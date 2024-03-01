@@ -6,6 +6,7 @@
 #include "../Library/gameutil.h"
 #include "../Library/gamecore.h"
 #include "mygame.h"
+#include<iostream>
 
 using namespace game_framework;
 
@@ -24,30 +25,16 @@ CGameStateRun::~CGameStateRun()
 void CGameStateRun::OnBeginState()
 {
 }
-bool isFinish = false;
-void CGameStateRun::OnMove()						// 移動遊戲元素
+
+void CGameStateRun::OnMove()							// 移動遊戲元素
 {
-	if (CMovingBitmap::IsOverlap(chest_and_key, character) && chest_and_key.GetFrameIndexOfBitmap() == 0) {
-		chest_and_key.ToggleAnimation();
-		chest_and_key.SetAnimation(1000, true);
+	if (character.IsOverlap(character, chest_and_key)) {
+		chest_and_key.SetFrameIndexOfBitmap(1);
 	}
-	if (CMovingBitmap::IsOverlap(bee, character) && bee.GetFrameIndexOfBitmap() == 0) {
-		bee.SetAnimation(1000, false);
-	}
-	if (door[0].GetFrameIndexOfBitmap() == 0) {
-		door[0].ToggleAnimation();
-		door[1].ToggleAnimation();
-		door[2].ToggleAnimation();
-		door[0].SetAnimation(1000, false);
-		door[1].SetAnimation(1000, false);
-		door[2].SetAnimation(1000, false);
-		isFinish = true;
-	}
-	if (isFinish) {
-		ball.SetAnimation(1000, false);
-	}
-	if (ball.GetFrameIndexOfBitmap() == 4) {
-		ball.SetAnimation(1000, true);
+	for (int i = 0; i < 3; i++) {
+		if (character.IsOverlap(character, door[i])) {
+			door[i].SetFrameIndexOfBitmap(1);
+		}
 	}
 }
 
@@ -72,11 +59,12 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	character.LoadBitmapByString({ "resources/giraffe.bmp" });
 	character.SetTopLeft(150, 265);
 
-	chest_and_key.LoadBitmapByString({ "resources/chest.bmp", "resources/chest_ignore.bmp" }, RGB(255,255,255));
+	chest_and_key.LoadBitmapByString({ "resources/chest.bmp", "resources/chest_ignore.bmp" }, RGB(255, 255, 255));
 	chest_and_key.SetTopLeft(150, 430);
 
 	bee.LoadBitmapByString({ "resources/bee_1.bmp", "resources/bee_2.bmp" });
 	bee.SetTopLeft(462, 265);
+	bee.SetAnimation(10, false);
 
 	ball.LoadBitmapByString({ "resources/ball-3.bmp", "resources/ball-3.bmp", "resources/ball-2.bmp", "resources/ball-1.bmp", "resources/ball-ok.bmp" });
 	ball.SetTopLeft(150, 430);
@@ -89,6 +77,21 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 
 void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
+	int tp = character.GetTop(), lft = character.GetLeft();
+	if (nChar == VK_LEFT) {
+		character.SetTopLeft(lft - 10, tp);
+	}
+	if (nChar == VK_RIGHT) {
+		character.SetTopLeft(lft + 10, tp);
+	}
+	if (nChar == VK_UP) {
+		character.SetTopLeft(lft, tp - 10);
+	}
+	if (nChar == VK_DOWN) {
+		character.SetTopLeft(lft, tp + 10);
+	}
+	
+
 	if (nChar == VK_RETURN) {
 		if (phase == 1) {
 			if (sub_phase == 1) {
@@ -141,19 +144,6 @@ void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			}
 		}
 	}
-	if (nChar == VK_UP) {
-		character.SetTopLeft(character.GetLeft(), character.GetTop() - 30);
-	}
-	if (nChar == VK_DOWN) {
-		character.SetTopLeft(character.GetLeft(), character.GetTop() + 30);
-	}
-	if (nChar == VK_LEFT) {
-		character.SetTopLeft(character.GetLeft() - 30, character.GetTop());
-	}
-	if (nChar == VK_RIGHT) {
-		character.SetTopLeft(character.GetLeft() + 30, character.GetTop());
-	}
-	
 }
 
 void CGameStateRun::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
@@ -163,12 +153,10 @@ void CGameStateRun::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 
 void CGameStateRun::OnLButtonDown(UINT nFlags, CPoint point)  // 處理滑鼠的動作
 {
-
 }
 
 void CGameStateRun::OnLButtonUp(UINT nFlags, CPoint point)	// 處理滑鼠的動作
 {
-	
 }
 
 void CGameStateRun::OnMouseMove(UINT nFlags, CPoint point)	// 處理滑鼠的動作
@@ -195,7 +183,7 @@ void CGameStateRun::show_image_by_phase() {
 		background.ShowBitmap();
 		character.ShowBitmap();
 		if (phase == 3 && sub_phase == 1) {
-			chest_and_key.ShowBitmap();		
+			chest_and_key.ShowBitmap();
 		}
 		if (phase == 4 && sub_phase == 1) {
 			bee.ShowBitmap();
