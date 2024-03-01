@@ -100,6 +100,7 @@ namespace game_framework {
 		CMovingBitmap bee;
 		CMovingBitmap ball;
 		CMovingBitmap door[3];
+		CMovingBitmap candy[5][5];
 		void show_image_by_phase();
 		void show_text_by_phase();
 		bool validate_phase_1();
