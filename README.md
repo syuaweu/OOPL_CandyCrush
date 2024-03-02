@@ -6,6 +6,6 @@ syuaweu & itaouo
 
 
 ## Useful Reference
-
+- 分工文件：https://ntutcc-my.sharepoint.com/:w:/g/personal/111820029_cc_ntut_edu_tw/EVRKgzemRFpDuEROYD7MDhEBsfaLafNppT0MBTj02KP6PQ?e=FXU13L
 - 快速入門：https://lgf-readthedocs.readthedocs.io/zh_TW/latest/index.html
 - 函式庫：https://ntut-xuan.github.io/LeistungsstarkesGameFramework
