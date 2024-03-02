@@ -7,6 +7,8 @@
 #include "../Library/gamecore.h"
 #include "mygame.h"
 #include<iostream>
+#include <cstdlib> /* 亂數相關函數 */
+#include <ctime>   /* 時間相關函數 */
 
 using namespace game_framework;
 
@@ -26,6 +28,35 @@ void CGameStateRun::OnBeginState()
 {
 }
 
+int rnd_number(int start, int end) {
+	/* 指定亂數範圍 */
+	int min = start;
+	int max = end;
+
+	/* 產生 [min , max] 的整數亂數 */
+	int x = rand() % (max - min + 1) + min;
+
+	return x;
+}
+
+bool CheckInitCandy(int arr[5][5]) {
+	for (int i = 0; i < 5; i++) {
+		for (int j = 0; j < 5; j++) {
+			if (i >= 2) {
+				if (arr[i][j] == arr[i - 1][j] && arr[i][j] == arr[i - 2][j]) {
+					return true;
+				}
+			}
+			if (j >= 2) {
+				if (arr[i][j] == arr[i][j - 1] && arr[i][j] == arr[i][j - 2]) {
+					return true;
+				}
+			}
+		}
+	}
+	return false;
+}
+
 void CGameStateRun::OnMove()							// 移動遊戲元素
 {
 	if (character.IsOverlap(character, chest_and_key)) {
@@ -36,6 +67,7 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 			door[i].SetFrameIndexOfBitmap(1);
 		}
 	}
+	
 }
 
 void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
@@ -68,7 +100,32 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 
 	ball.LoadBitmapByString({ "resources/ball-3.bmp", "resources/ball-3.bmp", "resources/ball-2.bmp", "resources/ball-1.bmp", "resources/ball-ok.bmp" });
 	ball.SetTopLeft(150, 430);
-
+	int which_candy[5][5] = {};
+	for (int i = 0; i < 5; i++) {
+		for (int j = 0; j < 5; j++) {
+			candy[i][j].LoadBitmapByString({ 
+				"Resources/texture_pack_original/candy/green.bmp", 
+				"Resources/texture_pack_original/candy/blue.bmp",  
+				"Resources/texture_pack_original/candy/orange.bmp",
+				"Resources/texture_pack_original/candy/purple.bmp",
+				"Resources/texture_pack_original/candy/yellow.bmp",
+				"Resources/texture_pack_original/candy/red.bmp" });
+			candy[i][j].SetTopLeft(175 + i * 50, 175 + j * 50);
+			which_candy[i][j] = rnd_number(0, 3);
+		}
+	}
+	while (CheckInitCandy(which_candy)) {
+		for (int i = 0; i < 5; i++) {
+			for (int j = 0; j < 5; j++) {
+				which_candy[i][j] = rnd_number(0, 3);
+			}
+		}
+	}
+	for (int i = 0; i < 5; i++) {
+		for (int j = 0; j < 5; j++) {
+			candy[i][j].SetFrameIndexOfBitmap(which_candy[i][j]);
+		}
+	}
 	for (int i = 0; i < 3; i++) {
 		door[i].LoadBitmapByString({ "resources/door_close.bmp", "resources/door_open.bmp" }, RGB(255, 255, 255));
 		door[i].SetTopLeft(462 - 100 * i, 265);
@@ -91,7 +148,6 @@ void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 		character.SetTopLeft(lft, tp + 10);
 	}
 	
-
 	if (nChar == VK_RETURN) {
 		if (phase == 1) {
 			if (sub_phase == 1) {
@@ -182,6 +238,12 @@ void CGameStateRun::show_image_by_phase() {
 		background.SetFrameIndexOfBitmap((phase - 1) * 2 + (sub_phase - 1));
 		background.ShowBitmap();
 		character.ShowBitmap();
+		for (int i = 0; i < 5; i++) {
+			for (int j = 0; j < 5; j++) {
+				candy[i][j].ShowBitmap();
+			}
+		}
+
 		if (phase == 3 && sub_phase == 1) {
 			chest_and_key.ShowBitmap();
 		}
