@@ -10,12 +10,32 @@
 #include <cstdlib> /* 亂數相關函數 */
 #include <ctime>   /* 時間相關函數 */
 
+#include <fstream>
+using namespace std;
+
 using namespace game_framework;
 
 /////////////////////////////////////////////////////////////////////////////
 // 這個class為遊戲的遊戲執行物件，主要的遊戲程式都在這裡
 /////////////////////////////////////////////////////////////////////////////
+int **LoadMap(string map_name) {
+	ifstream in;
+	in.open("Map/" + map_name + ".txt");
+	int row, column;
+	in >> row >> column;
+	int **map = new int*[row];
+	for (int i = 0; i < row; ++i) {
+		map[i] = new int[column];
+	}
 
+	for (int i = 0; i < row; i++) {
+		for (int j = 0; j < column; j++) {
+			in >> map[i][j];
+		}
+	}
+	in.close();
+	return map;
+}
 CGameStateRun::CGameStateRun(CGame *g) : CGameState(g)
 {
 }
@@ -26,6 +46,7 @@ CGameStateRun::~CGameStateRun()
 
 void CGameStateRun::OnBeginState()
 {
+	
 }
 
 int rnd_number(int start, int end) {
@@ -87,7 +108,7 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 		"resources/phase62_background.bmp",
 	});
 	background.SetTopLeft(0, 0);
-
+	cout << LoadMap("1");
 	character.LoadBitmapByString({ "resources/giraffe.bmp" });
 	character.SetTopLeft(150, 265);
 
