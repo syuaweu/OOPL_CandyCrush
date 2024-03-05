@@ -9,6 +9,8 @@
 #include<iostream>
 #include <cstdlib> /* 亂數相關函數 */
 #include <ctime>   /* 時間相關函數 */
+#include<sstream>
+#include <vector>
 
 #include <fstream>
 using namespace std;
@@ -18,22 +20,22 @@ using namespace game_framework;
 /////////////////////////////////////////////////////////////////////////////
 // 這個class為遊戲的遊戲執行物件，主要的遊戲程式都在這裡
 /////////////////////////////////////////////////////////////////////////////
-int **LoadMap(string map_name) {
+vector<vector<int>> LoadMap(string map_name) {
 	ifstream in;
-	in.open("Map/" + map_name + ".txt");
+	in.open("Resource/map/" + map_name + ".txt");
 	int row, column;
 	in >> row >> column;
-	int **map = new int*[row];
-	for (int i = 0; i < row; ++i) {
-		map[i] = new int[column];
-	}
-
+	cout << row << ' ' << column << '\n';
+	vector<vector<int>> map(10);
 	for (int i = 0; i < row; i++) {
 		for (int j = 0; j < column; j++) {
-			in >> map[i][j];
+			int x = 0;
+			in >> x;
+			map[i].push_back(x);
 		}
 	}
 	in.close();
+
 	return map;
 }
 CGameStateRun::CGameStateRun(CGame *g) : CGameState(g)
@@ -94,7 +96,7 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 {
 	background.LoadBitmapByString({ 
-		"resources/phase11_background.bmp", 
+		"resources/texture_pack_original/bg_screens/4.bmp",
 		"resources/phase12_background.bmp", 
 		"resources/phase21_background.bmp", 
 		"resources/phase22_background.bmp", 
@@ -108,7 +110,7 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 		"resources/phase62_background.bmp",
 	});
 	background.SetTopLeft(0, 0);
-	cout << LoadMap("1");
+	vector<vector<int>> mp = LoadMap("1");
 	character.LoadBitmapByString({ "resources/giraffe.bmp" });
 	character.SetTopLeft(150, 265);
 
@@ -121,9 +123,11 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 
 	ball.LoadBitmapByString({ "resources/ball-3.bmp", "resources/ball-3.bmp", "resources/ball-2.bmp", "resources/ball-1.bmp", "resources/ball-ok.bmp" });
 	ball.SetTopLeft(150, 430);
+	int w = 5, h = 5;
 	int which_candy[5][5] = {};
-	for (int i = 0; i < 5; i++) {
-		for (int j = 0; j < 5; j++) {
+	for (int i = 0; i < h; i++) {
+		for (int j = 0; j < w; j++) {
+			cout << mp[i][j] << ' ';
 			candy[i][j].LoadBitmapByString({ 
 				"Resources/texture_pack_original/candy/green.bmp", 
 				"Resources/texture_pack_original/candy/blue.bmp",  
@@ -131,7 +135,7 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 				"Resources/texture_pack_original/candy/purple.bmp",
 				"Resources/texture_pack_original/candy/yellow.bmp",
 				"Resources/texture_pack_original/candy/red.bmp" });
-			candy[i][j].SetTopLeft(175 + i * 50, 175 + j * 50);
+			candy[i][j].SetTopLeft((400-25*w) + i * 50, (400-25*h) + j * 50);
 			which_candy[i][j] = rnd_number(0, 3);
 		}
 	}

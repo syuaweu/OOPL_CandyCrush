@@ -1,6 +1,6 @@
 5 5
-bpopb
-pobog
-gbggp
-gobop
-bgopb
+1 1 0 1 1
+1 0 1 1 1
+1 1 1 1 1
+1 1 1 0 1
+1 1 1 1 3
