@@ -20,15 +20,13 @@ using namespace game_framework;
 /////////////////////////////////////////////////////////////////////////////
 // 這個class為遊戲的遊戲執行物件，主要的遊戲程式都在這裡
 /////////////////////////////////////////////////////////////////////////////
-vector<vector<int>> LoadMap(string map_name) {
+vector<vector<int>> LoadMap(string map_name, int *row, int *column) {
 	ifstream in;
-	in.open("Resource/map/" + map_name + ".txt");
-	int row, column;
-	in >> row >> column;
-	cout << row << ' ' << column << '\n';
+	in.open("Resources/map/" + map_name + ".txt");
+	in >> *row >> *column;
 	vector<vector<int>> map(10);
-	for (int i = 0; i < row; i++) {
-		for (int j = 0; j < column; j++) {
+	for (int i = 0; i < *row; i++) {
+		for (int j = 0; j < *column; j++) {
 			int x = 0;
 			in >> x;
 			map[i].push_back(x);
@@ -110,7 +108,8 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 		"resources/phase62_background.bmp",
 	});
 	background.SetTopLeft(0, 0);
-	vector<vector<int>> mp = LoadMap("1");
+	int w = 5, h = 5;
+	vector<vector<int>> mp = LoadMap("1", &h, &w);
 	character.LoadBitmapByString({ "resources/giraffe.bmp" });
 	character.SetTopLeft(150, 265);
 
@@ -123,7 +122,6 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 
 	ball.LoadBitmapByString({ "resources/ball-3.bmp", "resources/ball-3.bmp", "resources/ball-2.bmp", "resources/ball-1.bmp", "resources/ball-ok.bmp" });
 	ball.SetTopLeft(150, 430);
-	int w = 5, h = 5;
 	int which_candy[5][5] = {};
 	for (int i = 0; i < h; i++) {
 		for (int j = 0; j < w; j++) {
