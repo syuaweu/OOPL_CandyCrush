@@ -94,7 +94,7 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 {
 	background.LoadBitmapByString({ 
-		"resources/texture_pack_original/bg_screens/4.bmp",
+		"resources/texture_pack_original/bg_screens/3.bmp",
 		"resources/phase12_background.bmp", 
 		"resources/phase21_background.bmp", 
 		"resources/phase22_background.bmp", 
@@ -127,12 +127,12 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 		for (int j = 0; j < w; j++) {
 			cout << mp[i][j] << ' ';
 			candy[i][j].LoadBitmapByString({ 
-				"Resources/texture_pack_original/candy/green.bmp", 
-				"Resources/texture_pack_original/candy/blue.bmp",  
-				"Resources/texture_pack_original/candy/orange.bmp",
-				"Resources/texture_pack_original/candy/purple.bmp",
-				"Resources/texture_pack_original/candy/yellow.bmp",
-				"Resources/texture_pack_original/candy/red.bmp" });
+				"Resources/texture_pack_original/candy/0.bmp", 
+				"Resources/texture_pack_original/candy/1.bmp",  
+				"Resources/texture_pack_original/candy/2.bmp",
+				"Resources/texture_pack_original/candy/3.bmp",
+				"Resources/texture_pack_original/candy/4.bmp",
+				"Resources/texture_pack_original/candy/5.bmp" });
 			candy[i][j].SetTopLeft((400-25*w) + i * 50, (400-25*h) + j * 50);
 			which_candy[i][j] = rnd_number(0, 3);
 		}
