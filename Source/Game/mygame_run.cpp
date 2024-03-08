@@ -60,9 +60,9 @@ int rnd_number(int start, int end) {
 	return x;
 }
 
-bool CheckInitCandy(int arr[5][5]) {
-	for (int i = 0; i < 5; i++) {
-		for (int j = 0; j < 5; j++) {
+bool CheckInitCandy(int arr[5][5] ,int w, int h) {
+	for (int i = 0; i < h; i++) {
+		for (int j = 0; j < w; j++) {
 			if (i >= 2) {
 				if (arr[i][j] == arr[i - 1][j] && arr[i][j] == arr[i - 2][j]) {
 					return true;
@@ -134,14 +134,7 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 				"Resources/texture_pack_original/candy/4.bmp",
 				"Resources/texture_pack_original/candy/5.bmp" });
 			candy[i][j].SetTopLeft((400-25*w) + i * 50, (400-25*h) + j * 50);
-			which_candy[i][j] = rnd_number(0, 3);
-		}
-	}
-	while (CheckInitCandy(which_candy)) {
-		for (int i = 0; i < 5; i++) {
-			for (int j = 0; j < 5; j++) {
-				which_candy[i][j] = rnd_number(0, 3);
-			}
+			which_candy[i][j] = mp[i][j];
 		}
 	}
 	for (int i = 0; i < 5; i++) {
