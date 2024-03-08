@@ -11,6 +11,8 @@
 #include <ctime>   /* 時間相關函數 */
 #include<sstream>
 #include <vector>
+#include<math.h>
+
 
 #include <fstream>
 using namespace std;
@@ -257,8 +259,15 @@ void swtch(int now_x, int now_y, int pr_x, int pr_y) {
 	which_candy[pr_y][pr_x] = xx;
 }
 bool CanDelete() {
-	swtch((idx0 - (400 - 25 * w)) / 50, (idy0 - (400 - 25 * h)) / 50
-		, (idx1 - (400 - 25 * w)) / 50, (idy1 - (400 - 25 * h)) / 50);
+	int row0 = (idy0 - (400 - 25 * h)) / 50;
+	int column0 = (idx0 - (400 - 25 * w)) / 50;
+	int row1 = (idy1 - (400 - 25 * h)) / 50;
+	int column1 = (idx1 - (400 - 25 * w)) / 50;
+	if (!(std::abs(row0 - row1) == 1 && std::abs(column0 - column1) == 0) &&!(std::abs(row0 - row1) == 0 && std::abs(column0 - column1) == 1)) {
+		return false;
+	}
+	swtch(column0, row0
+		, column1, row1);
 	if (CheckInitCandy(which_candy, w, h)) {
 		return true;
 	}
