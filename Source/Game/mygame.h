@@ -95,12 +95,14 @@ namespace game_framework {
 		int phase = 1;
 		int sub_phase = 1;
 		CMovingBitmap background;
+		CMovingBitmap cursor;
 		CMovingBitmap character;
 		CMovingBitmap chest_and_key;
 		CMovingBitmap bee;
 		CMovingBitmap ball;
 		CMovingBitmap door[3];
 		CMovingBitmap candy[5][5];
+		
 		void show_image_by_phase();
 		void show_text_by_phase();
 		bool validate_phase_1();

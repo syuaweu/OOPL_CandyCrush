@@ -97,6 +97,7 @@ int w = 5, h = 5;
 int which_candy[9][9] = {};
 void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 {
+	
 	background.LoadBitmapByString({
 		"resources/texture_pack_original/bg_screens/3.bmp",
 		"resources/phase12_background.bmp",
@@ -169,6 +170,8 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	}
 	character.LoadBitmapByString({ "resources/giraffe.bmp" });
 	character.SetTopLeft(150, 265);
+	cursor.LoadBitmapByString({ "Resources/texture_pack_original/cursor.bmp" }, RGB(255, 255, 255));
+	cursor.SetTopLeft((400 - 25 * w), (400 - 25 * h));
 }
 
 void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
@@ -271,8 +274,8 @@ bool CanDelete() {
 	if (CheckInitCandy(which_candy, w, h)) {
 		return true;
 	}
-	swtch((idx0 - (400 - 25 * w)) / 50, (idy0 - (400 - 25 * h)) / 50
-		, (idx1 - (400 - 25 * w)) / 50, (idy1 - (400 - 25 * h)) / 50);
+	swtch(column0, row0
+		, column1, row1);
 	return false;
 }
 bool inSquare() {
@@ -292,11 +295,27 @@ bool inSquare() {
 	}
 	return 1;
 }
+bool oneInSquare() {
+	int potx = (400 - 25 * w);
+	int poty = (400 - 25 * h);
+	
+	if (which_mou) {
+		if (idx0 < potx || idx0 > potx + 50 * w || idy0 < poty || idy0 > poty + 50 * h) {
+			return 0;
+		}
+		return 1;
+	}
+	else {
+		if (idx1 < potx||idx1 > potx + 50 * w||idy1 < poty||idy1 > poty + 50 * h) {
+			return 0;
+		}
+		return 1;
+	}
+}
 void CGameStateRun::OnLButtonDown(UINT nFlags, CPoint point)  // 處理滑鼠的動作
 {
-	if (inSquare()) {
-		character.SetTopLeft(point.x, point.y);
-	}
+	
+	
 	if (which_mou) {
 		idx1 = point.x;
 		idy1 = point.y;
@@ -319,7 +338,13 @@ void CGameStateRun::OnLButtonDown(UINT nFlags, CPoint point)  // 處理滑鼠的動作
 			}
 		}
 	}
-
+	
+	if (oneInSquare()) {
+		cursor.SetTopLeft((point.x - (400 - 25 * w)) / 50 * 50 + (400 - 25 * w),
+			(point.y - (400 - 25 * h)) / 50 * 50 + (400 - 25 * h));
+		cursor.ShowBitmap();
+	}
+	
 
 }
 
@@ -358,6 +383,8 @@ void CGameStateRun::show_image_by_phase() {
 				candy[i][j].ShowBitmap();
 			}
 		}
+
+		cursor.ShowBitmap();
 
 		if (phase == 3 && sub_phase == 1) {
 			chest_and_key.ShowBitmap();
