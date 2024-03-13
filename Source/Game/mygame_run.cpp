@@ -147,7 +147,7 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 			door[i].SetFrameIndexOfBitmap(1);
 		}
 	}
-	while (CheckInitCandy(which_candy, 5, 5)) {
+	if (CheckInitCandy(which_candy, 5, 5)) {
 		vector<vector<int>> status = CheckMapStatus(which_candy, w, h);
 		for (int i = 0; i < h; i++) {
 			for (int j = 0; j < w; j++) {
@@ -419,6 +419,9 @@ void CGameStateRun::OnLButtonDown(UINT nFlags, CPoint point)  // 處理滑鼠的動作
 				candy[i][j].ShowBitmap();
 			}
 		}
+		idx0 = 0, idx1 = 0;
+		idy0 = 0, idy1 = 0;
+		which_mou = 0;
 	}
 
 	/*if (oneInSquare()) {
