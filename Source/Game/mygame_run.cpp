@@ -190,7 +190,7 @@ void CGameStateRun::update_candy() {
 				candy[i][j].SetFrameIndexOfBitmap(27);
 			}
 			else {
-				candy[i][j].SetFrameIndexOfBitmap(which_candy[i][j] / 10 + which_candy[i][j] % 10);
+				candy[i][j].SetFrameIndexOfBitmap(which_candy[i][j] / 10 * 6 + which_candy[i][j] % 10);
 			}
 		}
 	}
