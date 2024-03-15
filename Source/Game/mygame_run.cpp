@@ -136,6 +136,19 @@ vector<vector<int>> UpdateMap(vector<vector<int>> mp, int i, int j) {
 	return mp;
 }
 
+void CGameStateRun::vertical_fall_candy(int i,int j) {
+	for (int k = 0; k <= i; k++) {
+		if (which_candy[k][j] < 0) {
+			i = k-1;
+
+			break;
+		}
+	}
+	for (int k = i; k > 0; k--) {
+		which_candy[k][j] = which_candy[k - 1][j];
+	}
+}
+
 void CGameStateRun::OnMove()							// 移動遊戲元素
 {
 	if (character.IsOverlap(character, chest_and_key)) {
@@ -157,16 +170,9 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 							//candy[k][j].SetTopLeft(candy[k][j].GetLeft(), candy[k][j].GetTop() + 10);
 						} //candy[k][j]
 					}
-					for (int k = i; k > 0; k--) {
-						which_candy[k][j] = which_candy[k - 1][j];
-					}
+					vertical_fall_candy(i, j);
 					which_candy[0][j] = rnd_number(0, 3);
-					for (int i = 0; i < h; i++) {
-						for (int j = 0; j < w; j++) {
-							candy[i][j].SetFrameIndexOfBitmap(which_candy[i][j]);
-						}
-					}
-
+					update_candy();
 				}
 			}
 		}
@@ -174,7 +180,21 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 	}
 
 }
-
+void CGameStateRun::update_candy() {
+	for (int i = h - 1; i >= 0; i--) {
+		for (int j = w - 1; j >= 0; j--) {
+			if (which_candy[i][j] == -1) {
+				candy[i][j].SetFrameIndexOfBitmap(26);
+			}
+			else if (which_candy[i][j] == -11) {
+				candy[i][j].SetFrameIndexOfBitmap(27);
+			}
+			else {
+				candy[i][j].SetFrameIndexOfBitmap(which_candy[i][j] / 10 * 6 + which_candy[i][j] % 10);
+			}
+		}
+	}
+}
 
 void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 {
@@ -236,16 +256,14 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 				"Resources/texture_pack_original/candy/35.bmp",
 				"Resources/texture_pack_original/candy/40.bmp",
 				"Resources/texture_pack_original/candy/50.bmp",
+				"Resources/texture_pack_original/candy/-1.bmp",
+				"Resources/texture_pack_original/candy/-11.bmp",
 				});
 			candy[i][j].SetTopLeft((400 - 25 * w) + j * 50, (400 - 25 * h) + i * 50);
 			which_candy[i][j] = mp[i][j];
 		}
 	}
-	for (int i = h - 1; i >= 0; i--) {
-		for (int j = w - 1; j >= 0; j--) {
-			candy[i][j].SetFrameIndexOfBitmap(which_candy[i][j]);
-		}
-	}
+	update_candy();
 	for (int i = 0; i < 3; i++) {
 		door[i].LoadBitmapByString({ "resources/door_close.bmp", "resources/door_open.bmp" }, RGB(255, 255, 255));
 		door[i].SetTopLeft(462 - 100 * i, 265);
@@ -396,8 +414,6 @@ bool oneInSquare() {
 }
 void CGameStateRun::OnLButtonDown(UINT nFlags, CPoint point)  // 處理滑鼠的動作
 {
-
-
 	if (which_mou) {
 		idx1 = point.x;
 		idy1 = point.y;
