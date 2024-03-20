@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "fstream": "cpp",
-        "files.encoding": "cp950"
+        "files.encoding": "cp950",
+        "utility": "cpp"
     }
 }
