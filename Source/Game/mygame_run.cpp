@@ -7,11 +7,13 @@
 #include "../Library/gamecore.h"
 #include "mygame.h"
 #include<iostream>
-#include <cstdlib> /* ¶Ã¼Æ¬ÛÃö¨ç¼Æ */
-#include <ctime>   /* ®É¶¡¬ÛÃö¨ç¼Æ */
+#include <cstdlib> /* ï¿½???ï¿½ï¿½?ï¿½ï¿½????ï¿½ï¿½?? */
+#include <ctime>   /* ????????ï¿½ï¿½????ï¿½ï¿½?? */
 #include<sstream>
 #include <vector>
 #include<math.h>
+#include<utility>
+
 
 
 #include <fstream>
@@ -20,7 +22,7 @@ using namespace std;
 using namespace game_framework;
 
 /////////////////////////////////////////////////////////////////////////////
-// ³o­Óclass¬°¹CÀ¸ªº¹CÀ¸°õ¦æª«¥ó¡A¥D­nªº¹CÀ¸µ{¦¡³£¦b³o¸Ì
+// ??????class??ï¿½ï¿½????ï¿½ï¿½???????ï¿½ï¿½?ï¿½ï¿½????ï¿½ä»¶ï¿½?ä¸»ï¿½??????????ï¿½ï¿½??ï¿½???ï¿½ï¿½?ï¿½ï¿½??ï¿½?
 /////////////////////////////////////////////////////////////////////////////
 vector<vector<int>> LoadMap(string map_name, int *row, int *column) {
 	ifstream in;
@@ -55,11 +57,11 @@ int which_candy[9][9] = { 0 };
 vector<vector<int>> mp;
 
 int rnd_number(int start, int end) {
-	/* «ü©w¶Ã¼Æ½d³ò */
+	/* ???ï¿½?ï¿½???ï¿½ï¿½????? */
 	int min = start;
 	int max = end;
 
-	/* ²£¥Í [min , max] ªº¾ã¼Æ¶Ã¼Æ */
+	/* ??ï¿½ï¿½?? [min , max] ?????ï¿½ï¿½?ï¿½ï¿½????? */
 	int x = rand() % (max - min + 1) + min;
 
 	return x;
@@ -89,7 +91,110 @@ void delay(int ms) {
 		now = clock();
 	}
 }
-vector<vector<int>> CheckMapStatus(int mp[9][9], int w, int h) {
+
+bool LTypeCandy(int mp[9][9], int now_h,int now_w) {
+	if (now_w >= 2 && now_h < h - 2) {
+		if (mp[now_h][now_w] == mp[now_h][now_w - 1]
+			&& mp[now_h][now_w] == mp[now_h][now_w - 2]
+			&& mp[now_h][now_w] == mp[now_h + 1][now_w]
+			&& mp[now_h][now_w] == mp[now_h + 2][now_w]) {
+			return true;
+		}
+	}
+	if (now_w < w - 2 && now_h < h - 2) {
+		if (mp[now_h][now_w] == mp[now_h][now_w + 1]
+			&& mp[now_h][now_w] == mp[now_h][now_w + 2]
+			&& mp[now_h][now_w] == mp[now_h + 1][now_w]
+			&& mp[now_h][now_w] == mp[now_h + 2][now_w]) {
+			return true;
+		}
+	}
+	if (now_w >= 2 && now_h >= 2) {
+		if (mp[now_h][now_w] == mp[now_h][now_w - 1]
+			&& mp[now_h][now_w] == mp[now_h][now_w - 2]
+			&& mp[now_h][now_w] == mp[now_h - 1][now_w]
+			&& mp[now_h][now_w] == mp[now_h - 2][now_w]) {
+			return true;
+		}
+	}
+	if (now_w < w - 2 && now_h >= 2) {
+		if (mp[now_h][now_w] == mp[now_h][now_w + 1]
+			&& mp[now_h][now_w] == mp[now_h][now_w + 2]
+			&& mp[now_h][now_w] == mp[now_h - 1][now_w]
+			&& mp[now_h][now_w] == mp[now_h - 2][now_w]) {
+			return true;
+		}
+	}
+	return false;
+}
+bool ITypeCandy(int mp[9][9], int now_h, int now_w) {
+	if (now_h >= 3) {
+		if (mp[now_h][now_w] == mp[now_h - 1][now_w]
+			&& mp[now_h][now_w] == mp[now_h - 2][now_w]
+			&& mp[now_h][now_w] == mp[now_h - 3][now_w]) {
+			return true;
+		}
+	}
+	return false;
+}
+
+bool TTypeCandy(int mp[9][9], int now_h, int now_w) {
+	if (now_w < w - 2 && now_h >= 1 && now_h < h - 1) {
+		if (mp[now_h][now_w] == mp[now_h - 1][now_w]
+			&& mp[now_h][now_w] == mp[now_h + 1][now_w]
+			&& mp[now_h][now_w] == mp[now_h][now_w + 1]
+			&& mp[now_h][now_w] == mp[now_h][now_w + 2]) {
+			return true;
+		}
+	}
+	if (now_w >= 2 && now_h >= 1 && now_h < h - 1) {
+		if (mp[now_h][now_w] == mp[now_h - 1][now_w]
+			&& mp[now_h][now_w] == mp[now_h + 1][now_w]
+			&& mp[now_h][now_w] == mp[now_h][now_w - 1]
+			&& mp[now_h][now_w] == mp[now_h][now_w - 2]) {
+			return true;
+		}
+	}
+	if (now_h >= 2 && now_w >= 1 && now_w < w - 1) {
+		if (mp[now_h][now_w] == mp[now_h][now_w - 1]
+			&& mp[now_h][now_w] == mp[now_h][now_w + 1]
+			&& mp[now_h][now_w] == mp[now_h - 1][now_w]
+			&& mp[now_h][now_w] == mp[now_h - 2][now_w]) {
+			return true;
+		}
+	}
+	if (now_h < h - 2 && now_w >= 1 && now_w < w - 1) {
+		if (mp[now_h][now_w] == mp[now_h][now_w - 1]
+			&& mp[now_h][now_w] == mp[now_h][now_w + 1]
+			&& mp[now_h][now_w] == mp[now_h + 1][now_w]
+			&& mp[now_h][now_w] == mp[now_h + 2][now_w]) {
+			return true;
+		}
+	}
+	return false;
+}
+/*
+bool ETypeCandy(int mp[9][9], int now_h, int now_w) {
+
+}
+*/
+void CGameStateRun::update_candy() {
+	for (int i = h - 1; i >= 0; i--) {
+		for (int j = w - 1; j >= 0; j--) {
+			if (which_candy[i][j] == -1) {
+				candy[i][j].SetFrameIndexOfBitmap(26);
+			}
+			else if (which_candy[i][j] == -11) {
+				candy[i][j].SetFrameIndexOfBitmap(27);
+			}
+			else {
+				candy[i][j].SetFrameIndexOfBitmap(which_candy[i][j] / 10 * 6 + which_candy[i][j] % 10);
+			}
+		}
+	}
+}
+bool disapear = 0;
+vector<vector<int>> CGameStateRun::CheckMapStatus(int mp[9][9], int w, int h) {
 	vector<vector<int>> status(9);
 	for (int i = 0; i < h; i++) {
 		for (int j = 0; j < w; j++) {
@@ -107,6 +212,23 @@ vector<vector<int>> CheckMapStatus(int mp[9][9], int w, int h) {
 					status[i][j - 1] = 0;
 					status[i][j - 2] = 0;
 				}
+			}
+			
+		}
+	}
+	for (int i = 0; i < h; i++) {
+		for (int j = 0; j < w; j++) {
+			if (LTypeCandy(mp, i, j)||TTypeCandy(mp, i, j)) {
+				status[i][j] = 1;
+				candy[i][j].SetFrameIndexOfBitmap(which_candy[i][j] + 6);
+				which_candy[i][j] += 10;
+				disapear = 1;
+			}
+			if (ITypeCandy(mp, i, j)) {
+				status[i][j] = 1;
+				candy[i][j].SetFrameIndexOfBitmap(which_candy[i][j] + 12);
+				which_candy[i][j] += 20;
+				disapear = 1;
 			}
 		}
 	}
@@ -149,7 +271,7 @@ void CGameStateRun::vertical_fall_candy(int i,int j) {
 	}
 }
 
-void CGameStateRun::OnMove()							// ²¾°Ê¹CÀ¸¤¸¯À
+void CGameStateRun::OnMove()							// ç§»ï¿½???????ï¿½ï¿½??ï¿½?
 {
 	if (character.IsOverlap(character, chest_and_key)) {
 		chest_and_key.SetFrameIndexOfBitmap(1);
@@ -160,11 +282,14 @@ void CGameStateRun::OnMove()							// ²¾°Ê¹CÀ¸¤¸¯À
 			door[i].SetFrameIndexOfBitmap(1);
 		}
 	}
-	if (CheckInitCandy(which_candy, 5, 5)) {
-		vector<vector<int>> status = CheckMapStatus(which_candy, w, h);
+	vector<vector<int>> status = CheckMapStatus(which_candy, w, h);
+	if (CheckInitCandy(which_candy, 5, 5)||disapear) {
+		disapear = 0;
+		
 		for (int i = 0; i < h; i++) {
 			for (int j = 0; j < w; j++) {
 				if (status[i][j] == 0) {
+					character.SetTopLeft(600, 600);
 					for (int k = i - 1; k >= 0; k--) {
 						for (int i = 0; i < 5; i++) {
 							//candy[k][j].SetTopLeft(candy[k][j].GetLeft(), candy[k][j].GetTop() + 10);
@@ -180,23 +305,8 @@ void CGameStateRun::OnMove()							// ²¾°Ê¹CÀ¸¤¸¯À
 	}
 
 }
-void CGameStateRun::update_candy() {
-	for (int i = h - 1; i >= 0; i--) {
-		for (int j = w - 1; j >= 0; j--) {
-			if (which_candy[i][j] == -1) {
-				candy[i][j].SetFrameIndexOfBitmap(26);
-			}
-			else if (which_candy[i][j] == -11) {
-				candy[i][j].SetFrameIndexOfBitmap(27);
-			}
-			else {
-				candy[i][j].SetFrameIndexOfBitmap(which_candy[i][j] / 10 * 6 + which_candy[i][j] % 10);
-			}
-		}
-	}
-}
 
-void CGameStateRun::OnInit()  								// ¹CÀ¸ªºªì­È¤Î¹Ï§Î³]©w
+void CGameStateRun::OnInit()  								// ?????ï¿½ï¿½???????ï¿½ï¿½?????å½¢è¨­ï¿½?
 {
 
 	background.LoadBitmapByString({
@@ -412,7 +522,7 @@ bool oneInSquare() {
 		return 1;
 	}
 }
-void CGameStateRun::OnLButtonDown(UINT nFlags, CPoint point)  // ³B²z·Æ¹«ªº°Ê§@
+void CGameStateRun::OnLButtonDown(UINT nFlags, CPoint point)  // ??????ï¿½?ï¿½???????ï¿½?
 {
 	if (which_mou) {
 		idx1 = point.x;
@@ -449,22 +559,22 @@ void CGameStateRun::OnLButtonDown(UINT nFlags, CPoint point)  // ³B²z·Æ¹«ªº°Ê§@
 
 }
 
-void CGameStateRun::OnLButtonUp(UINT nFlags, CPoint point)	// ³B²z·Æ¹«ªº°Ê§@
+void CGameStateRun::OnLButtonUp(UINT nFlags, CPoint point)	// ??????ï¿½?ï¿½???????ï¿½?
 {
 
 }
 
-void CGameStateRun::OnMouseMove(UINT nFlags, CPoint point)	// ³B²z·Æ¹«ªº°Ê§@
+void CGameStateRun::OnMouseMove(UINT nFlags, CPoint point)	// ??????ï¿½?ï¿½???????ï¿½?
 {
 
 
 }
 
-void CGameStateRun::OnRButtonDown(UINT nFlags, CPoint point)  // ³B²z·Æ¹«ªº°Ê§@
+void CGameStateRun::OnRButtonDown(UINT nFlags, CPoint point)  // ??????ï¿½?ï¿½???????ï¿½?
 {
 }
 
-void CGameStateRun::OnRButtonUp(UINT nFlags, CPoint point)	// ³B²z·Æ¹«ªº°Ê§@
+void CGameStateRun::OnRButtonUp(UINT nFlags, CPoint point)	// ??????ï¿½?ï¿½???????ï¿½?
 {
 }
 
@@ -506,41 +616,41 @@ void CGameStateRun::show_image_by_phase() {
 void CGameStateRun::show_text_by_phase() {
 	CDC *pDC = CDDraw::GetBackCDC();
 
-	CTextDraw::ChangeFontLog(pDC, 21, "·L³n¥¿¶ÂÅé", RGB(0, 0, 0), 800);
+	CTextDraw::ChangeFontLog(pDC, 21, "å¾®ï¿½??ï¿½?ï¿½?ï¿½?", RGB(0, 0, 0), 800);
 
 	if (phase == 1 && sub_phase == 1) {
-		CTextDraw::Print(pDC, 237, 128, "­×§ï§Aªº¥D¨¤¡I");
-		CTextDraw::Print(pDC, 55, 163, "±N¦Ç¦â¤è®æ´«¦¨ resources ¤ºªº giraffe.bmp ¹Ï¼Ë¡I");
+		CTextDraw::Print(pDC, 237, 128, "ä¿®ï¿½?ï¿½ï¿½?????ä¸»ï¿½??ï¿½?");
+		CTextDraw::Print(pDC, 55, 163, "ï¿½???ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½????? resources ??ï¿½ï¿½?? giraffe.bmp ???ï¿½?ï¿½?");
 		CTextDraw::Print(pDC, 373, 537, to_string(clock()));
 	}
 	else if (phase == 2 && sub_phase == 1) {
-		CTextDraw::Print(pDC, 26, 128, "¤U¤@­Ó¶¥¬q¡AÅýªøÀV³À¯à°÷³z¹L¤W¤U¥ª¥k²¾°Ê¨ì³o­Ó¦ì¸m¡I");
-		CTextDraw::Print(pDC, 373, 537, "«ö¤U Enter Áä¨ÓÅçÃÒ");
+		CTextDraw::Print(pDC, 26, 128, "ï¿½?ï¿½???????æ®µï¿½??ï¿½???ï¿½ï¿½?ï¿½é¹¿??ï¿½ï¿½????????ï¿½?ï¿½?å·¦ï¿½?ï¿½ç§»?????ï¿½ï¿½?????ï¿½?ç½®ï¿½??");
+		CTextDraw::Print(pDC, 373, 537, "???ï¿½? Enter ??ï¿½ï¿½??ï¿½?ï¿½?");
 	}
 	else if (phase == 3 && sub_phase == 1) {
-		CTextDraw::Print(pDC, 205, 128, "À°§A·Ç³Æ¤F¤@­ÓÄ_½c");
-		CTextDraw::Print(pDC, 68, 162, "³]­pµ{¦¡ÅýªøÀV³ÀºN¨ìÄ_½c«á¡A±NÄ_½c®ø¥¢¡I");
-		CTextDraw::Print(pDC, 68, 196, "°O±oÄ_½c­n¥h­I¡A¨Ï¥Î RGB(255, 255, 255)");
-		CTextDraw::Print(pDC, 373, 537, "«ö¤U Enter Áä¨ÓÅçÃÒ");
+		CTextDraw::Print(pDC, 205, 128, "å¹«ï¿½??ï¿½????ï¿½?ï¿½????å¯¶ç®±");
+		CTextDraw::Print(pDC, 68, 162, "è¨­ï¿½??ï¿½?ï¿½?ï¿½???ï¿½ï¿½?ï¿½é¹¿??ï¿½ï¿½?ï¿½å¯¶ç®±ï¿½??ï¿½?ï¿½?å¯¶ç®±ï¿½?å¤±ï¿½??");
+		CTextDraw::Print(pDC, 68, 196, "ï¿½?ï¿½?å¯¶ç®±ï¿½???ï¿½ï¿½??ï¿½?ä½¿ï¿½?? RGB(255, 255, 255)");
+		CTextDraw::Print(pDC, 373, 537, "???ï¿½? Enter ??ï¿½ï¿½??ï¿½?ï¿½?");
 	}
 	else if (phase == 4 && sub_phase == 1) {
-		CTextDraw::Print(pDC, 173, 128, "À°§A·Ç³Æ¤F¤@­Ó»e¸Á¦nªB¤Í");
-		CTextDraw::Print(pDC, 89, 162, "¤w¸gÀ°¥¦°µ¤F¨â´Vªº°Êµe¡AÅý¥¦¥i¥H¤W¤U²¾°Ê");
-		CTextDraw::Print(pDC, 110, 196, "¼g­Óµ{¦¡¨ÓÅý§Aªº»e¸Á¦nªB¤Í¾Ö¦³°Êµe¡I");
-		CTextDraw::Print(pDC, 373, 537, "«ö¤U Enter Áä¨ÓÅçÃÒ");
+		CTextDraw::Print(pDC, 173, 128, "å¹«ï¿½??ï¿½????ï¿½?ï¿½??????????å¥½ï¿½?????");
+		CTextDraw::Print(pDC, 89, 162, "å·²ï¿½??å¹«ï¿½?????ï¿½???ï¿½ï¿½??????????ï¿½ï¿½??ï¿½?ï¿½???ï¿½ä»¥ï¿½?ï¿½?ç§»ï¿½??");
+		CTextDraw::Print(pDC, 110, 196, "å¯«ï¿½??ï¿½?ï¿½?ï¿½?ï¿½?ï¿½??????????å¥½ï¿½????????????????ï¿½ï¿½??");
+		CTextDraw::Print(pDC, 373, 537, "???ï¿½? Enter ??ï¿½ï¿½??ï¿½?ï¿½?");
 	}
 	else if (phase == 5 && sub_phase == 1) {
-		CTextDraw::Print(pDC, 173, 128, "À°§A·Ç³Æ¤F¤T®°ªù");
-		CTextDraw::Print(pDC, 89, 162, "³]­pµ{¦¡ÅýªøÀV³ÀºN¨ìªù¤§«á¡Aªù·|¥´¶}");
-		CTextDraw::Print(pDC, 373, 537, "«ö¤U Enter Áä¨ÓÅçÃÒ");
+		CTextDraw::Print(pDC, 173, 128, "å¹«ï¿½??ï¿½????ï¿½?ï¿½???????");
+		CTextDraw::Print(pDC, 89, 162, "è¨­ï¿½??ï¿½?ï¿½?ï¿½???ï¿½ï¿½?ï¿½é¹¿??ï¿½ï¿½?ï¿½ï¿½??ï¿½?ï¿½?ï¿½?????????????");
+		CTextDraw::Print(pDC, 373, 537, "???ï¿½? Enter ??ï¿½ï¿½??ï¿½?ï¿½?");
 	}
 	else if (phase == 6 && sub_phase == 1) {
-		CTextDraw::Print(pDC, 173, 128, "À°§A·Ç³Æ¤F¤@Áû·|­Ë¼Æªº²y");
-		CTextDraw::Print(pDC, 89, 162, "³]­pµ{¦¡Åý²y­Ë¼Æ¡AµM«áÅã¥Ü OK «á°±¤î°Êµe");
-		CTextDraw::Print(pDC, 373, 537, "«ö¤U Enter Áä¨ÓÅçÃÒ");
+		CTextDraw::Print(pDC, 173, 128, "å¹«ï¿½??ï¿½????ï¿½?ï¿½?ï¿½?????????ï¿½ï¿½?????");
+		CTextDraw::Print(pDC, 89, 162, "è¨­ï¿½??ï¿½?ï¿½?ï¿½?????????ï¿½ï¿½????ï¿½ï¿½??é¡¯ç¤º OK ï¿½????æ­¢ï¿½?????");
+		CTextDraw::Print(pDC, 373, 537, "???ï¿½? Enter ??ï¿½ï¿½??ï¿½?ï¿½?");
 	}
 	else if (sub_phase == 2) {
-		CTextDraw::Print(pDC, 268, 128, "§¹¦¨¡I");
+		CTextDraw::Print(pDC, 268, 128, "ï¿½????ï¿½?");
 	}
 
 	CDDraw::ReleaseBackCDC();
