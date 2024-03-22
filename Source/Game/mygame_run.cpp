@@ -263,15 +263,32 @@ vector<vector<int>> UpdateMap(vector<vector<int>> mp, int i, int j) {
 }
 
 void CGameStateRun::vertical_fall_candy(int i,int j) {
-	/*for (int k = 0; k <= i; k++) {
-		if (which_candy[k][j] < 0) {
-			i = k-1;
-			break;
-		}
-	}*/
-	for (int k = i; k > 0; k--) {
+	/*for (int k = i; k > 0; k--) {
 		which_candy[k][j] = which_candy[k - 1][j];
+	}*/
+	if (i == 0) {
+		return;
 	}
+	if (which_candy[i][j] >= 0) {
+		which_candy[i][j] = which_candy[i - 1][j];
+		vertical_fall_candy(i - 1, j);
+		return;
+	}
+	if (j >= 0){
+		if (which_candy[i][j - 1] >= 0) {
+			which_candy[i][j] = which_candy[i - 1][j - 1];
+			vertical_fall_candy(i - 1, j - 1);
+			return;
+		}
+	}
+	if (j <= w - 1) {
+		if (which_candy[i][j + 1] >= 0) {
+			which_candy[i][j] = which_candy[i - 1][j + 1];
+			vertical_fall_candy(i - 1, j + 1);
+			return;
+		}
+	}
+	which_candy[i][j] = -10;
 }
 
 void CGameStateRun::remove_obstacle_layer(int i, int j){
