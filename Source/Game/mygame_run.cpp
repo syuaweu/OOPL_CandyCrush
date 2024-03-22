@@ -507,12 +507,15 @@ void swtch(int now_x, int now_y, int pr_x, int pr_y) {
 	which_candy[now_y][now_x] = which_candy[pr_y][pr_x];
 	which_candy[pr_y][pr_x] = xx;
 }
-bool CanDelete() {
+bool CGameStateRun::CanDelete() {
 	int row0 = (idy0 - (400 - 25 * h)) / 50;
 	int column0 = (idx0 - (400 - 25 * w)) / 50;
 	int row1 = (idy1 - (400 - 25 * h)) / 50;
 	int column1 = (idx1 - (400 - 25 * w)) / 50;
 	if (!(std::abs(row0 - row1) == 1 && std::abs(column0 - column1) == 0) && !(std::abs(row0 - row1) == 0 && std::abs(column0 - column1) == 1)) {
+		return false;
+	}
+	if (which_candy[row0][column0] < -10 || which_candy[row1][column1] < -10) {
 		return false;
 	}
 	swtch(column0, row0
@@ -541,6 +544,7 @@ bool inSquare() {
 	}
 	return 1;
 }
+
 bool oneInSquare() {
 	int potx = (400 - 25 * w);
 	int poty = (400 - 25 * h);
@@ -572,6 +576,15 @@ void CGameStateRun::OnLButtonDown(UINT nFlags, CPoint point)  // ??????ï¿??ï¿???
 	}
 	character.SetTopLeft(idx0, idy0);
 	if (inSquare() && CanDelete()) {
+		int row0 = (idy0 - (400 - 25 * h)) / 50;
+		int column0 = (idx0 - (400 - 25 * w)) / 50;
+		int row1 = (idy1 - (400 - 25 * h)) / 50;
+		int column1 = (idx1 - (400 - 25 * w)) / 50;
+		
+		candy[(idy0 - (400 - 25 * h)) / 50][(idx0 - (400 - 25 * w)) / 50]
+			.SetFrameIndexOfBitmap(which_candy[(idy0 - (400 - 25 * h)) / 50][(idx0 - (400 - 25 * w)) / 50]);
+		candy[(idy1 - (400 - 25 * h)) / 50][(idx1 - (400 - 25 * w)) / 50]
+			.SetFrameIndexOfBitmap(which_candy[(idy1 - (400 - 25 * h)) / 50][(idx1 - (400 - 25 * w)) / 50]);
 		candy[(idy0 - (400 - 25 * h)) / 50][(idx0 - (400 - 25 * w)) / 50]
 			.SetFrameIndexOfBitmap(which_candy[(idy0 - (400 - 25 * h)) / 50][(idx0 - (400 - 25 * w)) / 50]);
 		candy[(idy1 - (400 - 25 * h)) / 50][(idx1 - (400 - 25 * w)) / 50]
