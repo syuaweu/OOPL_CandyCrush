@@ -194,6 +194,7 @@ bool ETypeCandy(int mp[9][9], int now_h, int now_w) {
 	return false;
 }
 void CGameStateRun::update_candy() {
+	TRACE("minnunaimx%d", which_candy[2][2]);
 	for (int i = h - 1; i >= 0; i--) {
 		for (int j = w - 1; j >= 0; j--) {
 			if (which_candy[i][j] == -1) {
@@ -240,9 +241,9 @@ vector<vector<int>> CGameStateRun::CheckMapStatus(int mp[9][9], int w, int h) {
 	if (ETypeCandy(mp, ii, jj) ){
 		TRACE("Hello");
 		status[ii][jj] = 1;
-		candy[ii][jj].SetFrameIndexOfBitmap(which_candy[ii][jj] + 20);
 		which_candy[ii][jj] %= 10;
 		which_candy[ii][jj] += 30;
+		update_candy();
 		disapear = 1;
 		return status;
 	}
@@ -251,9 +252,9 @@ vector<vector<int>> CGameStateRun::CheckMapStatus(int mp[9][9], int w, int h) {
 	if (ETypeCandy(mp, ii, jj)) {
 		TRACE("Hello");
 		status[ii][jj] = 1;
-		candy[ii][jj].SetFrameIndexOfBitmap(which_candy[ii][jj] + 20);
 		which_candy[ii][jj] %= 10;
 		which_candy[ii][jj] += 30;
+		update_candy();
 		disapear = 1;
 		return status;
 	}
@@ -261,25 +262,23 @@ vector<vector<int>> CGameStateRun::CheckMapStatus(int mp[9][9], int w, int h) {
 		for (int j = 0; j < w; j++) {
 			if (LTypeCandy(mp, i, j)||TTypeCandy(mp, i, j)) {
 				status[i][j] = 1;
-				candy[i][j].SetFrameIndexOfBitmap(which_candy[i][j] + 6);
 				which_candy[i][j] %= 10;
 				which_candy[i][j] += 10;
 				disapear = 1;
 			}
 			if (ITypeCandy(mp, i, j)) {
 				status[i][j] = 1;
-				candy[i][j].SetFrameIndexOfBitmap(which_candy[i][j] + 12);
 				which_candy[i][j] %= 10;
 				which_candy[i][j] += 20;
 				disapear = 1;
 			}
 			if (ETypeCandy(mp, i, j)) {
 				status[i][j] = 1;
-				candy[i][j].SetFrameIndexOfBitmap(which_candy[i][j] + 20);
 				which_candy[i][j] %= 10;
 				which_candy[i][j] += 30;
 				disapear = 1;
 			}
+			update_candy();
 		}
 	}
 	return status;
@@ -309,10 +308,10 @@ vector<vector<int>> UpdateMap(vector<vector<int>> mp, int i, int j) {
 }
 
 void CGameStateRun::vertical_fall_candy(int i,int j) {
-	/*for (int k = i; k > 0; k--) {
+	for (int k = i; k > 0; k--) {
 		which_candy[k][j] = which_candy[k - 1][j];
-	}*/
-	if (i == 0) {
+	}
+	/*if (i == 0) {
 		return;
 	}
 	if (which_candy[i][j] >= 0) {
@@ -334,7 +333,7 @@ void CGameStateRun::vertical_fall_candy(int i,int j) {
 			return;
 		}
 	}
-	which_candy[i][j] = -10;
+	which_candy[i][j] = -10;*/
 }
 
 void CGameStateRun::remove_obstacle_layer(int i, int j){
@@ -646,19 +645,15 @@ void CGameStateRun::OnLButtonDown(UINT nFlags, CPoint point)  // ??????ï¿???ï
 		int row1 = (idy1 - (400 - 25 * h)) / 50;
 		int column1 = (idx1 - (400 - 25 * w)) / 50;
 		
-		candy[(idy0 - (400 - 25 * h)) / 50][(idx0 - (400 - 25 * w)) / 50]
+		/*candy[(idy0 - (400 - 25 * h)) / 50][(idx0 - (400 - 25 * w)) / 50]
 			.SetFrameIndexOfBitmap(which_candy[(idy0 - (400 - 25 * h)) / 50][(idx0 - (400 - 25 * w)) / 50]);
 		candy[(idy1 - (400 - 25 * h)) / 50][(idx1 - (400 - 25 * w)) / 50]
 			.SetFrameIndexOfBitmap(which_candy[(idy1 - (400 - 25 * h)) / 50][(idx1 - (400 - 25 * w)) / 50]);
 		candy[(idy0 - (400 - 25 * h)) / 50][(idx0 - (400 - 25 * w)) / 50]
 			.SetFrameIndexOfBitmap(which_candy[(idy0 - (400 - 25 * h)) / 50][(idx0 - (400 - 25 * w)) / 50]);
 		candy[(idy1 - (400 - 25 * h)) / 50][(idx1 - (400 - 25 * w)) / 50]
-			.SetFrameIndexOfBitmap(which_candy[(idy1 - (400 - 25 * h)) / 50][(idx1 - (400 - 25 * w)) / 50]);
-		for (int i = 0; i < 5; i++) {
-			for (int j = 0; j < 5; j++) {
-				candy[i][j].ShowBitmap();
-			}
-		}
+			.SetFrameIndexOfBitmap(which_candy[(idy1 - (400 - 25 * h)) / 50][(idx1 - (400 - 25 * w)) / 50]);*/
+		update_candy();
 	}
 
 	/*if (oneInSquare()) {
