@@ -92,6 +92,8 @@ namespace game_framework {
 		vector<vector<int>> CheckMapStatus(int mp[9][9], int w, int h);
 		void vertical_fall_candy(int i,int j);
 		void update_candy();
+		void remove_obstacle_layer(int i, int j);
+		bool CanDelete();
 	protected:
 		void OnMove();									// 移�???????��??�??
 		void OnShow();									// 顯示????????????????????��?��??
