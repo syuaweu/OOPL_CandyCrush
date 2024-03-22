@@ -7,11 +7,13 @@
 #include "../Library/gamecore.h"
 #include "mygame.h"
 #include<iostream>
-#include <cstdlib> /* 亂數相關函數 */
-#include <ctime>   /* 時間相關函數 */
+#include <cstdlib> /* 嚙????嚙踝蕭?嚙踝蕭????嚙踝蕭?? */
+#include <ctime>   /* ????????嚙踝蕭????嚙踝蕭?? */
 #include<sstream>
 #include <vector>
 #include<math.h>
+#include<utility>
+
 
 
 #include <fstream>
@@ -20,7 +22,7 @@ using namespace std;
 using namespace game_framework;
 
 /////////////////////////////////////////////////////////////////////////////
-// 這個class為遊戲的遊戲執行物件，主要的遊戲程式都在這裡
+// ??????class??嚙踝蕭????嚙踝蕭???????嚙踝蕭?嚙踝蕭????嚙賭辣嚙??銝鳴蕭??????????嚙踝蕭??嚙????嚙踝蕭?嚙踝蕭??嚙??
 /////////////////////////////////////////////////////////////////////////////
 vector<vector<int>> LoadMap(string map_name, int *row, int *column) {
 	ifstream in;
@@ -55,11 +57,11 @@ int which_candy[9][9] = { 0 };
 vector<vector<int>> mp;
 
 int rnd_number(int start, int end) {
-	/* 指定亂數範圍 */
+	/* ???嚙??嚙????嚙踝蕭????? */
 	int min = start;
 	int max = end;
 
-	/* 產生 [min , max] 的整數亂數 */
+	/* ??嚙踝蕭?? [min , max] ?????嚙踝蕭?嚙踝蕭????? */
 	int x = rand() % (max - min + 1) + min;
 
 	return x;
@@ -89,7 +91,110 @@ void delay(int ms) {
 		now = clock();
 	}
 }
-vector<vector<int>> CheckMapStatus(int mp[9][9], int w, int h) {
+
+bool LTypeCandy(int mp[9][9], int now_h,int now_w) {
+	if (now_w >= 2 && now_h < h - 2) {
+		if (mp[now_h][now_w] == mp[now_h][now_w - 1]
+			&& mp[now_h][now_w] == mp[now_h][now_w - 2]
+			&& mp[now_h][now_w] == mp[now_h + 1][now_w]
+			&& mp[now_h][now_w] == mp[now_h + 2][now_w]) {
+			return true;
+		}
+	}
+	if (now_w < w - 2 && now_h < h - 2) {
+		if (mp[now_h][now_w] == mp[now_h][now_w + 1]
+			&& mp[now_h][now_w] == mp[now_h][now_w + 2]
+			&& mp[now_h][now_w] == mp[now_h + 1][now_w]
+			&& mp[now_h][now_w] == mp[now_h + 2][now_w]) {
+			return true;
+		}
+	}
+	if (now_w >= 2 && now_h >= 2) {
+		if (mp[now_h][now_w] == mp[now_h][now_w - 1]
+			&& mp[now_h][now_w] == mp[now_h][now_w - 2]
+			&& mp[now_h][now_w] == mp[now_h - 1][now_w]
+			&& mp[now_h][now_w] == mp[now_h - 2][now_w]) {
+			return true;
+		}
+	}
+	if (now_w < w - 2 && now_h >= 2) {
+		if (mp[now_h][now_w] == mp[now_h][now_w + 1]
+			&& mp[now_h][now_w] == mp[now_h][now_w + 2]
+			&& mp[now_h][now_w] == mp[now_h - 1][now_w]
+			&& mp[now_h][now_w] == mp[now_h - 2][now_w]) {
+			return true;
+		}
+	}
+	return false;
+}
+bool ITypeCandy(int mp[9][9], int now_h, int now_w) {
+	if (now_h >= 3) {
+		if (mp[now_h][now_w] == mp[now_h - 1][now_w]
+			&& mp[now_h][now_w] == mp[now_h - 2][now_w]
+			&& mp[now_h][now_w] == mp[now_h - 3][now_w]) {
+			return true;
+		}
+	}
+	return false;
+}
+
+bool TTypeCandy(int mp[9][9], int now_h, int now_w) {
+	if (now_w < w - 2 && now_h >= 1 && now_h < h - 1) {
+		if (mp[now_h][now_w] == mp[now_h - 1][now_w]
+			&& mp[now_h][now_w] == mp[now_h + 1][now_w]
+			&& mp[now_h][now_w] == mp[now_h][now_w + 1]
+			&& mp[now_h][now_w] == mp[now_h][now_w + 2]) {
+			return true;
+		}
+	}
+	if (now_w >= 2 && now_h >= 1 && now_h < h - 1) {
+		if (mp[now_h][now_w] == mp[now_h - 1][now_w]
+			&& mp[now_h][now_w] == mp[now_h + 1][now_w]
+			&& mp[now_h][now_w] == mp[now_h][now_w - 1]
+			&& mp[now_h][now_w] == mp[now_h][now_w - 2]) {
+			return true;
+		}
+	}
+	if (now_h >= 2 && now_w >= 1 && now_w < w - 1) {
+		if (mp[now_h][now_w] == mp[now_h][now_w - 1]
+			&& mp[now_h][now_w] == mp[now_h][now_w + 1]
+			&& mp[now_h][now_w] == mp[now_h - 1][now_w]
+			&& mp[now_h][now_w] == mp[now_h - 2][now_w]) {
+			return true;
+		}
+	}
+	if (now_h < h - 2 && now_w >= 1 && now_w < w - 1) {
+		if (mp[now_h][now_w] == mp[now_h][now_w - 1]
+			&& mp[now_h][now_w] == mp[now_h][now_w + 1]
+			&& mp[now_h][now_w] == mp[now_h + 1][now_w]
+			&& mp[now_h][now_w] == mp[now_h + 2][now_w]) {
+			return true;
+		}
+	}
+	return false;
+}
+/*
+bool ETypeCandy(int mp[9][9], int now_h, int now_w) {
+
+}
+*/
+void CGameStateRun::update_candy() {
+	for (int i = h - 1; i >= 0; i--) {
+		for (int j = w - 1; j >= 0; j--) {
+			if (which_candy[i][j] == -1) {
+				candy[i][j].SetFrameIndexOfBitmap(26);
+			}
+			else if (which_candy[i][j] == -11) {
+				candy[i][j].SetFrameIndexOfBitmap(27);
+			}
+			else {
+				candy[i][j].SetFrameIndexOfBitmap(which_candy[i][j] / 10 * 6 + which_candy[i][j] % 10);
+			}
+		}
+	}
+}
+bool disapear = 0;
+vector<vector<int>> CGameStateRun::CheckMapStatus(int mp[9][9], int w, int h) {
 	vector<vector<int>> status(9);
 	for (int i = 0; i < h; i++) {
 		for (int j = 0; j < w; j++) {
@@ -107,6 +212,23 @@ vector<vector<int>> CheckMapStatus(int mp[9][9], int w, int h) {
 					status[i][j - 1] = 0;
 					status[i][j - 2] = 0;
 				}
+			}
+			
+		}
+	}
+	for (int i = 0; i < h; i++) {
+		for (int j = 0; j < w; j++) {
+			if (LTypeCandy(mp, i, j)||TTypeCandy(mp, i, j)) {
+				status[i][j] = 1;
+				candy[i][j].SetFrameIndexOfBitmap(which_candy[i][j] + 6);
+				which_candy[i][j] += 10;
+				disapear = 1;
+			}
+			if (ITypeCandy(mp, i, j)) {
+				status[i][j] = 1;
+				candy[i][j].SetFrameIndexOfBitmap(which_candy[i][j] + 12);
+				which_candy[i][j] += 20;
+				disapear = 1;
 			}
 		}
 	}
@@ -149,7 +271,7 @@ void CGameStateRun::vertical_fall_candy(int i,int j) {
 	}
 }
 
-void CGameStateRun::OnMove()							// 移動遊戲元素
+void CGameStateRun::OnMove()							// 蝘鳴蕭???????嚙踝蕭??嚙??
 {
 	if (character.IsOverlap(character, chest_and_key)) {
 		chest_and_key.SetFrameIndexOfBitmap(1);
@@ -160,11 +282,14 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 			door[i].SetFrameIndexOfBitmap(1);
 		}
 	}
-	if (CheckInitCandy(which_candy, 5, 5)) {
-		vector<vector<int>> status = CheckMapStatus(which_candy, w, h);
+	vector<vector<int>> status = CheckMapStatus(which_candy, w, h);
+	if (CheckInitCandy(which_candy, 5, 5)||disapear) {
+		disapear = 0;
+		
 		for (int i = 0; i < h; i++) {
 			for (int j = 0; j < w; j++) {
 				if (status[i][j] == 0) {
+					character.SetTopLeft(600, 600);
 					for (int k = i - 1; k >= 0; k--) {
 						for (int i = 0; i < 5; i++) {
 							//candy[k][j].SetTopLeft(candy[k][j].GetLeft(), candy[k][j].GetTop() + 10);
@@ -180,23 +305,8 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 	}
 
 }
-void CGameStateRun::update_candy() {
-	for (int i = h - 1; i >= 0; i--) {
-		for (int j = w - 1; j >= 0; j--) {
-			if (which_candy[i][j] == -1) {
-				candy[i][j].SetFrameIndexOfBitmap(26);
-			}
-			else if (which_candy[i][j] == -11) {
-				candy[i][j].SetFrameIndexOfBitmap(27);
-			}
-			else {
-				candy[i][j].SetFrameIndexOfBitmap(which_candy[i][j] / 10 * 6 + which_candy[i][j] % 10);
-			}
-		}
-	}
-}
 
-void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
+void CGameStateRun::OnInit()  								// ?????嚙踝蕭???????嚙踝蕭?????敶Ｚ身嚙??
 {
 
 	background.LoadBitmapByString({
@@ -412,7 +522,7 @@ bool oneInSquare() {
 		return 1;
 	}
 }
-void CGameStateRun::OnLButtonDown(UINT nFlags, CPoint point)  // 處理滑鼠的動作
+void CGameStateRun::OnLButtonDown(UINT nFlags, CPoint point)  // ??????嚙??嚙????????嚙??
 {
 	if (which_mou) {
 		idx1 = point.x;
@@ -449,22 +559,22 @@ void CGameStateRun::OnLButtonDown(UINT nFlags, CPoint point)  // 處理滑鼠的動作
 
 }
 
-void CGameStateRun::OnLButtonUp(UINT nFlags, CPoint point)	// 處理滑鼠的動作
+void CGameStateRun::OnLButtonUp(UINT nFlags, CPoint point)	// ??????嚙??嚙????????嚙??
 {
 
 }
 
-void CGameStateRun::OnMouseMove(UINT nFlags, CPoint point)	// 處理滑鼠的動作
+void CGameStateRun::OnMouseMove(UINT nFlags, CPoint point)	// ??????嚙??嚙????????嚙??
 {
 
 
 }
 
-void CGameStateRun::OnRButtonDown(UINT nFlags, CPoint point)  // 處理滑鼠的動作
+void CGameStateRun::OnRButtonDown(UINT nFlags, CPoint point)  // ??????嚙??嚙????????嚙??
 {
 }
 
-void CGameStateRun::OnRButtonUp(UINT nFlags, CPoint point)	// 處理滑鼠的動作
+void CGameStateRun::OnRButtonUp(UINT nFlags, CPoint point)	// ??????嚙??嚙????????嚙??
 {
 }
 
@@ -506,41 +616,41 @@ void CGameStateRun::show_image_by_phase() {
 void CGameStateRun::show_text_by_phase() {
 	CDC *pDC = CDDraw::GetBackCDC();
 
-	CTextDraw::ChangeFontLog(pDC, 21, "微軟正黑體", RGB(0, 0, 0), 800);
+	CTextDraw::ChangeFontLog(pDC, 21, "敺殷蕭??嚙??嚙??嚙??", RGB(0, 0, 0), 800);
 
 	if (phase == 1 && sub_phase == 1) {
-		CTextDraw::Print(pDC, 237, 128, "修改你的主角！");
-		CTextDraw::Print(pDC, 55, 163, "將灰色方格換成 resources 內的 giraffe.bmp 圖樣！");
+		CTextDraw::Print(pDC, 237, 128, "靽殷蕭?嚙踝蕭?????銝鳴蕭??嚙??");
+		CTextDraw::Print(pDC, 55, 163, "嚙????嚙踝蕭?嚙踝蕭?嚙踝蕭?嚙踝蕭????? resources ??嚙踝蕭?? giraffe.bmp ???嚙??嚙??");
 		CTextDraw::Print(pDC, 373, 537, to_string(clock()));
 	}
 	else if (phase == 2 && sub_phase == 1) {
-		CTextDraw::Print(pDC, 26, 128, "下一個階段，讓長頸鹿能夠透過上下左右移動到這個位置！");
-		CTextDraw::Print(pDC, 373, 537, "按下 Enter 鍵來驗證");
+		CTextDraw::Print(pDC, 26, 128, "嚙??嚙????????畾蛛蕭??嚙????嚙踝蕭?嚙賡嘀??嚙踝蕭????????嚙??嚙??撌佗蕭?嚙賜宏?????嚙踝蕭?????嚙??蝵殷蕭??");
+		CTextDraw::Print(pDC, 373, 537, "???嚙?? Enter ??嚙踝蕭??嚙??嚙??");
 	}
 	else if (phase == 3 && sub_phase == 1) {
-		CTextDraw::Print(pDC, 205, 128, "幫你準備了一個寶箱");
-		CTextDraw::Print(pDC, 68, 162, "設計程式讓長頸鹿摸到寶箱後，將寶箱消失！");
-		CTextDraw::Print(pDC, 68, 196, "記得寶箱要去背，使用 RGB(255, 255, 255)");
-		CTextDraw::Print(pDC, 373, 537, "按下 Enter 鍵來驗證");
+		CTextDraw::Print(pDC, 205, 128, "撟恬蕭??嚙?????嚙??嚙?????撖嗥拳");
+		CTextDraw::Print(pDC, 68, 162, "閮哨蕭??嚙??嚙??嚙????嚙踝蕭?嚙賡嘀??嚙踝蕭?嚙賢窄蝞梧蕭??嚙??嚙??撖嗥拳嚙??憭梧蕭??");
+		CTextDraw::Print(pDC, 68, 196, "嚙??嚙??撖嗥拳嚙????嚙踝蕭??嚙??雿選蕭?? RGB(255, 255, 255)");
+		CTextDraw::Print(pDC, 373, 537, "???嚙?? Enter ??嚙踝蕭??嚙??嚙??");
 	}
 	else if (phase == 4 && sub_phase == 1) {
-		CTextDraw::Print(pDC, 173, 128, "幫你準備了一個蜜蜂好朋友");
-		CTextDraw::Print(pDC, 89, 162, "已經幫它做了兩幀的動畫，讓它可以上下移動");
-		CTextDraw::Print(pDC, 110, 196, "寫個程式來讓你的蜜蜂好朋友擁有動畫！");
-		CTextDraw::Print(pDC, 373, 537, "按下 Enter 鍵來驗證");
+		CTextDraw::Print(pDC, 173, 128, "撟恬蕭??嚙?????嚙??嚙???????????憟踝蕭?????");
+		CTextDraw::Print(pDC, 89, 162, "撌莎蕭??撟恬蕭?????嚙????嚙踝蕭??????????嚙踝蕭??嚙??嚙????嚙賭誑嚙??嚙??蝘鳴蕭??");
+		CTextDraw::Print(pDC, 110, 196, "撖恬蕭??嚙??嚙??嚙??嚙??嚙???????????憟踝蕭????????????????嚙踝蕭??");
+		CTextDraw::Print(pDC, 373, 537, "???嚙?? Enter ??嚙踝蕭??嚙??嚙??");
 	}
 	else if (phase == 5 && sub_phase == 1) {
-		CTextDraw::Print(pDC, 173, 128, "幫你準備了三扇門");
-		CTextDraw::Print(pDC, 89, 162, "設計程式讓長頸鹿摸到門之後，門會打開");
-		CTextDraw::Print(pDC, 373, 537, "按下 Enter 鍵來驗證");
+		CTextDraw::Print(pDC, 173, 128, "撟恬蕭??嚙?????嚙??嚙????????");
+		CTextDraw::Print(pDC, 89, 162, "閮哨蕭??嚙??嚙??嚙????嚙踝蕭?嚙賡嘀??嚙踝蕭?嚙踝蕭??嚙??嚙??嚙??????????????");
+		CTextDraw::Print(pDC, 373, 537, "???嚙?? Enter ??嚙踝蕭??嚙??嚙??");
 	}
 	else if (phase == 6 && sub_phase == 1) {
-		CTextDraw::Print(pDC, 173, 128, "幫你準備了一顆會倒數的球");
-		CTextDraw::Print(pDC, 89, 162, "設計程式讓球倒數，然後顯示 OK 後停止動畫");
-		CTextDraw::Print(pDC, 373, 537, "按下 Enter 鍵來驗證");
+		CTextDraw::Print(pDC, 173, 128, "撟恬蕭??嚙?????嚙??嚙??嚙??????????嚙踝蕭?????");
+		CTextDraw::Print(pDC, 89, 162, "閮哨蕭??嚙??嚙??嚙??????????嚙踝蕭????嚙踝蕭??憿舐內 OK 嚙?????甇ｇ蕭?????");
+		CTextDraw::Print(pDC, 373, 537, "???嚙?? Enter ??嚙踝蕭??嚙??嚙??");
 	}
 	else if (sub_phase == 2) {
-		CTextDraw::Print(pDC, 268, 128, "完成！");
+		CTextDraw::Print(pDC, 268, 128, "嚙?????嚙??");
 	}
 
 	CDDraw::ReleaseBackCDC();
