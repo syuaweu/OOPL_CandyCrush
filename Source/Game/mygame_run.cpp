@@ -193,6 +193,20 @@ bool ETypeCandy(int mp[9][9], int now_h, int now_w) {
 	}
 	return false;
 }
+
+vector < vector<int>> delete_row(vector<vector<int>> st,int r) {
+	for (int i = 0; i < w; i++) {
+		st[r][i] = 0;
+	}
+	return st;
+}
+vector < vector<int>> delete_column(vector<vector<int>> st, int c) {
+	for (int i = 0; i < w; i++) {
+		st[i][c] = 0;
+	}
+	return st;
+}
+
 void CGameStateRun::update_candy() {
 	TRACE("minnunaimx%d", which_candy[2][2]);
 	for (int i = h - 1; i >= 0; i--) {
@@ -215,15 +229,32 @@ vector<vector<int>> CGameStateRun::CheckMapStatus(int mp[9][9], int w, int h) {
 	for (int i = 0; i < h; i++) {
 		for (int j = 0; j < w; j++) {
 			status[i].push_back(1);
+		}
+	}
+	for (int i = 0; i < h; i++) {
+		for (int j = 0; j < w; j++) {
 			if (which_candy[i][j] == -10) {
 				status[i][j] = 2;
 				disapear = 1;
 			}
+			
 			if (i >= 2) {
 				if (mp[i][j]%10 == mp[i - 1][j]%10 && mp[i][j]%10 == mp[i - 2][j]%10) {
 					status[i][j] = 0;
 					status[i - 1][j] = 0;
 					status[i - 2][j] = 0;
+					if (which_candy[i][j] / 10 == 2) {
+						status=delete_row(status, i);
+					}
+					else if (which_candy[i - 1][j] / 10 == 2) {
+						status = delete_row(status, i - 1);
+					}
+					else if (which_candy[i - 2][j] / 10 == 2) {
+						status = delete_row(status, i - 2);
+					}
+					if (which_candy[i][j] / 10 == 3 || which_candy[i-1][j] / 10 == 3 || which_candy[i-2][j] / 10 == 3) {
+						status = delete_column(status, j);
+					}
 				}
 			}
 			if (j >= 2) {
@@ -231,6 +262,18 @@ vector<vector<int>> CGameStateRun::CheckMapStatus(int mp[9][9], int w, int h) {
 					status[i][j] = 0;
 					status[i][j - 1] = 0;
 					status[i][j - 2] = 0;
+					if (which_candy[i][j] / 10 == 2 || which_candy[i][j - 1] / 10 == 2 || which_candy[i][j - 2] / 10 == 2) {
+						status = delete_row(status, i);
+					}
+					if (which_candy[i][j] / 10 == 3) {
+						status = delete_column(status, j);
+					}
+					else if (which_candy[i][j-1] / 10 == 3) {
+						status = delete_column(status, j - 1);
+					}
+					else if (which_candy[i][j-2] / 10 == 3) {
+						status = delete_column(status, j - 2);
+					}
 				}
 			}
 			
@@ -265,18 +308,21 @@ vector<vector<int>> CGameStateRun::CheckMapStatus(int mp[9][9], int w, int h) {
 				which_candy[i][j] %= 10;
 				which_candy[i][j] += 10;
 				disapear = 1;
+				update_candy();
 			}
 			if (ITypeCandy(mp, i, j)) {
 				status[i][j] = 1;
 				which_candy[i][j] %= 10;
 				which_candy[i][j] += 20;
 				disapear = 1;
+				update_candy();
 			}
 			if (ETypeCandy(mp, i, j)) {
 				status[i][j] = 1;
 				which_candy[i][j] %= 10;
 				which_candy[i][j] += 30;
-				disapear = 1;
+				disapear = 1; 
+				update_candy();
 			}
 			update_candy();
 		}
