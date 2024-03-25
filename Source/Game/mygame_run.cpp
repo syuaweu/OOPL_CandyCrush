@@ -194,6 +194,26 @@ bool ETypeCandy(int mp[9][9], int now_h, int now_w) {
 	return false;
 }
 
+bool ChocoCandy(int mp[9][9], int now_h, int now_w) {
+	if (now_h >= 4) {
+		if (mp[now_h][now_w] % 10 == mp[now_h - 1][now_w] % 10
+			&& mp[now_h][now_w] % 10 == mp[now_h - 2][now_w] % 10
+			&& mp[now_h][now_w] % 10 == mp[now_h - 3][now_w] % 10
+			&& mp[now_h][now_w] % 10 == mp[now_h - 4][now_w] % 10) {
+			return true;
+		}
+	}
+	if (now_w >= 2) {
+		if (mp[now_h][now_w] % 10 == mp[now_h][now_w - 1] % 10
+			&& mp[now_h][now_w] % 10 == mp[now_h][now_w - 2] % 10
+			&& mp[now_h][now_w] % 10 == mp[now_h][now_w + 1] % 10
+			&& mp[now_h][now_w] % 10 == mp[now_h][now_w + 2] % 10) {
+			return true;
+		}
+	}
+	return false;
+}
+
 vector < vector<int>> delete_row(vector<vector<int>> st,int r) {
 	for (int i = 0; i < w; i++) {
 		st[r][i] = 0;
@@ -216,6 +236,9 @@ void CGameStateRun::update_candy() {
 			}
 			else if (which_candy[i][j] <= -10) {
 				candy[i][j].SetFrameIndexOfBitmap(std::abs(which_candy[i][j]) + 17);
+			}
+			else if (which_candy[i][j] == 7) {
+				candy[i][j].SetFrameIndexOfBitmap(24);
 			}
 			else {
 				candy[i][j].SetFrameIndexOfBitmap(which_candy[i][j] / 10 * 6 + which_candy[i][j] % 10);
@@ -281,6 +304,13 @@ vector<vector<int>> CGameStateRun::CheckMapStatus(int mp[9][9], int w, int h) {
 	}
 	int ii = (idy0 - (400 - 25 * h)) / 50;
 	int jj = (idx0 - (400 - 25 * w)) / 50;
+	if (ChocoCandy(mp, ii, jj)) {
+		status[ii][jj] = 1;
+		which_candy[ii][jj] %= 10;
+		which_candy[ii][jj] = 7;
+		update_candy();
+		disapear = 1;
+	}
 	if (ETypeCandy(mp, ii, jj) ){
 		TRACE("Hello");
 		status[ii][jj] = 1;
@@ -303,6 +333,13 @@ vector<vector<int>> CGameStateRun::CheckMapStatus(int mp[9][9], int w, int h) {
 	}
 	for (int i = 0; i < h; i++) {
 		for (int j = 0; j < w; j++) {
+			if (ChocoCandy(mp, i, j)) {
+				status[i][j] = 1;
+				which_candy[i][j] %= 10;
+				which_candy[i][j] = 7;
+				update_candy();
+				disapear = 1;
+			}
 			if (LTypeCandy(mp, i, j)||TTypeCandy(mp, i, j)) {
 				status[i][j] = 1;
 				which_candy[i][j] %= 10;
@@ -509,7 +546,7 @@ void CGameStateRun::OnInit()  								// ?????ï¿½ï¿½???????ï¿½ï¿½???
 				"Resources/texture_pack_original/candy/33.bmp",
 				"Resources/texture_pack_original/candy/34.bmp",
 				"Resources/texture_pack_original/candy/35.bmp",
-				"Resources/texture_pack_original/candy/40.bmp",
+				"Resources/texture_pack_original/candy/7.bmp",
 				"Resources/texture_pack_original/candy/50.bmp",
 				"Resources/texture_pack_original/candy/-1.bmp",
 				"Resources/texture_pack_original/candy/-10.bmp",
