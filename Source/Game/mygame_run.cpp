@@ -35,7 +35,6 @@ vector<vector<int>> LoadMap(string map_name, int *row, int *column) {
 		}
 	}
 	in.close();
-
 	return map;
 }
 
@@ -191,11 +190,20 @@ bool ETypeCandy(int mp[9][9], int now_h, int now_w) {
 	}
 	return false;
 }
+
+bool is_animation_finished = 0;
+
 void CGameStateRun::update_candy() {
+	if (is_animation_finished == false) {
+		return;
+	}
 	for (int i = h - 1; i >= 0; i--) {
 		for (int j = w - 1; j >= 0; j--) {
 			if (which_candy[i][j] == -1) {
 				candy[i][j].SetFrameIndexOfBitmap(26);
+			}
+			else if (which_candy[i][j] >= 60) {
+				candy[i][j].SetFrameIndexOfBitmap(32);
 			}
 			else if (which_candy[i][j] <= -60) {
 				candy[i][j].SetFrameIndexOfBitmap(31);
@@ -208,7 +216,13 @@ void CGameStateRun::update_candy() {
 			}
 		}
 	}
+	for (int i = 0; i < h; i++) {
+		for (int j = 0; j < w; j++) {
+			candy[i][j].SetTopLeft((400 - 25 * w) + j * 50, (400 - 25 * h) + i * 50);
+		}
+	}
 }
+
 bool disapear = 0;
 vector<vector<int>> CGameStateRun::CheckMapStatus(int mp[9][9], int w, int h) {
 	vector<vector<int>> status(9);
@@ -233,14 +247,12 @@ vector<vector<int>> CGameStateRun::CheckMapStatus(int mp[9][9], int w, int h) {
 					status[i][j - 2] = 0;
 				}
 			}
-			
 		}
 	}
 
 	int ii = (idy0 - (400 - 25 * h)) / 50;
 	int jj = (idx0 - (400 - 25 * w)) / 50;
 	if (ETypeCandy(mp, ii, jj) ){
-		TRACE("Hello");
 		status[ii][jj] = 1;
 		candy[ii][jj].SetFrameIndexOfBitmap(which_candy[ii][jj] + 20);
 		which_candy[ii][jj] %= 10;
@@ -251,7 +263,6 @@ vector<vector<int>> CGameStateRun::CheckMapStatus(int mp[9][9], int w, int h) {
 	ii= (idy1 - (400 - 25 * h)) / 50;
 	jj= (idx1 - (400 - 25 * w)) / 50;
 	if (ETypeCandy(mp, ii, jj)) {
-		TRACE("Hello");
 		status[ii][jj] = 1;
 		candy[ii][jj].SetFrameIndexOfBitmap(which_candy[ii][jj] + 20);
 		which_candy[ii][jj] %= 10;
@@ -286,21 +297,58 @@ vector<vector<int>> CGameStateRun::CheckMapStatus(int mp[9][9], int w, int h) {
 	}
 	return status;
 }
+int c_x = 0;
+int c_y = 0;
+std::vector<std::vector<std::pair<int, int>>> candy_xy_position(9);
 
-void CGameStateRun::DropOneSquare() {
 
-	for (int i = 0; i < 5; i++) {
-		character.SetTopLeft(0, i * 20);
-		int set_clock = clock() + 50;
-		int now = clock();
-		while (now < set_clock) {
-			now = clock();
+
+void CGameStateRun::StartDropOneSquare(int i,int j) {
+
+	if (candy_xy_position[i][j].first == 0 && candy_xy_position[i][j].second == 0) {
+		candy_xy_position[i][j].first = candy[i][j].GetLeft();
+		candy_xy_position[i][j].second = candy[i][j].GetTop() + 50;
+		is_animation_finished = 0;
+		// StartDropOneSquare(i - 1, j);
+	}
+	if (i == 0) { //potential bug (fall candy probably not start from i=0)
+		return;
+	}
+	if (which_candy[i - 1][j] >= 0) {
+		StartDropOneSquare(i - 1, j);
+		TRACE("%d %d", i - 1, j);
+		return;
+	}
+	else if (j >= 0) {
+		if (which_candy[i - 1][j - 1] >= 0) {
+			StartDropOneSquare(i - 1, j - 1);
+			TRACE("%d %d", i - 1, j - 1);
+			return;
 		}
 	}
-
-
+	else if (j <= w - 1) {
+		if (which_candy[i - 1][j + 1] >= 0) {
+			StartDropOneSquare(i - 1, j + 1);
+			TRACE("%d %d", i-1, j + 1);
+			return;
+		}
+	}
 }
 
+void CGameStateRun::DropOneSquare() {
+	for (int i = 0; i < h; i++) {
+		for (int j = 0; j < w; j++) {
+			if (candy_xy_position[i][j].second != 0 || candy_xy_position[i][j].first != 0) {
+				candy[i][j].SetTopLeft(candy[i][j].GetLeft(), candy[i][j].GetTop() + 2);
+				if (candy[i][j].GetTop() == candy_xy_position[i][j].second) {
+					candy_xy_position[i][j].first = 0;
+					candy_xy_position[i][j].second = 0;
+					is_animation_finished = 1;
+				}
+			}
+		}
+	}
+}
 
 vector<vector<int>> UpdateMap(vector<vector<int>> mp, int i, int j) {
 	for (int k = i; k > 0; k--) {
@@ -360,23 +408,30 @@ void CGameStateRun::remove_obstacle_layer(int i, int j){
 	}
 }
 void CGameStateRun::OnMove()							// ç§»ï¿½???????ï¿½ï¿½??ï¿??
-{
-	if (character.IsOverlap(character, chest_and_key)) {
-		chest_and_key.SetFrameIndexOfBitmap(1);
-
+{	
+	vector<vector<int>> status = CheckMapStatus(which_candy, w, h);
+	for (int i = 0; i < h; i++) {
+		for (int j = 0; j < w; j++) {
+			if (status[i][j] == 0) {
+				candy[i][j].SetFrameIndexOfBitmap(32);
+				StartDropOneSquare(i, j);
+			}
+		}
 	}
-	for (int i = 0; i < 3; i++) {
+	DropOneSquare();
+	/*if (character.IsOverlap(character, chest_and_key)) {
+		chest_and_key.SetFrameIndexOfBitmap(1);
+	}*/
+	/*for (int i = 0; i < 3; i++) {
 		if (character.IsOverlap(character, door[i])) {
 			door[i].SetFrameIndexOfBitmap(1);
 		}
-	}
-	vector<vector<int>> status = CheckMapStatus(which_candy, w, h);
-	if (CheckInitCandy(which_candy, 5, 5)||disapear) {
+	}*/
+	if ((CheckInitCandy(which_candy, 5, 5)||disapear) && is_animation_finished) {
 		disapear = 0;
 		for (int i = h - 1; i >= 0; i--) {
 			for (int j = 0; j < w; j++) {
 				if (status[i][j] == 0 && which_candy[i][j] != -10) {
-					character.SetTopLeft(600, 600);
 					for (int k = i - 1; k >= 0; k--) {
 						for (int i = 0; i < 5; i++) {
 							//candy[k][j].SetTopLeft(candy[k][j].GetLeft(), candy[k][j].GetTop() + 10);
@@ -399,41 +454,23 @@ void CGameStateRun::OnMove()							// ç§»ï¿½???????ï¿½ï¿½??ï¿??
 		idx0 = 0, idx1 = 0;
 		idy0 = 0, idy1 = 0;
 		which_mou = 0;
-		delay(1500);
+		//delay(1500);
 	}
 
 }
 
 void CGameStateRun::OnInit()
 {
-
 	background.LoadBitmapByString({
 		"resources/texture_pack_original/bg_screens/3.bmp",
 		"resources/texture_pack_original/bg_screens/2.bmp",
-		"resources/phase12_background.bmp",
-		"resources/phase21_background.bmp",
-		"resources/phase22_background.bmp",
-		"resources/phase31_background.bmp",
-		"resources/phase32_background.bmp",
-		"resources/phase41_background.bmp",
-		"resources/phase42_background.bmp",
-		"resources/phase51_background.bmp",
-		"resources/phase52_background.bmp",
-		"resources/phase61_background.bmp",
-		"resources/phase62_background.bmp",
+		"resources/texture_pack_original/bg_screens/1.bmp",
+		"resources/texture_pack_original/bg_screens/0.bmp",
 		});
 	background.SetTopLeft(0, 0);
+
 	vector<vector<int>> mp = LoadMap("1", &h, &w);
 
-	chest_and_key.LoadBitmapByString({ "resources/chest.bmp", "resources/chest_ignore.bmp" }, RGB(255, 255, 255));
-	chest_and_key.SetTopLeft(150, 430);
-
-	bee.LoadBitmapByString({ "resources/bee_1.bmp", "resources/bee_2.bmp" });
-	bee.SetTopLeft(462, 265);
-	bee.SetAnimation(10, false);
-
-	ball.LoadBitmapByString({ "resources/ball-3.bmp", "resources/ball-3.bmp", "resources/ball-2.bmp", "resources/ball-1.bmp", "resources/ball-ok.bmp" });
-	ball.SetTopLeft(150, 430);
 	for (int i = 0; i < h; i++) {
 		for (int j = 0; j < w; j++) {
 
@@ -469,21 +506,29 @@ void CGameStateRun::OnInit()
 				"Resources/texture_pack_original/candy/-11.bmp",
 				"Resources/texture_pack_original/candy/-12.bmp",
 				"Resources/texture_pack_original/candy/-13.bmp",
-				"Resources/texture_pack_original/candy/-99.bmp"
+				"Resources/texture_pack_original/candy/-99.bmp",
+				"Resources/texture_pack_original/candy/99.bmp"
 				});
 			candy[i][j].SetTopLeft((400 - 25 * w) + j * 50, (400 - 25 * h) + i * 50);
 			which_candy[i][j] = mp[i][j];
 		}
 	}
+	is_animation_finished = 1;
 	update_candy();
-	for (int i = 0; i < 3; i++) {
-		door[i].LoadBitmapByString({ "resources/door_close.bmp", "resources/door_open.bmp" }, RGB(255, 255, 255));
-		door[i].SetTopLeft(462 - 100 * i, 265);
-	}
-	character.LoadBitmapByString({ "resources/giraffe.bmp" });
-	character.SetTopLeft(150, 265);
+
 	cursor.LoadBitmapByString({ "Resources/texture_pack_original/cursor.bmp" }, RGB(255, 255, 255));
 	cursor.SetTopLeft((400 - 25 * w), (400 - 25 * h));
+
+	for (int i = 0; i < h; i++) {
+		std::vector<std::pair<int, int>> inner_vector(9);
+		for (int j = 0; j < w; j++) {
+			inner_vector.push_back(std::make_pair(0, 0));
+		}
+		candy_xy_position[i] = inner_vector;
+	}
+
+	character.LoadBitmapByString({ "resources/giraffe.bmp" });
+	character.SetTopLeft(0, 0);
 }
 
 void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
@@ -503,7 +548,9 @@ void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 	}
 
 	if (nChar == VK_RETURN) {
-		if (phase == 1) {
+		
+
+		/*if (phase == 1) {
 			if (sub_phase == 1) {
 				sub_phase += validate_phase_1();
 			}
@@ -557,7 +604,7 @@ void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 				phase += 1;
 				GotoGameState(GAME_STATE_OVER);
 			}
-		}
+		}*/
 	}
 }
 
