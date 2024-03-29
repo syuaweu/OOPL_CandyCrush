@@ -23,6 +23,7 @@ using namespace game_framework;
 int idx0 = 0, idx1 = 0;
 int idy0 = 0, idy1 = 0;
 bool which_mou = 0;
+vector<vector<bool>> have_special_candy(9);
 /////////////////////////////////////////////////////////////////////////////
 // ??????class??ï¿½ï¿½????ï¿½ï¿½???????ï¿½ï¿½?ï¿½ï¿½????ï¿½ä»¶ï¿???ä¸»ï¿½??????????ï¿½ï¿½??ï¿?????ï¿½ï¿½?ï¿½ï¿½??ï¿???
 /////////////////////////////////////////////////////////////////////////////
@@ -95,6 +96,9 @@ void delay(int ms) {
 }
 
 bool LTypeCandy(int mp[9][9], int now_h,int now_w) {
+	if (now_h < 0 || now_w < 0) {
+		return false;
+	}
 	if (now_w >= 2 && now_h < h - 2) {
 		if (mp[now_h][now_w] % 10 == mp[now_h][now_w - 1] % 10
 			&& mp[now_h][now_w] % 10 == mp[now_h][now_w - 2] % 10
@@ -130,6 +134,9 @@ bool LTypeCandy(int mp[9][9], int now_h,int now_w) {
 	return false;
 }
 bool ITypeCandy(int mp[9][9], int now_h, int now_w) {
+	if (now_h < 0 || now_w < 0) {
+		return false;
+	}
 	if (now_h >= 3) {
 		if (mp[now_h][now_w] % 10 == mp[now_h - 1][now_w] % 10
 			&& mp[now_h][now_w] % 10 == mp[now_h - 2][now_w] % 10
@@ -141,6 +148,9 @@ bool ITypeCandy(int mp[9][9], int now_h, int now_w) {
 }
 
 bool TTypeCandy(int mp[9][9], int now_h, int now_w) {
+	if (now_h < 0 || now_w < 0) {
+		return false;
+	}
 	if (now_w < w - 2 && now_h >= 1 && now_h < h - 1) {
 		if (mp[now_h][now_w] %10 == mp[now_h - 1][now_w] % 10
 			&& mp[now_h][now_w] % 10 == mp[now_h + 1][now_w] % 10
@@ -177,6 +187,9 @@ bool TTypeCandy(int mp[9][9], int now_h, int now_w) {
 }
 
 bool ETypeCandy(int mp[9][9], int now_h, int now_w) {
+	if (now_h < 0 || now_w < 0) {
+		return false;
+	}
 	if (now_w > 0 && now_w < w - 2) {
 		if (mp[now_h][now_w] % 10 == mp[now_h][now_w - 1] % 10
 			&& mp[now_h][now_w] % 10 == mp[now_h][now_w + 1] % 10
@@ -195,6 +208,9 @@ bool ETypeCandy(int mp[9][9], int now_h, int now_w) {
 }
 
 bool ChocoCandy(int mp[9][9], int now_h, int now_w) {
+	if (now_h < 0 || now_w < 0) {
+		return false;
+	}
 	if (now_h >= 4) {
 		if (mp[now_h][now_w] % 10 == mp[now_h - 1][now_w] % 10
 			&& mp[now_h][now_w] % 10 == mp[now_h - 2][now_w] % 10
@@ -310,6 +326,14 @@ vector<vector<int>> CGameStateRun::CheckMapStatus(int mp[9][9], int w, int h) {
 		which_candy[ii][jj] = 7;
 		update_candy();
 		disapear = 1;
+	}
+	if (LTypeCandy(mp, ii, jj) || TTypeCandy(mp, ii, jj)) {
+		status[ii][jj] = 1;
+		which_candy[ii][jj] %= 10;
+		which_candy[ii][jj] += 10;
+		disapear = 1;
+		update_candy();
+		return status;
 	}
 	if (ETypeCandy(mp, ii, jj) ){
 		TRACE("Hello");
@@ -483,13 +507,18 @@ void CGameStateRun::OnMove()							// ç§»ï¿½???????ï¿½ï¿½??ï¿??
 		idx0 = 0, idx1 = 0;
 		idy0 = 0, idy1 = 0;
 		which_mou = 0;
-		delay(500);
+		delay(5000);
 	}
 
 }
 
 void CGameStateRun::OnInit()  								// ?????ï¿½ï¿½???????ï¿½ï¿½?????å½¢è¨­ï¿???
-{
+{	
+	for (int i = 0; i < 9; i++) {
+		for (int j = 0; j < 9; j++) {
+			have_special_candy[i].push_back(0);
+		}
+	}
 
 	background.LoadBitmapByString({
 		"resources/texture_pack_original/bg_screens/3.bmp",
