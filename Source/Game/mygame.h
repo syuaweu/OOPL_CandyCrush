@@ -90,10 +90,11 @@ namespace game_framework {
 		void OnRButtonUp(UINT nFlags, CPoint point);	// ??????ï¿??ï¿????????ï¿??
 		void DropOneSquare();
 		vector<vector<int>> CheckMapStatus(int mp[9][9], int w, int h);
-		void vertical_fall_candy(int i,int j);
+		void vertical_fall_candy(int i, int j);
 		void update_candy();
 		void remove_obstacle_layer(int i, int j);
 		bool CanDelete();
+		void StartDropOneSquare(int i, int j);
 	protected:
 		void OnMove();									// ç§»ï¿½???????ï¿½ï¿½??ï¿??
 		void OnShow();									// é¡¯ç¤º????????????????????ï¿½ï¿½?ï¿½ï¿½??
