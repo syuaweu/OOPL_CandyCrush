@@ -303,7 +303,7 @@ vector<vector<int>> CGameStateRun::CheckMapStatus(int mp[9][9], int w, int h) { 
 						status[i - 1][j] = 0;
 						status[i - 2][j] = 0;
 						if (which_candy[i][j] / 10 == 2) {
-						status=delete_row(status, i);
+							status=delete_row(status, i);
 						}
 						else if (which_candy[i - 1][j] / 10 == 2) {
 							status = delete_row(status, i - 1);
@@ -345,11 +345,14 @@ vector<vector<int>> CGameStateRun::CheckMapStatus(int mp[9][9], int w, int h) { 
 			ii = (idy1 - (400 - 25 * h)) / 50;
 			jj = (idx1 - (400 - 25 * w)) / 50;
 		}
+		
 		if (ChocoCandy(mp, ii, jj)) {
 			status[ii][jj] = 1;
+
 			which_candy[ii][jj] = 7;
 			update_candy();
 			disapear = 1;
+			return status;
 		}
 		if (LTypeCandy(mp, ii, jj) || TTypeCandy(mp, ii, jj)) {
 			status[ii][jj] = 1;
@@ -526,7 +529,8 @@ void CGameStateRun::OnMove()
 {	
 	vector<vector<int>> status = CheckMapStatus(which_candy, w, h);
 	DropOneSquare();
-	if (CheckInitCandy(which_candy, 5, 5) && is_animation_finished) {
+	if ((CheckInitCandy(which_candy, 5, 5) || disapear) && is_animation_finished) {
+		disapear = 0;
 		TRACE("is_animation_finished\n");
 		bool isFallCandy = false;
 		for (int i = h - 1; i >= 0; i--) { // status2: fall one layer
@@ -810,7 +814,6 @@ void CGameStateRun::OnLButtonDown(UINT nFlags, CPoint point)
 		int column0 = (idx0 - (400 - 25 * w)) / 50;
 		int row1 = (idy1 - (400 - 25 * h)) / 50;
 		int column1 = (idx1 - (400 - 25 * w)) / 50;
-
 		for (int i = 0; i < 5; i++) {
 			for (int j = 0; j < 5; j++) {
 				candy[i][j].ShowBitmap();
