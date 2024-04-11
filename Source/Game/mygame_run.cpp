@@ -14,13 +14,13 @@
 #include<math.h>
 #include<utility>
 #include <fstream>
-
+#include<queue>
 using namespace std;
 using namespace game_framework;
 int idx0 = 0, idx1 = 0;
 int idy0 = 0, idy1 = 0;
 bool which_mou = 0;
-
+deque<std::pair<int, std::pair<int, int>>> boom_que;
 vector<vector<int>> LoadMap(string map_name, int *row, int *column) {
 	ifstream in;
 	in.open("Resources/map/" + map_name + ".txt");
@@ -235,14 +235,38 @@ bool ChocoCandy(int mp[9][9], int now_h, int now_w) {
 }
 
 vector < vector<int>> delete_row(vector<vector<int>> st,int r) {
+	if (r >= h || r < 0) {
+		return st;
+	}
 	for (int i = 0; i < w; i++) {
 		st[r][i] = 0;
 	}
 	return st;
 }
 vector < vector<int>> delete_column(vector<vector<int>> st, int c) {
+	if (c >= w || c < 0) {
+		return st;
+	}
 	for (int i = 0; i < w; i++) {
 		st[i][c] = 0;
+	}
+	return st;
+}
+vector < vector<int>> boom(vector<vector<int>> st, int ii, int jj, int x) {
+	if (ii >= h || ii < 0 || jj >= w || jj < 0) {
+		return st;
+	}
+	for (int i = ii - 1; i <= ii + 1; i++) {
+		for (int j = jj - 1; j <= jj + 1; j++) {
+			if (i >= h || i < 0 || j >= w || j < 0) {
+				continue;
+			}
+			if (i == ii && j == jj && x == 2) {
+				st[i][j] = 1;
+				continue;
+			}
+			st[i][j] = 0;
+		}
 	}
 	return st;
 }
@@ -302,17 +326,16 @@ vector<vector<int>> CGameStateRun::CheckMapStatus(int mp[9][9], int w, int h) { 
 						status[i][j] = 0;
 						status[i - 1][j] = 0;
 						status[i - 2][j] = 0;
-						if (which_candy[i][j] / 10 == 2) {
-							status=delete_row(status, i);
-						}
-						else if (which_candy[i - 1][j] / 10 == 2) {
-							status = delete_row(status, i - 1);
-						}
-						else if (which_candy[i - 2][j] / 10 == 2) {
-							status = delete_row(status, i - 2);
-						}
-						if (which_candy[i][j] / 10 == 3 || which_candy[i-1][j] / 10 == 3 || which_candy[i-2][j] / 10 == 3) {
-							status = delete_column(status, j);
+						for (int k = i - 2; k <= i; k++) {
+							if (which_candy[k][j] / 10 == 2) {
+								status=delete_row(status, k);
+							}
+							if (which_candy[k][j] / 10 == 3) {
+								status = delete_column(status, j);
+							}
+							if (which_candy[k][j] / 10 ==1) {
+								boom_que.push_back({ 2, {k,j} });
+							}
 						}
 					}
 				}
@@ -337,6 +360,38 @@ vector<vector<int>> CGameStateRun::CheckMapStatus(int mp[9][9], int w, int h) { 
 				}
 			}
 		}
+	}
+	if (!boom_que.empty()) {
+		disapear = 1;
+		for (auto i : boom_que) {
+			status = boom(status, i.second.first, i.second.second, i.first);
+			if (i.first == 1) {
+				boom_que.pop_front();
+			}
+			else {
+				i.first -= 1;
+			}
+		}
+	}
+	int i0 = (idy0 - (400 - 25 * h)) / 50;
+	int j0 = (idx0 - (400 - 25 * w)) / 50;
+	int i1 = (idy1 - (400 - 25 * h)) / 50;
+	int j1 = (idx1 - (400 - 25 * w)) / 50;
+	if ((which_candy[i0][j0] / 10 == 2 || which_candy[i0][j0] / 10 == 3) &&
+		(which_candy[i1][j1] / 10 == 2 || which_candy[i1][j1] / 10 == 3)) {
+		status = delete_row(status, i1);
+		status = delete_column(status, j1);
+		return status;
+	}
+	else if (((which_candy[i0][j0] / 10 == 2 || which_candy[i0][j0] / 10 == 3) && which_candy[i1][j1] / 10 == 1) ||
+		((which_candy[i1][j1] / 10 == 2 || which_candy[i1][j1] / 10 == 3) && which_candy[i0][j0] / 10 == 1)) {
+		status = delete_row(status, i1);
+		status = delete_column(status, j1);
+		status = delete_row(status, i1 - 1);
+		status = delete_column(status, j1 - 1);
+		status = delete_row(status, i1 + 1);
+		status = delete_column(status, j1 + 1);
+		return status;
 	}
 	for (int i = 0; i < 2; i++) {
 		int ii = (idy0 - (400 - 25 * h)) / 50;
@@ -752,6 +807,10 @@ bool CGameStateRun::CanDelete() {
 	}
 	swtch(column0, row0
 		, column1, row1);
+	if (which_candy[row0][column0] >= 10 && which_candy[row1][column1] >= 10) {
+		disapear = 1;
+		return true;
+	}
 	if (CheckInitCandy(which_candy, w, h)) {
 		update_candy();
 		return true;
@@ -798,28 +857,14 @@ bool oneInSquare() {
 
 void CGameStateRun::OnLButtonDown(UINT nFlags, CPoint point)
 {
-	if (which_mou) {
-		idx1 = point.x;
-		idy1 = point.y;
-		which_mou = 0;
+	idx1 = point.x;
+	idy1 = point.y;
+	if (!CanDelete()) {
+		idx0 = idx1;
+		idy0 = idy1;
+		
 	}
-	else {
-		idx0 = point.x;
-		idy0 = point.y;
-		which_mou = 1;
-	}
-	character.SetTopLeft(idx0, idy0);
-	if (inSquare() && CanDelete()) {
-		int row0 = (idy0 - (400 - 25 * h)) / 50;
-		int column0 = (idx0 - (400 - 25 * w)) / 50;
-		int row1 = (idy1 - (400 - 25 * h)) / 50;
-		int column1 = (idx1 - (400 - 25 * w)) / 50;
-		for (int i = 0; i < 5; i++) {
-			for (int j = 0; j < 5; j++) {
-				candy[i][j].ShowBitmap();
-			}
-		}
-	}
+	
 
 	/*if (oneInSquare()) {
 		cursor.SetTopLeft((point.x - (400 - 25 * w)) / 50 * 50 + (400 - 25 * w),
