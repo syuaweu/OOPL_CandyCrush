@@ -20,7 +20,7 @@ using namespace game_framework;
 int idx0 = 0, idx1 = 0;
 int idy0 = 0, idy1 = 0;
 bool which_mou = 0;
-deque<std::pair<int, std::pair<int, int>>> boom_que;
+vector<std::pair<int, std::pair<int, int>>> boom_que;
 int boom_arr[9][9] = {};
 vector<vector<int>> LoadMap(string map_name, int *row, int *column) {
 	ifstream in;
@@ -264,11 +264,16 @@ vector < vector<int>> boom(vector<vector<int>> st, int ii, int jj, int x) {
 			}
 			if (i == ii && j == jj && x == 2) {
 				st[i][j] = 1;
+				which_candy[i][j] %= 10;
+				which_candy[i][j] += 60;
 				continue;
 			}
+			//TRACE("AAAAA %d %d || %d %d\n",i,j,ii,jj);
 			st[i][j] = 0;
 		}
+		
 	}
+	//TRACE("24242424 %d\n", st[2][4]);
 	return st;
 }
 
@@ -282,6 +287,9 @@ void CGameStateRun::update_candy() {
 		for (int j = w - 1; j >= 0; j--) {
 			if (which_candy[i][j] == -1) {
 				candy[i][j].SetFrameIndexOfBitmap(26);
+			}
+			else if (which_candy[i][j] >= 60 && which_candy[i][j] <= 65) {
+				candy[i][j].SetFrameIndexOfBitmap(which_candy[i][j] % 10 + which_candy[i][j] / 6 / 10 * 6);
 			}
 			else if (which_candy[i][j] >= 60) {
 				candy[i][j].SetFrameIndexOfBitmap(32);
@@ -322,6 +330,10 @@ vector<vector<int>> CGameStateRun::CheckMapStatus(int mp[9][9], int w, int h) { 
 				status[i][j] = 2;
 			}
 			else {
+				if (which_candy[i][j] / 10 == 6) {
+					disapear = 1;
+					boom_que.push_back({ 1, {i,j} });
+				}
 				if (i >= 2) {
 					if (mp[i][j] % 10 == mp[i - 1][j] % 10 && mp[i][j] % 10 == mp[i - 2][j] % 10) {
 						status[i][j] = 0;
@@ -334,10 +346,11 @@ vector<vector<int>> CGameStateRun::CheckMapStatus(int mp[9][9], int w, int h) { 
 							if (which_candy[k][j] / 10 == 3) {
 								status = delete_column(status, j);
 							}
-							if (which_candy[k][j] / 10 ==1 && boom_arr[k][j]==0) {
-								boom_arr[k][j] = 2;
+							if (which_candy[k][j] / 10 == 1) {
 								disapear = 1;
+								boom_que.push_back({ 2, {k,j} });
 							}
+							
 						}
 					}
 				}
@@ -353,9 +366,9 @@ vector<vector<int>> CGameStateRun::CheckMapStatus(int mp[9][9], int w, int h) { 
 							if (which_candy[i][k] / 10 == 3) {
 								status = delete_column(status, k);
 							}
-							if (which_candy[i][k] / 10 == 1 && boom_arr[i][k] == 0) {
-								boom_arr[i][k] = 2;
+							if (which_candy[i][k] / 10 == 1) {
 								disapear = 1;
+								boom_que.push_back({ 2, {i,k} });
 							}
 						}
 						
@@ -364,22 +377,21 @@ vector<vector<int>> CGameStateRun::CheckMapStatus(int mp[9][9], int w, int h) { 
 			}
 		}
 	}
-	for (int i = 0; i < h; i++) {
-		for (int j = 0; j < w; j++) {
-			if (boom_arr[i][j] > 0) {
-				status = boom(status, i, j, boom_arr[i][j]);
-				boom_arr[i][j]--;
-			}
-		}
+	TRACE("wryyyyy %d\n", boom_que.size());
+	for (auto i : boom_que) {
+		status = boom(status, i.second.first, i.second.second, i.first);
 	}
+	boom_que.clear();
 	int i0 = (idy0 - (400 - 25 * h)) / 50;
 	int j0 = (idx0 - (400 - 25 * w)) / 50;
 	int i1 = (idy1 - (400 - 25 * h)) / 50;
 	int j1 = (idx1 - (400 - 25 * w)) / 50;
+	TRACE("\n0: %d %d\n1:%d %d\n", i0, j0, i1, j1);
 	if (i0 >= 0 && i0 < h
 		&&i1 >= 0 && i1 < h
-		&&j0>0 && j0 < w
-		&&j1>0 && j1 < w) {
+		&&j0>=0 && j0 < w
+		&&j1>=0 && j1 < w
+		&&(i0!=i1||j0!=j1)) {
 		if ((which_candy[i0][j0] / 10 == 2 || which_candy[i0][j0] / 10 == 3) &&
 			(which_candy[i1][j1] / 10 == 2 || which_candy[i1][j1] / 10 == 3)) {
 			disapear = 1;
@@ -468,6 +480,7 @@ vector<vector<int>> CGameStateRun::CheckMapStatus(int mp[9][9], int w, int h) { 
 				return status;
 			}
 			if (ITypeCandy(mp, ii, jj)) {
+				TRACE("AAAAAAAAA %d %d: %d", ii, jj, ITypeCandy(mp, ii, jj));
 				status[ii][jj] = 1;
 				which_candy[ii][jj] %= 10;
 				which_candy[ii][jj] += 20;
@@ -477,8 +490,6 @@ vector<vector<int>> CGameStateRun::CheckMapStatus(int mp[9][9], int w, int h) { 
 
 		}
 	}
-	
-	
 	
 	
 	
@@ -582,14 +593,12 @@ void CGameStateRun::vertical_fall_candy(int i, int j) {
 	}
 	if (which_candy[i][j] >= 0) {
 		which_candy[i][j] = which_candy[i - 1][j];
-		boom_arr[i][j] = boom_arr[i - 1][j];
 		vertical_fall_candy(i - 1, j);
 		return;
 	}
 	if (j >= 0) {
 		if (which_candy[i][j - 1] >= 0) {
 			which_candy[i][j] = which_candy[i - 1][j - 1];
-			boom_arr[i][j] = boom_arr[i - 1][j - 1];
 			vertical_fall_candy(i - 1, j - 1);
 			return;
 		}
@@ -597,7 +606,6 @@ void CGameStateRun::vertical_fall_candy(int i, int j) {
 	if (j <= w - 1) {
 		if (which_candy[i][j + 1] >= 0) {
 			which_candy[i][j] = which_candy[i - 1][j + 1];
-			boom_arr[i][j] = boom_arr[i - 1][j + 1];
 			vertical_fall_candy(i - 1, j + 1);
 			return;
 		}
