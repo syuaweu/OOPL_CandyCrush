@@ -262,12 +262,6 @@ vector < vector<int>> boom(vector<vector<int>> st, int ii, int jj, int x) {
 			if (i >= h || i < 0 || j >= w || j < 0) {
 				continue;
 			}
-			if (i == ii && j == jj && x == 2) {
-				st[i][j] = 1;
-				which_candy[i][j] %= 10;
-				which_candy[i][j] += 60;
-				continue;
-			}
 			//TRACE("AAAAA %d %d || %d %d\n",i,j,ii,jj);
 			st[i][j] = 0;
 		}
@@ -380,6 +374,13 @@ vector<vector<int>> CGameStateRun::CheckMapStatus(int mp[9][9], int w, int h) { 
 	TRACE("wryyyyy %d\n", boom_que.size());
 	for (auto i : boom_que) {
 		status = boom(status, i.second.first, i.second.second, i.first);
+		if (i.first == 2) {
+			status[i.second.first][i.second.second] = 1;
+			which_candy[i.second.first][i.second.second] %= 10;
+			which_candy[i.second.first][i.second.second] += 60;
+			update_candy();
+			disapear = 1;
+		}
 	}
 	boom_que.clear();
 	int i0 = (idy0 - (400 - 25 * h)) / 50;
