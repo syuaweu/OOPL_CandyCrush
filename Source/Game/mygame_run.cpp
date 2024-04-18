@@ -21,6 +21,7 @@ int idx0 = 0, idx1 = 0;
 int idy0 = 0, idy1 = 0;
 bool which_mou = 0;
 deque<std::pair<int, std::pair<int, int>>> boom_que;
+int boom_arr[9][9] = {};
 vector<vector<int>> LoadMap(string map_name, int *row, int *column) {
 	ifstream in;
 	in.open("Resources/map/" + map_name + ".txt");
@@ -333,8 +334,9 @@ vector<vector<int>> CGameStateRun::CheckMapStatus(int mp[9][9], int w, int h) { 
 							if (which_candy[k][j] / 10 == 3) {
 								status = delete_column(status, j);
 							}
-							if (which_candy[k][j] / 10 ==1) {
-								boom_que.push_back({ 2, {k,j} });
+							if (which_candy[k][j] / 10 ==1 && boom_arr[k][j]==0) {
+								boom_arr[k][j] = 2;
+								disapear = 1;
 							}
 						}
 					}
@@ -344,32 +346,29 @@ vector<vector<int>> CGameStateRun::CheckMapStatus(int mp[9][9], int w, int h) { 
 						status[i][j] = 0;
 						status[i][j - 1] = 0;
 						status[i][j - 2] = 0;
-						if (which_candy[i][j] / 10 == 2 || which_candy[i][j - 1] / 10 == 2 || which_candy[i][j - 2] / 10 == 2) {
-						status = delete_row(status, i);
+						for (int k = j - 2; k <= j; k++) {
+							if (which_candy[i][k] / 10 == 2) {
+								status = delete_row(status, i);
+							}
+							if (which_candy[i][k] / 10 == 3) {
+								status = delete_column(status, k);
+							}
+							if (which_candy[i][k] / 10 == 1 && boom_arr[i][k] == 0) {
+								boom_arr[i][k] = 2;
+								disapear = 1;
+							}
 						}
-						if (which_candy[i][j] / 10 == 3) {
-							status = delete_column(status, j);
-						}
-						else if (which_candy[i][j-1] / 10 == 3) {
-							status = delete_column(status, j - 1);
-						}
-						else if (which_candy[i][j-2] / 10 == 3) {
-							status = delete_column(status, j - 2);
-						}
+						
 					}
 				}
 			}
 		}
 	}
-	if (!boom_que.empty()) {
-		disapear = 1;
-		for (auto i : boom_que) {
-			status = boom(status, i.second.first, i.second.second, i.first);
-			if (i.first == 1) {
-				boom_que.pop_front();
-			}
-			else {
-				i.first -= 1;
+	for (int i = 0; i < h; i++) {
+		for (int j = 0; j < w; j++) {
+			if (boom_arr[i][j] > 0) {
+				status = boom(status, i, j, boom_arr[i][j]);
+				boom_arr[i][j]--;
 			}
 		}
 	}
@@ -377,63 +376,109 @@ vector<vector<int>> CGameStateRun::CheckMapStatus(int mp[9][9], int w, int h) { 
 	int j0 = (idx0 - (400 - 25 * w)) / 50;
 	int i1 = (idy1 - (400 - 25 * h)) / 50;
 	int j1 = (idx1 - (400 - 25 * w)) / 50;
-	if ((which_candy[i0][j0] / 10 == 2 || which_candy[i0][j0] / 10 == 3) &&
-		(which_candy[i1][j1] / 10 == 2 || which_candy[i1][j1] / 10 == 3)) {
-		status = delete_row(status, i1);
-		status = delete_column(status, j1);
-		return status;
-	}
-	else if (((which_candy[i0][j0] / 10 == 2 || which_candy[i0][j0] / 10 == 3) && which_candy[i1][j1] / 10 == 1) ||
-		((which_candy[i1][j1] / 10 == 2 || which_candy[i1][j1] / 10 == 3) && which_candy[i0][j0] / 10 == 1)) {
-		status = delete_row(status, i1);
-		status = delete_column(status, j1);
-		status = delete_row(status, i1 - 1);
-		status = delete_column(status, j1 - 1);
-		status = delete_row(status, i1 + 1);
-		status = delete_column(status, j1 + 1);
-		return status;
-	}
-	for (int i = 0; i < 2; i++) {
-		int ii = (idy0 - (400 - 25 * h)) / 50;
-		int jj = (idx0 - (400 - 25 * w)) / 50;
-		if (i == 1) {
-			ii = (idy1 - (400 - 25 * h)) / 50;
-			jj = (idx1 - (400 - 25 * w)) / 50;
+	if (i0 >= 0 && i0 < h
+		&&i1 >= 0 && i1 < h
+		&&j0>0 && j0 < w
+		&&j1>0 && j1 < w) {
+		if ((which_candy[i0][j0] / 10 == 2 || which_candy[i0][j0] / 10 == 3) &&
+			(which_candy[i1][j1] / 10 == 2 || which_candy[i1][j1] / 10 == 3)) {
+			disapear = 1;
+			status = delete_row(status, i1);
+			status = delete_column(status, j1);
+			return status;
 		}
-		
-		if (ChocoCandy(mp, ii, jj)) {
-			status[ii][jj] = 1;
+		else if (((which_candy[i0][j0] / 10 == 2 || which_candy[i0][j0] / 10 == 3) && which_candy[i1][j1] / 10 == 1) ||
+			((which_candy[i1][j1] / 10 == 2 || which_candy[i1][j1] / 10 == 3) && which_candy[i0][j0] / 10 == 1)) {
+			disapear = 1;
+			status = delete_row(status, i1);
+			status = delete_column(status, j1);
+			status = delete_row(status, i1 - 1);
+			status = delete_column(status, j1 - 1);
+			status = delete_row(status, i1 + 1);
+			status = delete_column(status, j1 + 1);
+			return status;
+		}
+		else if (which_candy[i0][j0] == 7) {
+			disapear = 1;
+			
+			if (which_candy[i1][j1] < 7 && which_candy[i1][j1] >= 0) {
+				status[i0][j0] = 0;
+				int x = which_candy[i1][j1];
+				for (int i = 0; i < h; i++) {
+					for (int j = 0; j < w; j++) {
+						if (which_candy[i][j] % 10 == x) {
+							status[i][j] = 0;
+						}
+					}
+				}
+			}
+			else {
 
-			which_candy[ii][jj] = 7;
-			update_candy();
-			disapear = 1;
+			}
 			return status;
 		}
-		if (LTypeCandy(mp, ii, jj) || TTypeCandy(mp, ii, jj)) {
-			status[ii][jj] = 1;
-			which_candy[ii][jj] %= 10;
-			which_candy[ii][jj] += 10;
+		else if (which_candy[i1][j1] == 7) {
 			disapear = 1;
-			update_candy();
+			if (which_candy[i0][j0] < 7 && which_candy[i0][j0] >= 0) {
+				status[i1][j1] = 0;
+				int x = which_candy[i0][j0];
+				for (int i = 0; i < h; i++) {
+					for (int j = 0; j < w; j++) {
+						if (which_candy[i][j] % 10 == x) {
+							status[i][j] = 0;
+						}
+					}
+				}
+			}
+			else {
+
+			}
 			return status;
 		}
-		if (ETypeCandy(mp, ii, jj)) {
-			status[ii][jj] = 1;
-			which_candy[ii][jj] %= 10;
-			which_candy[ii][jj] += 30;
-			update_candy();
-			disapear = 1;
-			return status;
+		for (int i = 0; i < 2; i++) {
+			int ii = (idy0 - (400 - 25 * h)) / 50;
+			int jj = (idx0 - (400 - 25 * w)) / 50;
+			if (i == 1) {
+				ii = (idy1 - (400 - 25 * h)) / 50;
+				jj = (idx1 - (400 - 25 * w)) / 50;
+			}
+
+			if (ChocoCandy(mp, ii, jj)) {
+				status[ii][jj] = 1;
+
+				which_candy[ii][jj] = 7;
+				update_candy();
+				disapear = 1;
+				return status;
+			}
+			if (LTypeCandy(mp, ii, jj) || TTypeCandy(mp, ii, jj)) {
+				status[ii][jj] = 1;
+				which_candy[ii][jj] %= 10;
+				which_candy[ii][jj] += 10;
+				disapear = 1;
+				update_candy();
+				return status;
+			}
+			if (ETypeCandy(mp, ii, jj)) {
+				status[ii][jj] = 1;
+				which_candy[ii][jj] %= 10;
+				which_candy[ii][jj] += 30;
+				update_candy();
+				disapear = 1;
+				return status;
+			}
+			if (ITypeCandy(mp, ii, jj)) {
+				status[ii][jj] = 1;
+				which_candy[ii][jj] %= 10;
+				which_candy[ii][jj] += 20;
+				disapear = 1;
+				update_candy();
+			}
+
 		}
-		if (ITypeCandy(mp, ii, jj)) {
-			status[ii][jj] = 1;
-			which_candy[ii][jj] %= 10;
-			which_candy[ii][jj] += 20;
-			disapear = 1;
-			update_candy();
-		}
-		
 	}
+	
+	
 	
 	
 	
@@ -537,12 +582,14 @@ void CGameStateRun::vertical_fall_candy(int i, int j) {
 	}
 	if (which_candy[i][j] >= 0) {
 		which_candy[i][j] = which_candy[i - 1][j];
+		boom_arr[i][j] = boom_arr[i - 1][j];
 		vertical_fall_candy(i - 1, j);
 		return;
 	}
 	if (j >= 0) {
 		if (which_candy[i][j - 1] >= 0) {
 			which_candy[i][j] = which_candy[i - 1][j - 1];
+			boom_arr[i][j] = boom_arr[i - 1][j - 1];
 			vertical_fall_candy(i - 1, j - 1);
 			return;
 		}
@@ -550,6 +597,7 @@ void CGameStateRun::vertical_fall_candy(int i, int j) {
 	if (j <= w - 1) {
 		if (which_candy[i][j + 1] >= 0) {
 			which_candy[i][j] = which_candy[i - 1][j + 1];
+			boom_arr[i][j] = boom_arr[i - 1][j + 1];
 			vertical_fall_candy(i - 1, j + 1);
 			return;
 		}
@@ -702,7 +750,7 @@ void CGameStateRun::OnInit()
 		}
 		candy_xy_position[i] = inner_vector;
 	}
-
+	
 	character.LoadBitmapByString({ "resources/giraffe.bmp" });
 	character.SetTopLeft(0, 0);
 }
@@ -808,7 +856,10 @@ bool CGameStateRun::CanDelete() {
 	swtch(column0, row0
 		, column1, row1);
 	if (which_candy[row0][column0] >= 10 && which_candy[row1][column1] >= 10) {
-		disapear = 1;
+		return true;
+	}
+	if (which_candy[row0][column0] == 7 || which_candy[row1][column1] == 7) {
+		update_candy();
 		return true;
 	}
 	if (CheckInitCandy(which_candy, w, h)) {
@@ -859,7 +910,7 @@ void CGameStateRun::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	idx1 = point.x;
 	idy1 = point.y;
-	if (!CanDelete()) {
+	if (!inSquare()||!CanDelete()) {
 		idx0 = idx1;
 		idy0 = idy1;
 		
