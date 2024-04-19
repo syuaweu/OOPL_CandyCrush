@@ -14,13 +14,14 @@
 #include<math.h>
 #include<utility>
 #include <fstream>
-
+#include<queue>
 using namespace std;
 using namespace game_framework;
 int idx0 = 0, idx1 = 0;
 int idy0 = 0, idy1 = 0;
 bool which_mou = 0;
-
+vector<std::pair<int, std::pair<int, int>>> boom_que;
+int boom_arr[9][9] = {};
 vector<vector<int>> LoadMap(string map_name, int *row, int *column) {
 	ifstream in;
 	in.open("Resources/map/" + map_name + ".txt");
@@ -93,35 +94,38 @@ void delay(int ms) {
 }
 
 bool LTypeCandy(int mp[9][9], int now_h, int now_w) {
+if (now_h < 0 || now_w < 0) {
+		return false;
+	}
 	if (now_w >= 2 && now_h < h - 2) {
-		if (mp[now_h][now_w] == mp[now_h][now_w - 1]
-			&& mp[now_h][now_w] == mp[now_h][now_w - 2]
-			&& mp[now_h][now_w] == mp[now_h + 1][now_w]
-			&& mp[now_h][now_w] == mp[now_h + 2][now_w]) {
+		if (mp[now_h][now_w] % 10 == mp[now_h][now_w - 1] % 10
+			&& mp[now_h][now_w] % 10 == mp[now_h][now_w - 2] % 10
+			&& mp[now_h][now_w] % 10 == mp[now_h + 1][now_w] % 10
+			&& mp[now_h][now_w] % 10 == mp[now_h + 2][now_w] % 10) {
 			return true;
 		}
 	}
 	if (now_w < w - 2 && now_h < h - 2) {
-		if (mp[now_h][now_w] == mp[now_h][now_w + 1]
-			&& mp[now_h][now_w] == mp[now_h][now_w + 2]
-			&& mp[now_h][now_w] == mp[now_h + 1][now_w]
-			&& mp[now_h][now_w] == mp[now_h + 2][now_w]) {
+		if (mp[now_h][now_w] % 10 == mp[now_h][now_w + 1] % 10
+			&& mp[now_h][now_w] % 10 == mp[now_h][now_w + 2] % 10
+			&& mp[now_h][now_w] % 10 == mp[now_h + 1][now_w] % 10
+			&& mp[now_h][now_w] % 10 == mp[now_h + 2][now_w] % 10) {
 			return true;
 		}
 	}
 	if (now_w >= 2 && now_h >= 2) {
-		if (mp[now_h][now_w] == mp[now_h][now_w - 1]
-			&& mp[now_h][now_w] == mp[now_h][now_w - 2]
-			&& mp[now_h][now_w] == mp[now_h - 1][now_w]
-			&& mp[now_h][now_w] == mp[now_h - 2][now_w]) {
+		if (mp[now_h][now_w] % 10 == mp[now_h][now_w - 1] % 10
+			&& mp[now_h][now_w] % 10 == mp[now_h][now_w - 2] % 10
+			&& mp[now_h][now_w] % 10 == mp[now_h - 1][now_w] % 10
+			&& mp[now_h][now_w] % 10 == mp[now_h - 2][now_w] % 10) {
 			return true;
 		}
 	}
 	if (now_w < w - 2 && now_h >= 2) {
-		if (mp[now_h][now_w] == mp[now_h][now_w + 1]
-			&& mp[now_h][now_w] == mp[now_h][now_w + 2]
-			&& mp[now_h][now_w] == mp[now_h - 1][now_w]
-			&& mp[now_h][now_w] == mp[now_h - 2][now_w]) {
+		if (mp[now_h][now_w] % 10 == mp[now_h][now_w + 1] % 10
+			&& mp[now_h][now_w] % 10 == mp[now_h][now_w + 2] % 10
+			&& mp[now_h][now_w] % 10 == mp[now_h - 1][now_w] % 10
+			&& mp[now_h][now_w] % 10 == mp[now_h - 2][now_w] % 10) {
 			return true;
 		}
 	}
@@ -129,10 +133,20 @@ bool LTypeCandy(int mp[9][9], int now_h, int now_w) {
 }
 
 bool ITypeCandy(int mp[9][9], int now_h, int now_w) {
-	if (now_h >= 3) {
-		if (mp[now_h][now_w] == mp[now_h - 1][now_w]
-			&& mp[now_h][now_w] == mp[now_h - 2][now_w]
-			&& mp[now_h][now_w] == mp[now_h - 3][now_w]) {
+	if (now_h < 0 || now_w < 0) {
+		return false;
+	}
+	if (now_h >= 2 && now_h < h - 1 ) {
+		if (mp[now_h][now_w] % 10 == mp[now_h - 1][now_w] % 10
+			&& mp[now_h][now_w] % 10 == mp[now_h - 2][now_w] % 10
+			&& mp[now_h][now_w] % 10 == mp[now_h + 1][now_w] % 10) {
+			return true;
+		}
+	}
+	if (now_h >= 1 && now_h < h - 2) {
+		if (mp[now_h][now_w] % 10 == mp[now_h - 1][now_w] % 10
+			&& mp[now_h][now_w] % 10 == mp[now_h + 2][now_w] % 10
+			&& mp[now_h][now_w] % 10 == mp[now_h + 1][now_w] % 10) {
 			return true;
 		}
 	}
@@ -140,35 +154,38 @@ bool ITypeCandy(int mp[9][9], int now_h, int now_w) {
 }
 
 bool TTypeCandy(int mp[9][9], int now_h, int now_w) {
+	if (now_h < 0 || now_w < 0) {
+		return false;
+	}
 	if (now_w < w - 2 && now_h >= 1 && now_h < h - 1) {
-		if (mp[now_h][now_w] == mp[now_h - 1][now_w]
-			&& mp[now_h][now_w] == mp[now_h + 1][now_w]
-			&& mp[now_h][now_w] == mp[now_h][now_w + 1]
-			&& mp[now_h][now_w] == mp[now_h][now_w + 2]) {
+		if (mp[now_h][now_w] %10 == mp[now_h - 1][now_w] % 10
+			&& mp[now_h][now_w] % 10 == mp[now_h + 1][now_w] % 10
+			&& mp[now_h][now_w] % 10 == mp[now_h][now_w + 1] % 10
+			&& mp[now_h][now_w] % 10 == mp[now_h][now_w + 2]) {
 			return true;
 		}
 	}
 	if (now_w >= 2 && now_h >= 1 && now_h < h - 1) {
-		if (mp[now_h][now_w] == mp[now_h - 1][now_w]
-			&& mp[now_h][now_w] == mp[now_h + 1][now_w]
-			&& mp[now_h][now_w] == mp[now_h][now_w - 1]
-			&& mp[now_h][now_w] == mp[now_h][now_w - 2]) {
+		if (mp[now_h][now_w] % 10 == mp[now_h - 1][now_w] % 10
+			&& mp[now_h][now_w] % 10 == mp[now_h + 1][now_w] % 10
+			&& mp[now_h][now_w] % 10 == mp[now_h][now_w - 1] % 10
+			&& mp[now_h][now_w] % 10 == mp[now_h][now_w - 2] % 10) {
 			return true;
 		}
 	}
 	if (now_h >= 2 && now_w >= 1 && now_w < w - 1) {
-		if (mp[now_h][now_w] == mp[now_h][now_w - 1]
-			&& mp[now_h][now_w] == mp[now_h][now_w + 1]
-			&& mp[now_h][now_w] == mp[now_h - 1][now_w]
-			&& mp[now_h][now_w] == mp[now_h - 2][now_w]) {
+		if (mp[now_h][now_w] % 10 == mp[now_h][now_w - 1] % 10
+			&& mp[now_h][now_w] % 10 == mp[now_h][now_w + 1] % 10
+			&& mp[now_h][now_w] % 10 == mp[now_h - 1][now_w] % 10
+			&& mp[now_h][now_w] % 10 == mp[now_h - 2][now_w] % 10) {
 			return true;
 		}
 	}
 	if (now_h < h - 2 && now_w >= 1 && now_w < w - 1) {
-		if (mp[now_h][now_w] == mp[now_h][now_w - 1]
-			&& mp[now_h][now_w] == mp[now_h][now_w + 1]
-			&& mp[now_h][now_w] == mp[now_h + 1][now_w]
-			&& mp[now_h][now_w] == mp[now_h + 2][now_w]) {
+		if (mp[now_h][now_w] % 10 == mp[now_h][now_w - 1] % 10
+			&& mp[now_h][now_w] % 10 == mp[now_h][now_w + 1] % 10
+			&& mp[now_h][now_w] % 10 == mp[now_h + 1][now_w] % 10
+			&& mp[now_h][now_w] % 10 == mp[now_h + 2][now_w] % 10) {
 			return true;
 		}
 	}
@@ -176,6 +193,9 @@ bool TTypeCandy(int mp[9][9], int now_h, int now_w) {
 }
 
 bool ETypeCandy(int mp[9][9], int now_h, int now_w) {
+		if (now_h < 0 || now_w < 0) {
+		return false;
+	}
 	if (now_w > 0 && now_w < w - 2) {
 		if (mp[now_h][now_w] % 10 == mp[now_h][now_w - 1] % 10
 			&& mp[now_h][now_w] % 10 == mp[now_h][now_w + 1] % 10
@@ -192,6 +212,64 @@ bool ETypeCandy(int mp[9][9], int now_h, int now_w) {
 	}
 	return false;
 }
+bool ChocoCandy(int mp[9][9], int now_h, int now_w) {
+	if (now_h < 0 || now_w < 0) {
+		return false;
+	}
+	if (now_h >= 2 && now_h < h - 2) {
+		if (mp[now_h][now_w] % 10 == mp[now_h - 1][now_w] % 10
+			&& mp[now_h][now_w] % 10 == mp[now_h - 2][now_w] % 10
+			&& mp[now_h][now_w] % 10 == mp[now_h + 1][now_w] % 10
+			&& mp[now_h][now_w] % 10 == mp[now_h + 2][now_w] % 10) {
+			return true;
+		}
+	}
+	if (now_w >= 2 && now_w < w - 2) {
+		if (mp[now_h][now_w] % 10 == mp[now_h][now_w - 1] % 10
+			&& mp[now_h][now_w] % 10 == mp[now_h][now_w - 2] % 10
+			&& mp[now_h][now_w] % 10 == mp[now_h][now_w + 1] % 10
+			&& mp[now_h][now_w] % 10 == mp[now_h][now_w + 2] % 10) {
+			return true;
+		}
+	}
+	return false;
+}
+
+vector < vector<int>> delete_row(vector<vector<int>> st,int r) {
+	if (r >= h || r < 0) {
+		return st;
+	}
+	for (int i = 0; i < w; i++) {
+		st[r][i] = 0;
+	}
+	return st;
+}
+vector < vector<int>> delete_column(vector<vector<int>> st, int c) {
+	if (c >= w || c < 0) {
+		return st;
+	}
+	for (int i = 0; i < w; i++) {
+		st[i][c] = 0;
+	}
+	return st;
+}
+vector < vector<int>> boom(vector<vector<int>> st, int ii, int jj, int x) {
+	if (ii >= h || ii < 0 || jj >= w || jj < 0) {
+		return st;
+	}
+	for (int i = ii - 1; i <= ii + 1; i++) {
+		for (int j = jj - 1; j <= jj + 1; j++) {
+			if (i >= h || i < 0 || j >= w || j < 0) {
+				continue;
+			}
+			//TRACE("AAAAA %d %d || %d %d\n",i,j,ii,jj);
+			st[i][j] = 0;
+		}
+		
+	}
+	//TRACE("24242424 %d\n", st[2][4]);
+	return st;
+}
 
 bool is_animation_finished = 1;
 
@@ -204,11 +282,17 @@ void CGameStateRun::update_candy() {
 			if (which_candy[i][j] == -1) {
 				candy[i][j].SetFrameIndexOfBitmap(26);
 			}
+			else if (which_candy[i][j] >= 60 && which_candy[i][j] <= 65) {
+				candy[i][j].SetFrameIndexOfBitmap(which_candy[i][j] % 10 + which_candy[i][j] / 6 / 10 * 6);
+			}
 			else if (which_candy[i][j] >= 60) {
 				candy[i][j].SetFrameIndexOfBitmap(32);
 			}
 			else if (which_candy[i][j] <= -10) {
 				candy[i][j].SetFrameIndexOfBitmap(std::abs(which_candy[i][j]) + 17);
+			}
+			else if (which_candy[i][j] == 7) {
+				candy[i][j].SetFrameIndexOfBitmap(34);
 			}
 			else if (which_candy[i][j] >= 0 && which_candy[i][j] <= 35) {
 				candy[i][j].SetFrameIndexOfBitmap(which_candy[i][j] / 10 * 6 + which_candy[i][j] % 10);
@@ -232,15 +316,36 @@ vector<vector<int>> CGameStateRun::CheckMapStatus(int mp[9][9], int w, int h) { 
 	for (int i = 0; i < h; i++) {
 		for (int j = 0; j < w; j++) {
 			status[i].push_back(1);
+		}
+	}
+	for (int i = 0; i < h; i++) {
+		for (int j = 0; j < w; j++) {
 			if (which_candy[i][j] == -10 || which_candy[i][j] == 99) {
 				status[i][j] = 2;
 			}
 			else {
+				if (which_candy[i][j] / 10 == 6) {
+					disapear = 1;
+					boom_que.push_back({ 1, {i,j} });
+				}
 				if (i >= 2) {
 					if (mp[i][j] % 10 == mp[i - 1][j] % 10 && mp[i][j] % 10 == mp[i - 2][j] % 10) {
 						status[i][j] = 0;
 						status[i - 1][j] = 0;
 						status[i - 2][j] = 0;
+						for (int k = i - 2; k <= i; k++) {
+							if (which_candy[k][j] / 10 == 2) {
+								status=delete_row(status, k);
+							}
+							if (which_candy[k][j] / 10 == 3) {
+								status = delete_column(status, j);
+							}
+							if (which_candy[k][j] / 10 == 1) {
+								disapear = 1;
+								boom_que.push_back({ 2, {k,j} });
+							}
+							
+						}
 					}
 				}
 				if (j >= 2) {
@@ -248,56 +353,175 @@ vector<vector<int>> CGameStateRun::CheckMapStatus(int mp[9][9], int w, int h) { 
 						status[i][j] = 0;
 						status[i][j - 1] = 0;
 						status[i][j - 2] = 0;
+						for (int k = j - 2; k <= j; k++) {
+							if (which_candy[i][k] / 10 == 2) {
+								status = delete_row(status, i);
+							}
+							if (which_candy[i][k] / 10 == 3) {
+								status = delete_column(status, k);
+							}
+							if (which_candy[i][k] / 10 == 1) {
+								disapear = 1;
+								boom_que.push_back({ 2, {i,k} });
+							}
+						}
+						
 					}
 				}
 			}
 		}
 	}
-	int ii = (idy0 - (400 - 25 * h)) / 50;
-	int jj = (idx0 - (400 - 25 * w)) / 50;
-	if (ETypeCandy(mp, ii, jj)) {
-		status[ii][jj] = 1;
-		candy[ii][jj].SetFrameIndexOfBitmap(which_candy[ii][jj] + 20);
-		which_candy[ii][jj] %= 10;
-		which_candy[ii][jj] += 30;
-		disapear = 1;
-		return status;
+	TRACE("wryyyyy %d\n", boom_que.size());
+	for (auto i : boom_que) {
+		status = boom(status, i.second.first, i.second.second, i.first);
+		if (i.first == 2) {
+			status[i.second.first][i.second.second] = 1;
+			which_candy[i.second.first][i.second.second] %= 10;
+			which_candy[i.second.first][i.second.second] += 60;
+			update_candy();
+			disapear = 1;
+		}
 	}
-	ii = (idy1 - (400 - 25 * h)) / 50;
-	jj = (idx1 - (400 - 25 * w)) / 50;
-	if (ETypeCandy(mp, ii, jj)) {
-		status[ii][jj] = 1;
-		candy[ii][jj].SetFrameIndexOfBitmap(which_candy[ii][jj] + 20);
-		which_candy[ii][jj] %= 10;
-		which_candy[ii][jj] += 30;
-		disapear = 1;
-		return status;
+	boom_que.clear();
+	int i0 = (idy0 - (400 - 25 * h)) / 50;
+	int j0 = (idx0 - (400 - 25 * w)) / 50;
+	int i1 = (idy1 - (400 - 25 * h)) / 50;
+	int j1 = (idx1 - (400 - 25 * w)) / 50;
+	TRACE("\n0: %d %d\n1:%d %d\n", i0, j0, i1, j1);
+	if (i0 >= 0 && i0 < h
+		&&i1 >= 0 && i1 < h
+		&&j0>=0 && j0 < w
+		&&j1>=0 && j1 < w
+		&&(i0!=i1||j0!=j1)) {
+		if ((which_candy[i0][j0] / 10 == 2 || which_candy[i0][j0] / 10 == 3) &&
+			(which_candy[i1][j1] / 10 == 2 || which_candy[i1][j1] / 10 == 3)) {
+			disapear = 1;
+			status = delete_row(status, i1);
+			status = delete_column(status, j1);
+			return status;
+		}
+		else if (((which_candy[i0][j0] / 10 == 2 || which_candy[i0][j0] / 10 == 3) && which_candy[i1][j1] / 10 == 1) ||
+			((which_candy[i1][j1] / 10 == 2 || which_candy[i1][j1] / 10 == 3) && which_candy[i0][j0] / 10 == 1)) {
+			disapear = 1;
+			status = delete_row(status, i1);
+			status = delete_column(status, j1);
+			status = delete_row(status, i1 - 1);
+			status = delete_column(status, j1 - 1);
+			status = delete_row(status, i1 + 1);
+			status = delete_column(status, j1 + 1);
+			return status;
+		}
+		else if (which_candy[i0][j0] == 7) {
+			disapear = 1;
+			
+			if (which_candy[i1][j1] < 7 && which_candy[i1][j1] >= 0) {
+				status[i0][j0] = 0;
+				int x = which_candy[i1][j1];
+				for (int i = 0; i < h; i++) {
+					for (int j = 0; j < w; j++) {
+						if (which_candy[i][j] % 10 == x) {
+							status[i][j] = 0;
+						}
+					}
+				}
+			}
+			else {
+
+			}
+			return status;
+		}
+		else if (which_candy[i1][j1] == 7) {
+			disapear = 1;
+			if (which_candy[i0][j0] < 7 && which_candy[i0][j0] >= 0) {
+				status[i1][j1] = 0;
+				int x = which_candy[i0][j0];
+				for (int i = 0; i < h; i++) {
+					for (int j = 0; j < w; j++) {
+						if (which_candy[i][j] % 10 == x) {
+							status[i][j] = 0;
+						}
+					}
+				}
+			}
+			else {
+
+			}
+			return status;
+		}
+		for (int i = 0; i < 2; i++) {
+			int ii = (idy0 - (400 - 25 * h)) / 50;
+			int jj = (idx0 - (400 - 25 * w)) / 50;
+			if (i == 1) {
+				ii = (idy1 - (400 - 25 * h)) / 50;
+				jj = (idx1 - (400 - 25 * w)) / 50;
+			}
+
+			if (ChocoCandy(mp, ii, jj)) {
+				status[ii][jj] = 1;
+
+				which_candy[ii][jj] = 7;
+				update_candy();
+				disapear = 1;
+				return status;
+			}
+			if (LTypeCandy(mp, ii, jj) || TTypeCandy(mp, ii, jj)) {
+				status[ii][jj] = 1;
+				which_candy[ii][jj] %= 10;
+				which_candy[ii][jj] += 10;
+				disapear = 1;
+				update_candy();
+				return status;
+			}
+			if (ETypeCandy(mp, ii, jj)) {
+				status[ii][jj] = 1;
+				which_candy[ii][jj] %= 10;
+				which_candy[ii][jj] += 30;
+				update_candy();
+				disapear = 1;
+				return status;
+			}
+			if (ITypeCandy(mp, ii, jj)) {
+				TRACE("AAAAAAAAA %d %d: %d", ii, jj, ITypeCandy(mp, ii, jj));
+				status[ii][jj] = 1;
+				which_candy[ii][jj] %= 10;
+				which_candy[ii][jj] += 20;
+				disapear = 1;
+				update_candy();
+			}
+
+		}
 	}
+	
+	
+	
+	
+	/*
 	for (int i = 0; i < h; i++) {
 		for (int j = 0; j < w; j++) {
 			if (LTypeCandy(mp, i, j) || TTypeCandy(mp, i, j)) {
 				status[i][j] = 1;
-				candy[i][j].SetFrameIndexOfBitmap(which_candy[i][j] + 6);
 				which_candy[i][j] %= 10;
 				which_candy[i][j] += 10;
 				disapear = 1;
+				update_candy();
 			}
 			if (ITypeCandy(mp, i, j)) {
 				status[i][j] = 1;
-				candy[i][j].SetFrameIndexOfBitmap(which_candy[i][j] + 12);
 				which_candy[i][j] %= 10;
 				which_candy[i][j] += 20;
 				disapear = 1;
+				update_candy();
 			}
 			if (ETypeCandy(mp, i, j)) {
 				status[i][j] = 1;
-				candy[i][j].SetFrameIndexOfBitmap(which_candy[i][j] + 20);
 				which_candy[i][j] %= 10;
 				which_candy[i][j] += 30;
 				disapear = 1;
+				update_candy();
 			}
 		}
 	}
+	*/
 	return status;
 }
 
@@ -417,7 +641,8 @@ void CGameStateRun::OnMove()
 {	
 	vector<vector<int>> status = CheckMapStatus(which_candy, w, h);
 	DropOneSquare();
-	if (CheckInitCandy(which_candy, 5, 5) && is_animation_finished) {
+	if ((CheckInitCandy(which_candy, 5, 5) || disapear) && is_animation_finished) {
+		disapear = 0;
 		TRACE("is_animation_finished\n");
 		bool isFallCandy = false;
 		for (int i = h - 1; i >= 0; i--) { // status2: fall one layer
@@ -516,7 +741,8 @@ void CGameStateRun::OnInit()
 				"Resources/texture_pack_original/candy/-13.bmp",
 				"Resources/texture_pack_original/candy/-99.bmp",
 				"Resources/texture_pack_original/candy/99.bmp",
-				"Resources/texture_pack_original/candy/999.bmp"
+				"Resources/texture_pack_original/candy/999.bmp",
+				"Resources/texture_pack_original/candy/7.bmp"
 				});
 			candy[i][j].SetTopLeft((400 - 25 * w) + j * 50, (400 - 25 * h) + i * 50);
 			which_candy[i][j] = mp[i][j];
@@ -533,7 +759,7 @@ void CGameStateRun::OnInit()
 		}
 		candy_xy_position[i] = inner_vector;
 	}
-
+	
 	character.LoadBitmapByString({ "resources/giraffe.bmp" });
 	character.SetTopLeft(0, 0);
 }
@@ -638,6 +864,13 @@ bool CGameStateRun::CanDelete() {
 	}
 	swtch(column0, row0
 		, column1, row1);
+	if (which_candy[row0][column0] >= 10 && which_candy[row1][column1] >= 10) {
+		return true;
+	}
+	if (which_candy[row0][column0] == 7 || which_candy[row1][column1] == 7) {
+		update_candy();
+		return true;
+	}
 	if (CheckInitCandy(which_candy, w, h)) {
 		update_candy();
 		return true;
@@ -684,29 +917,14 @@ bool oneInSquare() {
 
 void CGameStateRun::OnLButtonDown(UINT nFlags, CPoint point)
 {
-	if (which_mou) {
-		idx1 = point.x;
-		idy1 = point.y;
-		which_mou = 0;
+	idx1 = point.x;
+	idy1 = point.y;
+	if (!inSquare()||!CanDelete()) {
+		idx0 = idx1;
+		idy0 = idy1;
+		
 	}
-	else {
-		idx0 = point.x;
-		idy0 = point.y;
-		which_mou = 1;
-	}
-	character.SetTopLeft(idx0, idy0);
-	if (inSquare() && CanDelete()) {
-		int row0 = (idy0 - (400 - 25 * h)) / 50;
-		int column0 = (idx0 - (400 - 25 * w)) / 50;
-		int row1 = (idy1 - (400 - 25 * h)) / 50;
-		int column1 = (idx1 - (400 - 25 * w)) / 50;
-
-		for (int i = 0; i < 5; i++) {
-			for (int j = 0; j < 5; j++) {
-				candy[i][j].ShowBitmap();
-			}
-		}
-	}
+	
 
 	/*if (oneInSquare()) {
 		cursor.SetTopLeft((point.x - (400 - 25 * w)) / 50 * 50 + (400 - 25 * w),
