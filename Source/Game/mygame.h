@@ -94,7 +94,7 @@ namespace game_framework {
 		void update_candy();
 		void remove_obstacle_layer(int i, int j);
 		bool CanDelete();
-		void StartDropOneSquare(int i, int j);
+		void StartDropOneSquare(int i, int j,int direction);
 	protected:
 		void OnMove();									// 移�???????��??�??
 		void OnShow();									// 顯示????????????????????��?��??
