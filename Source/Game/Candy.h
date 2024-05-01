@@ -20,11 +20,11 @@ public:
 
 	}
 
-	Candy(CMovingBitmap candy, int type, pair<int, int> index, pair<int, int> position)
+	Candy(game_framework::CMovingBitmap candy, int type, pair<int, int> index, pair<int, int> position)
 	: _candy(candy), _type(type), _index(index), _position(position){
 	}
 
-	CMovingBitmap candy() const {
+	game_framework::CMovingBitmap candy() const {
 		return _candy;
 	}
 

@@ -38,7 +38,6 @@
  *      3. Use ShowInitProgress(percent) to display loading progress.
 */
 
-
 namespace game_framework {
 	/////////////////////////////////////////////////////////////////////////////
 	// Constants
