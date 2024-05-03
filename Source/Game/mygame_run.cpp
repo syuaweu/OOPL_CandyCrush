@@ -15,6 +15,7 @@
 #include<utility>
 #include <fstream>
 #include<queue>
+
 using namespace std;
 using namespace game_framework;
 int idx0 = 0, idx1 = 0;
@@ -22,6 +23,7 @@ int idy0 = 0, idy1 = 0;
 bool which_mou = 0;
 vector<std::pair<int, std::pair<int, int>>> boom_que;
 int boom_arr[9][9] = {};
+
 vector<vector<int>> LoadMap(string map_name, int *row, int *column) {
 	ifstream in;
 	in.open("Resources/map/" + map_name + ".txt");
@@ -692,8 +694,8 @@ void CGameStateRun::OnMove()
 }
 
 void CGameStateRun::OnInit()
-{
-
+{	
+	
 	background.LoadBitmapByString({
 		"resources/texture_pack_original/bg_screens/3.bmp",
 		"resources/texture_pack_original/bg_screens/2.bmp",
@@ -767,7 +769,7 @@ void CGameStateRun::OnInit()
 		}
 		candy_xy_position[i] = inner_vector;
 	}
-	
+	c.Init();
 	/*character.LoadBitmapByString({ "resources/giraffe.bmp" });
 	character.SetTopLeft(0, 0);*/
 }
@@ -979,6 +981,7 @@ void CGameStateRun::show_image_by_phase() {
 				candy[i][j].ShowBitmap();
 			}
 		}
+		//c.candy().ShowBitmap();
 		/*cursor.ShowBitmap();*/
 
 		if (phase == 3 && sub_phase == 1) {

@@ -37,6 +37,8 @@
  *      2. Replace the demonstration of animation as a new bouncing ball.
  *      3. Use ShowInitProgress(percent) to display loading progress.
 */
+#include "Candy.h"
+#include "Map.h"
 
 namespace game_framework {
 	/////////////////////////////////////////////////////////////////////////////
@@ -108,7 +110,8 @@ namespace game_framework {
 		CMovingBitmap ball;
 		CMovingBitmap door[3];
 		CMovingBitmap candy[9][9];
-
+		Candy c;
+		Map m;
 		void show_image_by_phase();
 		void show_text_by_phase();
 		bool validate_phase_1();
