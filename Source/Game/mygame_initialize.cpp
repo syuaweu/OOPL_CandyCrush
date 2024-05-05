@@ -8,6 +8,7 @@
 #include "mygame.h"
 
 using namespace game_framework;
+bool isAccountSettingOpen = 0;
 /////////////////////////////////////////////////////////////////////////////
 // 這個class為遊戲的遊戲開頭畫面物件
 /////////////////////////////////////////////////////////////////////////////
@@ -25,11 +26,11 @@ void CGameStateInit::OnInit()
 	//     等的不耐煩，遊戲會出現「Loading ...」，顯示Loading的進度。
 	//
 	
-	/*for (int i = 0; i < 100; i++) {
-		ShowInitProgress(i, "");
-		Sleep(1);
-	}*/
 	load_background();
+	for (int i = 0; i < 25; i++) {
+		ShowInitProgress(i*4, "");
+		Sleep(1);
+	}
 	//
 	// 此OnInit動作會接到CGameStaterRun::OnInit()，所以進度還沒到100%
 	//
@@ -40,37 +41,52 @@ void CGameStateInit::OnBeginState()
 	
 }
 
+void CGameStateInit::OnMove()
+{	
+	if (isAccountSettingOpen == 1 && show_account.GetTop() < 0){
+		show_account.SetTopLeft(0, show_account.GetTop() + 40);
+	}
+	else if (isAccountSettingOpen == 0 && show_account.GetTop() > -800) {
+		show_account.SetTopLeft(0, show_account.GetTop() - 40);
+	}
+}
+
 void CGameStateInit::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-	GotoGameState(GAME_STATE_RUN);		// 切換至GAME_STATE_RUN
+	
 }
 
 void CGameStateInit::OnLButtonDown(UINT nFlags, CPoint point)
-{
-	GotoGameState(GAME_STATE_RUN);
+{	
+	int mouse_x = point.x;
+	int mouse_y = point.y;
+
+	if (mouse_x > 260 && mouse_y > 400 && mouse_x < 510 && mouse_y < 460 && isAccountSettingOpen == 0) {
+		GotoGameState(GAME_STATE_RUN);
+	}
+	else if (mouse_x>200 && mouse_y>480 && mouse_x < 540 && mouse_y < 560 && isAccountSettingOpen == 0) {
+		isAccountSettingOpen = 1;
+	}
+	else if(mouse_x > 625 && mouse_y > 0 && mouse_x < 720 && mouse_y < 90 && isAccountSettingOpen == 1){
+		isAccountSettingOpen = 0;
+	}
 }
 
 void CGameStateInit::OnShow()
 {
 	background.ShowBitmap();
+	show_account.ShowBitmap();
 	draw_text();
 }
 
 void CGameStateInit::load_background() {
+
 	background.LoadBitmapByString({ "Resources/texture_pack_original/bg_screens/start.bmp" });
 	background.SetTopLeft(0, 0);
+	show_account.LoadBitmapByString({ "Resources/texture_pack_original/bg_screens/account_setting.bmp" }, RGB(255,255,255));
+	show_account.SetTopLeft(0, -800);
 }
 
 void CGameStateInit::draw_text() {
-	CDC *pDC = CDDraw::GetBackCDC();
 
-	/* Print title */
-	/*CTextDraw::ChangeFontLog(pDC, 36, "微軟正黑體", RGB(255, 255, 255));
-	CTextDraw::Print(pDC, 79, 228, "Candy Crush");*/
-
-	/* Print info */
-	/*CTextDraw::ChangeFontLog(pDC,  24, "微軟正黑體", RGB(0, 0, 0));
-	CTextDraw::Print(pDC, 200, 600, "Press any key to start");*/
-
-	CDDraw::ReleaseBackCDC();
 }
