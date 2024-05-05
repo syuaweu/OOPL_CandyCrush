@@ -39,6 +39,29 @@ vector<vector<int>> LoadMap(string map_name, int *row, int *column) {
 	return map;
 }
 
+vector<vector<int>> LoadStatus(string map_name, int *row, int *column) {
+	ifstream in;
+	in.open("Resources/map/" + map_name + ".txt");
+	in >> *row >> *column;
+	vector<vector<int>> map(10);
+	for (int i = 0; i < *row; i++) {
+		for (int j = 0; j < *column; j++) {
+			int x = 0;
+			in >> x;
+		}
+	}
+	for (int i = 0; i < *row; i++) {
+		for (int j = 0; j < *column; j++) {
+			int x = 0;
+			in >> x;
+			map[i].push_back(x);
+		}
+	}
+	in.close();
+
+	return map;
+}
+
 CGameStateRun::CGameStateRun(CGame *g) : CGameState(g)
 {
 }
@@ -54,7 +77,9 @@ void CGameStateRun::OnBeginState()
 
 int w = 5, h = 5;
 int which_candy[9][9] = { 0 };
+int which_jelly[9][9] = { 0 };
 vector<vector<int>> mp;
+vector<vector<int>> jellymp;
 
 int rnd_number(int start, int end) {
 	int min = start;
@@ -305,6 +330,19 @@ void CGameStateRun::update_candy() {
 	for (int i = 0; i < h; i++) {
 		for (int j = 0; j < w; j++) {
 			candy[i][j].SetTopLeft((400 - 25 * w) + j * 50, (400 - 25 * h) + i * 50);
+		}
+	}
+	for (int i = h - 1; i >= 0; i--) {
+		for (int j = w - 1; j >= 0; j--) {
+			if (which_jelly[i][j] == 1){
+				jelly[i][j].SetFrameIndexOfBitmap(1);
+			}
+			else if(which_jelly[i][j] == 2){
+				jelly[i][j].SetFrameIndexOfBitmap(2);
+			}
+			else{
+				jelly[i][j].SetFrameIndexOfBitmap(0);
+			}
 		}
 	}
 }
@@ -617,6 +655,9 @@ void CGameStateRun::vertical_fall_candy(int i, int j) {
 }
 
 void CGameStateRun::remove_obstacle_layer(int i, int j) {
+	if (which_jelly[i][j] != 0) {
+		which_jelly[i][j] -= 1;
+	}
 	if (i > 0) {
 		if (which_candy[i - 1][j] < 0 && which_candy[i - 1][j] != -10 && which_candy[i - 1][j] != 99) {
 			which_candy[i - 1][j] += 1;
@@ -702,6 +743,7 @@ void CGameStateRun::OnInit()
 		});
 	background.SetTopLeft(0, 0);
 	vector<vector<int>> mp = LoadMap("2", &h, &w);
+	vector<vector<int>> jellymp = LoadStatus("2", &h, &w);
 
 	chest_and_key.LoadBitmapByString({ "resources/chest.bmp", "resources/chest_ignore.bmp" }, RGB(255, 255, 255));
 	chest_and_key.SetTopLeft(150, 430);
@@ -754,6 +796,17 @@ void CGameStateRun::OnInit()
 				});
 			candy[i][j].SetTopLeft((400 - 25 * w) + j * 50, (400 - 25 * h) + i * 50);
 			which_candy[i][j] = mp[i][j];
+		}
+	}
+	for (int i = 0; i < h; i++) {
+		for (int j = 0; j < w; j++) {
+			jelly[i][j].LoadBitmapByString({
+				"Resources/texture_pack_original/n.bmp",
+				"Resources/texture_pack_original/i.bmp",
+				"Resources/texture_pack_original/ix2.bmp",
+				});
+			jelly[i][j].SetTopLeft((400 - 25 * w) + j * 50, (400 - 25 * h) + i * 50);
+			which_jelly[i][j] = jellymp[i][j];
 		}
 	}
 	is_animation_finished = 1;
@@ -977,8 +1030,10 @@ void CGameStateRun::show_image_by_phase() {
 		for (int i = 0; i < h; i++) {
 			for (int j = 0; j < w; j++) {
 				candy[i][j].ShowBitmap();
+				jelly[i][j].ShowBitmap();
 			}
 		}
+		
 		/*cursor.ShowBitmap();*/
 
 		if (phase == 3 && sub_phase == 1) {
