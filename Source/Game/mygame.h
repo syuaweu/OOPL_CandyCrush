@@ -64,10 +64,12 @@ namespace game_framework {
 		void OnLButtonDown(UINT nFlags, CPoint point);  // ??????ï¿??ï¿????????ï¿??
 	protected:
 		void OnShow();									// é¡¯ç¤º????????????????????ï¿½ï¿½?ï¿½ï¿½??
+		void OnMove();
 	private:
 		void load_background();
 		void draw_text();
 		CMovingBitmap background;
+		CMovingBitmap show_account;
 	};
 
 	/////////////////////////////////////////////////////////////////////////////
@@ -109,6 +111,7 @@ namespace game_framework {
 		CMovingBitmap ball;
 		CMovingBitmap door[3];
 		CMovingBitmap candy[9][9];
+		CMovingBitmap jelly[9][9];
 
 		void show_image_by_phase();
 		void show_text_by_phase();
