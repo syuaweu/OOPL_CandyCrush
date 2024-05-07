@@ -801,9 +801,9 @@ void CGameStateRun::OnInit()
 	for (int i = 0; i < h; i++) {
 		for (int j = 0; j < w; j++) {
 			jelly[i][j].LoadBitmapByString({
-				"Resources/texture_pack_original/n.bmp",
-				"Resources/texture_pack_original/i.bmp",
-				"Resources/texture_pack_original/ix2.bmp",
+				"Resources/texture_pack_original/ice/blank.bmp",
+				"Resources/texture_pack_original/ice/ice1.bmp",
+				"Resources/texture_pack_original/ice/ice2.bmp",
 				});
 			jelly[i][j].SetTopLeft((400 - 25 * w) + j * 50, (400 - 25 * h) + i * 50);
 			which_jelly[i][j] = jellymp[i][j];
