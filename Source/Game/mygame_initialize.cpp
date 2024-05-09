@@ -63,6 +63,7 @@ void CGameStateInit::OnLButtonDown(UINT nFlags, CPoint point)
 
 	if (mouse_x > 260 && mouse_y > 400 && mouse_x < 510 && mouse_y < 460 && isAccountSettingOpen == 0) {
 		GotoGameState(GAME_STATE_RUN);
+		//GotoGameState(GAME_STATE_INIT);
 	}
 	else if (mouse_x>200 && mouse_y>480 && mouse_x < 540 && mouse_y < 560 && isAccountSettingOpen == 0) {
 		isAccountSettingOpen = 1;
@@ -70,6 +71,8 @@ void CGameStateInit::OnLButtonDown(UINT nFlags, CPoint point)
 	else if(mouse_x > 625 && mouse_y > 0 && mouse_x < 720 && mouse_y < 90 && isAccountSettingOpen == 1){
 		isAccountSettingOpen = 0;
 	}
+
+	
 }
 
 void CGameStateInit::OnShow()

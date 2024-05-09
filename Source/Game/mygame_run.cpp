@@ -985,7 +985,6 @@ void CGameStateRun::OnLButtonDown(UINT nFlags, CPoint point)
 		idy0 = idy1;
 		
 	}
-	
 
 	/*if (oneInSquare()) {
 		cursor.SetTopLeft((point.x - (400 - 25 * w)) / 50 * 50 + (400 - 25 * w),
@@ -1029,8 +1028,13 @@ void CGameStateRun::show_image_by_phase() {
 
 		for (int i = 0; i < h; i++) {
 			for (int j = 0; j < w; j++) {
-				candy[i][j].ShowBitmap();
 				jelly[i][j].ShowBitmap();
+			}
+		}
+		
+		for (int i = 0; i < h; i++) {
+			for (int j = 0; j < w; j++) {
+				candy[i][j].ShowBitmap();
 			}
 		}
 		
