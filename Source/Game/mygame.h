@@ -112,6 +112,7 @@ namespace game_framework {
 		CMovingBitmap door[3];
 		CMovingBitmap candy[9][9];
 		CMovingBitmap jelly[9][9];
+		int score = 0;
 
 		void show_image_by_phase();
 		void show_text_by_phase();
