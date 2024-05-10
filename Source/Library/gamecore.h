@@ -111,6 +111,7 @@ namespace game_framework {
 		static bool					fullscreen;
 		static CDDraw				ddraw;
 		static int					size_x, size_y;
+		static int                  level;
 	};
 
 	/////////////////////////////////////////////////////////////////////////////

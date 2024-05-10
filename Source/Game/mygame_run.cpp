@@ -22,9 +22,23 @@ int idy0 = 0, idy1 = 0;
 bool which_mou = 0;
 vector<std::pair<int, std::pair<int, int>>> boom_que;
 int boom_arr[9][9] = {};
-vector<vector<int>> LoadMap(string map_name, int *row, int *column) {
+int w = 5, h = 5;
+bool is_animation_finished = 1;
+
+int which_candy[9][9] = { 0 };
+int which_jelly[9][9] = { 0 };
+vector<vector<int>> mp;
+vector<vector<int>> jellymp;
+int c_x = 0;
+int c_y = 0;
+std::vector<std::vector<std::pair<int, int>>> candy_xy_position(9);
+vector<vector<int>> LoadMap(int *row, int *column) {
 	ifstream in;
-	in.open("Resources/map/" + map_name + ".txt");
+	int map_name;
+	in.open("Resources/map/choose_level.txt");
+	in >> map_name;
+	in.close();
+	in.open("Resources/map/" + to_string(map_name) + ".txt");
 	in >> *row >> *column;
 	vector<vector<int>> map(10);
 	for (int i = 0; i < *row; i++) {
@@ -39,9 +53,13 @@ vector<vector<int>> LoadMap(string map_name, int *row, int *column) {
 	return map;
 }
 
-vector<vector<int>> LoadStatus(string map_name, int *row, int *column) {
+vector<vector<int>> LoadStatus(int *row, int *column) {
 	ifstream in;
-	in.open("Resources/map/" + map_name + ".txt");
+	int map_name;
+	in.open("Resources/map/choose_level.txt");
+	in >> map_name;
+	in.close();
+	in.open("Resources/map/" + to_string(map_name) + ".txt");
 	in >> *row >> *column;
 	vector<vector<int>> map(10);
 	for (int i = 0; i < *row; i++) {
@@ -72,14 +90,82 @@ CGameStateRun::~CGameStateRun()
 
 void CGameStateRun::OnBeginState()
 {
+	
+	vector<vector<int>> mp = LoadMap(&h, &w);
+	vector<vector<int>> jellymp = LoadStatus(&h, &w);
 
+	for (int i = 0; i < h; i++) {
+		for (int j = 0; j < w; j++) {
+			TRACE("AGGG");
+			candy[i][j].LoadBitmapByString({
+				"Resources/texture_pack_original/candy/0.bmp",
+				"Resources/texture_pack_original/candy/1.bmp",
+				"Resources/texture_pack_original/candy/2.bmp",
+				"Resources/texture_pack_original/candy/3.bmp",
+				"Resources/texture_pack_original/candy/4.bmp",
+				"Resources/texture_pack_original/candy/5.bmp",
+				"Resources/texture_pack_original/candy/10.bmp",
+				"Resources/texture_pack_original/candy/11.bmp",
+				"Resources/texture_pack_original/candy/12.bmp",
+				"Resources/texture_pack_original/candy/13.bmp",
+				"Resources/texture_pack_original/candy/14.bmp",
+				"Resources/texture_pack_original/candy/15.bmp",
+				"Resources/texture_pack_original/candy/20.bmp",
+				"Resources/texture_pack_original/candy/21.bmp",
+				"Resources/texture_pack_original/candy/22.bmp",
+				"Resources/texture_pack_original/candy/23.bmp",
+				"Resources/texture_pack_original/candy/24.bmp",
+				"Resources/texture_pack_original/candy/25.bmp",
+				"Resources/texture_pack_original/candy/30.bmp",
+				"Resources/texture_pack_original/candy/31.bmp",
+				"Resources/texture_pack_original/candy/32.bmp",
+				"Resources/texture_pack_original/candy/33.bmp",
+				"Resources/texture_pack_original/candy/34.bmp",
+				"Resources/texture_pack_original/candy/35.bmp",
+				"Resources/texture_pack_original/candy/40.bmp",
+				"Resources/texture_pack_original/candy/50.bmp",
+				"Resources/texture_pack_original/candy/-1.bmp",
+				"Resources/texture_pack_original/candy/-10.bmp",
+				"Resources/texture_pack_original/candy/-11.bmp",
+				"Resources/texture_pack_original/candy/-12.bmp",
+				"Resources/texture_pack_original/candy/-13.bmp",
+				"Resources/texture_pack_original/candy/-99.bmp",
+				"Resources/texture_pack_original/candy/99.bmp",
+				"Resources/texture_pack_original/candy/999.bmp",
+				"Resources/texture_pack_original/candy/7.bmp"
+				});
+			candy[i][j].SetTopLeft((400 - 25 * w) + j * 50, (400 - 25 * h) + i * 50);
+			which_candy[i][j] = mp[i][j];
+		}
+	}
+	for (int i = 0; i < h; i++) {
+		for (int j = 0; j < w; j++) {
+			jelly[i][j].LoadBitmapByString({
+				"Resources/texture_pack_original/ice/blank.bmp",
+				"Resources/texture_pack_original/ice/ice1.bmp",
+				"Resources/texture_pack_original/ice/ice2.bmp",
+				});
+			jelly[i][j].SetTopLeft((400 - 25 * w) + j * 50, (400 - 25 * h) + i * 50);
+			which_jelly[i][j] = jellymp[i][j];
+		}
+	}
+	is_animation_finished = 1;
+	update_candy();
+	/*cursor.LoadBitmapByString({ "Resources/texture_pack_original/cursor.bmp" }, RGB(255, 255, 255));
+	cursor.SetTopLeft((400 - 25 * w), (400 - 25 * h));*/
+	for (int i = 0; i < h; i++) {
+		std::vector<std::pair<int, int>> inner_vector(9);
+		for (int j = 0; j < w; j++) {
+			inner_vector.push_back(std::make_pair(0, 0));
+		}
+		candy_xy_position[i] = inner_vector;
+	}
+
+	/*character.LoadBitmapByString({ "resources/giraffe.bmp" });
+	character.SetTopLeft(0, 0);*/
 }
 
-int w = 5, h = 5;
-int which_candy[9][9] = { 0 };
-int which_jelly[9][9] = { 0 };
-vector<vector<int>> mp;
-vector<vector<int>> jellymp;
+
 
 int rnd_number(int start, int end) {
 	int min = start;
@@ -295,8 +381,6 @@ vector < vector<int>> boom(vector<vector<int>> st, int ii, int jj, int x) {
 	//TRACE("24242424 %d\n", st[2][4]);
 	return st;
 }
-
-bool is_animation_finished = 1;
 
 void CGameStateRun::update_candy() {
 	if (is_animation_finished == false) {
@@ -563,9 +647,7 @@ vector<vector<int>> CGameStateRun::CheckMapStatus(int mp[9][9], int w, int h) { 
 	return status;
 }
 
-int c_x = 0;
-int c_y = 0;
-std::vector<std::vector<std::pair<int, int>>> candy_xy_position(9);
+
 
 void CGameStateRun::StartDropOneSquare(int i, int j, int direction) {
 	TRACE("StartDropOneSquare%d %d %d\n",i,j,direction);
@@ -734,7 +816,6 @@ void CGameStateRun::OnMove()
 
 void CGameStateRun::OnInit()
 {
-
 	background.LoadBitmapByString({
 		"resources/texture_pack_original/bg_screens/3.bmp",
 		"resources/texture_pack_original/bg_screens/2.bmp",
@@ -742,8 +823,6 @@ void CGameStateRun::OnInit()
 		"resources/texture_pack_original/bg_screens/0.bmp",
 		});
 	background.SetTopLeft(0, 0);
-	vector<vector<int>> mp = LoadMap("2", &h, &w);
-	vector<vector<int>> jellymp = LoadStatus("2", &h, &w);
 
 	chest_and_key.LoadBitmapByString({ "resources/chest.bmp", "resources/chest_ignore.bmp" }, RGB(255, 255, 255));
 	chest_and_key.SetTopLeft(150, 430);
@@ -754,75 +833,6 @@ void CGameStateRun::OnInit()
 
 	ball.LoadBitmapByString({ "resources/ball-3.bmp", "resources/ball-3.bmp", "resources/ball-2.bmp", "resources/ball-1.bmp", "resources/ball-ok.bmp" });
 	ball.SetTopLeft(150, 430);
-	for (int i = 0; i < h; i++) {
-		for (int j = 0; j < w; j++) {
-
-			candy[i][j].LoadBitmapByString({
-				"Resources/texture_pack_original/candy/0.bmp",
-				"Resources/texture_pack_original/candy/1.bmp",
-				"Resources/texture_pack_original/candy/2.bmp",
-				"Resources/texture_pack_original/candy/3.bmp",
-				"Resources/texture_pack_original/candy/4.bmp",
-				"Resources/texture_pack_original/candy/5.bmp",
-				"Resources/texture_pack_original/candy/10.bmp",
-				"Resources/texture_pack_original/candy/11.bmp",
-				"Resources/texture_pack_original/candy/12.bmp",
-				"Resources/texture_pack_original/candy/13.bmp",
-				"Resources/texture_pack_original/candy/14.bmp",
-				"Resources/texture_pack_original/candy/15.bmp",
-				"Resources/texture_pack_original/candy/20.bmp",
-				"Resources/texture_pack_original/candy/21.bmp",
-				"Resources/texture_pack_original/candy/22.bmp",
-				"Resources/texture_pack_original/candy/23.bmp",
-				"Resources/texture_pack_original/candy/24.bmp",
-				"Resources/texture_pack_original/candy/25.bmp",
-				"Resources/texture_pack_original/candy/30.bmp",
-				"Resources/texture_pack_original/candy/31.bmp",
-				"Resources/texture_pack_original/candy/32.bmp",
-				"Resources/texture_pack_original/candy/33.bmp",
-				"Resources/texture_pack_original/candy/34.bmp",
-				"Resources/texture_pack_original/candy/35.bmp",
-				"Resources/texture_pack_original/candy/40.bmp",
-				"Resources/texture_pack_original/candy/50.bmp",
-				"Resources/texture_pack_original/candy/-1.bmp",
-				"Resources/texture_pack_original/candy/-10.bmp",
-				"Resources/texture_pack_original/candy/-11.bmp",
-				"Resources/texture_pack_original/candy/-12.bmp",
-				"Resources/texture_pack_original/candy/-13.bmp",
-				"Resources/texture_pack_original/candy/-99.bmp",
-				"Resources/texture_pack_original/candy/99.bmp",
-				"Resources/texture_pack_original/candy/999.bmp",
-				"Resources/texture_pack_original/candy/7.bmp"
-				});
-			candy[i][j].SetTopLeft((400 - 25 * w) + j * 50, (400 - 25 * h) + i * 50);
-			which_candy[i][j] = mp[i][j];
-		}
-	}
-	for (int i = 0; i < h; i++) {
-		for (int j = 0; j < w; j++) {
-			jelly[i][j].LoadBitmapByString({
-				"Resources/texture_pack_original/ice/blank.bmp",
-				"Resources/texture_pack_original/ice/ice1.bmp",
-				"Resources/texture_pack_original/ice/ice2.bmp",
-				});
-			jelly[i][j].SetTopLeft((400 - 25 * w) + j * 50, (400 - 25 * h) + i * 50);
-			which_jelly[i][j] = jellymp[i][j];
-		}
-	}
-	is_animation_finished = 1;
-	update_candy();
-	/*cursor.LoadBitmapByString({ "Resources/texture_pack_original/cursor.bmp" }, RGB(255, 255, 255));
-	cursor.SetTopLeft((400 - 25 * w), (400 - 25 * h));*/
-	for (int i = 0; i < h; i++) {
-		std::vector<std::pair<int, int>> inner_vector(9);
-		for (int j = 0; j < w; j++) {
-			inner_vector.push_back(std::make_pair(0, 0));
-		}
-		candy_xy_position[i] = inner_vector;
-	}
-	
-	/*character.LoadBitmapByString({ "resources/giraffe.bmp" });
-	character.SetTopLeft(0, 0);*/
 }
 
 void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
