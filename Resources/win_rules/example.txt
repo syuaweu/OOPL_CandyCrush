@@ -1,0 +1,11 @@
+int [moves]
+bool [has_type1]
+int [condition type] int [number]
+bool [has_type2]
+int [number]
+bool [has_type3]
+int [condition type] int [number]
+
+//type1: clear obstacle
+//type2: cherry fall
+//type3: candy order

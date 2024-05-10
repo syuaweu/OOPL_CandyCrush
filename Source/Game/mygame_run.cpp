@@ -374,9 +374,11 @@ vector<vector<int>> CGameStateRun::CheckMapStatus(int mp[9][9], int w, int h) { 
 						for (int k = i - 2; k <= i; k++) {
 							if (which_candy[k][j] / 10 == 2) {
 								status=delete_row(status, k);
+								score += 500;
 							}
 							if (which_candy[k][j] / 10 == 3) {
 								status = delete_column(status, j);
+								score += 500;
 							}
 							if (which_candy[k][j] / 10 == 1) {
 								disapear = 1;
@@ -412,6 +414,7 @@ vector<vector<int>> CGameStateRun::CheckMapStatus(int mp[9][9], int w, int h) { 
 	/*TRACE("wryyyyy %d\n", boom_que.size());*/
 	for (auto i : boom_que) {
 		status = boom(status, i.second.first, i.second.second, i.first);
+		score += 1000;
 		if (i.first == 2) {
 			status[i.second.first][i.second.second] = 1;
 			which_candy[i.second.first][i.second.second] %= 10;
@@ -451,7 +454,7 @@ vector<vector<int>> CGameStateRun::CheckMapStatus(int mp[9][9], int w, int h) { 
 		}
 		else if (which_candy[i0][j0] == 7) {
 			disapear = 1;
-			
+			score += 5000;
 			if (which_candy[i1][j1] < 7 && which_candy[i1][j1] >= 0) {
 				status[i0][j0] = 0;
 				int x = which_candy[i1][j1];
@@ -470,6 +473,7 @@ vector<vector<int>> CGameStateRun::CheckMapStatus(int mp[9][9], int w, int h) { 
 		}
 		else if (which_candy[i1][j1] == 7) {
 			disapear = 1;
+			score += 5000;
 			if (which_candy[i0][j0] < 7 && which_candy[i0][j0] >= 0) {
 				status[i1][j1] = 0;
 				int x = which_candy[i0][j0];
@@ -529,7 +533,13 @@ vector<vector<int>> CGameStateRun::CheckMapStatus(int mp[9][9], int w, int h) { 
 
 		}
 	}
-	
+	for (int i = 0; i < h; i++) {
+		for (int j = 0; j < h; j++) {
+			if (status[i][j] == 0) {
+				score += 40;
+			}
+		}
+	}
 	
 	
 	
@@ -657,6 +667,7 @@ void CGameStateRun::vertical_fall_candy(int i, int j) {
 void CGameStateRun::remove_obstacle_layer(int i, int j) {
 	if (which_jelly[i][j] != 0) {
 		which_jelly[i][j] -= 1;
+		score += 1000;
 	}
 	if (i > 0) {
 		if (which_candy[i - 1][j] < 0 && which_candy[i - 1][j] != -10 && which_candy[i - 1][j] != 99) {
@@ -1029,8 +1040,9 @@ void CGameStateRun::show_image_by_phase() {
 
 		for (int i = 0; i < h; i++) {
 			for (int j = 0; j < w; j++) {
-				candy[i][j].ShowBitmap();
 				jelly[i][j].ShowBitmap();
+				candy[i][j].ShowBitmap();
+				
 			}
 		}
 		
@@ -1058,6 +1070,7 @@ void CGameStateRun::show_text_by_phase() {
 	CTextDraw::ChangeFontLog(pDC, 21, "", RGB(0, 0, 0), 800);
 	CTextDraw::Print(pDC, 237, 128, "");
 	CTextDraw::Print(pDC, 55, 163, "");
+	CTextDraw::Print(pDC, 50, 50, to_string(score));
 	/*CTextDraw::Print(pDC, 50, 50, "timer:" + to_string(clock()));*/
 	CDDraw::ReleaseBackCDC();
 }
@@ -1068,17 +1081,12 @@ bool CGameStateRun::validate_phase_1() {
 }
 
 bool CGameStateRun::validate_phase_2() {
-	/*return character.GetTop() > 204 && character.GetTop() < 325 && character.GetLeft() > 339 && character.GetLeft() < 459;*/
+	
 	return 0;
 }
 
 bool CGameStateRun::validate_phase_3() {
-	/*return (
-		character.GetTop() + character.GetHeight() >= chest_and_key.GetTop()
-		&& character.GetLeft() + character.GetWidth() >= chest_and_key.GetLeft()
-		&& chest_and_key.GetFrameIndexOfBitmap() == 1
-		&& chest_and_key.GetFilterColor() == RGB(255, 255, 255)
-		);*/
+	
 	return 0;
 }
 
