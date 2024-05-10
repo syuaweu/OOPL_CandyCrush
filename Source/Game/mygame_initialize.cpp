@@ -66,7 +66,11 @@ void CGameStateInit::OnMove()
 }
 
 void CGameStateInit::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
-{
+{	
+	if (isGameOn == 0) {
+		next_level();
+		isGameOn = 1;
+	}
 	if (nChar == VK_UP) {
 		next_level();
 	}
@@ -128,7 +132,7 @@ void CGameStateInit::next_level(){
 	}
 }
 void CGameStateInit::previous_level() {
-	if (stage > 0) {
+	if (stage > 1) {
 		stage -= 1;
 		background.SetFrameIndexOfBitmap(stage);
 	}
