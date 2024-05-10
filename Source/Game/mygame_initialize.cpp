@@ -2,13 +2,17 @@
 #include "../Core/Resource.h"
 #include <mmsystem.h>
 #include <ddraw.h>
+#include <fstream>
 #include "../Library/audio.h"
 #include "../Library/gameutil.h"
 #include "../Library/gamecore.h"
 #include "mygame.h"
 
+
 using namespace game_framework;
 bool isAccountSettingOpen = 0;
+bool isGameOn = 0;
+int stage = 0;
 /////////////////////////////////////////////////////////////////////////////
 // 這個class為遊戲的遊戲開頭畫面物件
 /////////////////////////////////////////////////////////////////////////////
@@ -28,7 +32,7 @@ void CGameStateInit::OnInit()
 	
 	load_background();
 	for (int i = 0; i < 25; i++) {
-		ShowInitProgress(i*4, "");
+		ShowInitProgress(i * 4, "");
 		Sleep(1);
 	}
 	//
@@ -43,32 +47,58 @@ void CGameStateInit::OnBeginState()
 
 void CGameStateInit::OnMove()
 {	
-	if (isAccountSettingOpen == 1 && show_account.GetTop() < 0){
-		show_account.SetTopLeft(0, show_account.GetTop() + 40);
+	if (stage == 0) {
+		if (isAccountSettingOpen == 1 && show_account.GetTop() < 0) {
+			show_account.SetTopLeft(0, show_account.GetTop() + 40);
+		}
+		else if (isAccountSettingOpen == 0 && show_account.GetTop() > -800) {
+			show_account.SetTopLeft(0, show_account.GetTop() - 40);
+		}
 	}
-	else if (isAccountSettingOpen == 0 && show_account.GetTop() > -800) {
-		show_account.SetTopLeft(0, show_account.GetTop() - 40);
+	if (stage == 4) {
+		stage = 5;
 	}
+	else if (stage == 5) {
+		Sleep(1000);
+		GotoGameState(GAME_STATE_RUN);
+	}
+	
 }
 
-void CGameStateInit::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
-{
-	
+void CGameStateInit::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
+{	
+	if (isGameOn == 0) {
+		next_level();
+		isGameOn = 1;
+	}
+	if (nChar == VK_UP) {
+		next_level();
+	}
+	if (nChar == VK_DOWN) {
+		previous_level();
+	}
 }
 
 void CGameStateInit::OnLButtonDown(UINT nFlags, CPoint point)
 {	
 	int mouse_x = point.x;
 	int mouse_y = point.y;
-
-	if (mouse_x > 260 && mouse_y > 400 && mouse_x < 510 && mouse_y < 460 && isAccountSettingOpen == 0) {
-		GotoGameState(GAME_STATE_RUN);
+	if (isGameOn == 0){
+		if (mouse_x > 276 && mouse_y > 366 && mouse_x < 516 && mouse_y < 443 && isAccountSettingOpen == 0) {
+			next_level();
+			isGameOn = 1;
+		}
+		else if (mouse_x > 218 && mouse_y > 458 && mouse_x < 537 && mouse_y < 532 && isAccountSettingOpen == 0) {
+			isAccountSettingOpen = 1;
+		}
+		else if(mouse_x > 618 && mouse_y > 0 && mouse_x < 716 && mouse_y < 83 && isAccountSettingOpen == 1){
+			isAccountSettingOpen = 0;
+		}
 	}
-	else if (mouse_x>200 && mouse_y>480 && mouse_x < 540 && mouse_y < 560 && isAccountSettingOpen == 0) {
-		isAccountSettingOpen = 1;
-	}
-	else if(mouse_x > 625 && mouse_y > 0 && mouse_x < 720 && mouse_y < 90 && isAccountSettingOpen == 1){
-		isAccountSettingOpen = 0;
+	else {
+		if (stage == 1) {
+			level_1to4(mouse_x, mouse_y);
+		}
 	}
 }
 
@@ -81,7 +111,11 @@ void CGameStateInit::OnShow()
 
 void CGameStateInit::load_background() {
 
-	background.LoadBitmapByString({ "Resources/texture_pack_original/bg_screens/start.bmp" });
+	background.LoadBitmapByString({ "Resources/texture_pack_original/bg_screens/start.bmp",
+									"Resources/texture_pack_original/level/1to4.bmp",
+									"Resources/texture_pack_original/level/4to8.bmp",
+									"Resources/texture_pack_original/level/7to10.bmp",
+									"Resources/texture_pack_original/bg_screens/loding.bmp" });
 	background.SetTopLeft(0, 0);
 	show_account.LoadBitmapByString({ "Resources/texture_pack_original/bg_screens/account_setting.bmp" }, RGB(255,255,255));
 	show_account.SetTopLeft(0, -800);
@@ -89,4 +123,40 @@ void CGameStateInit::load_background() {
 
 void CGameStateInit::draw_text() {
 
+}
+
+void CGameStateInit::next_level(){
+	if (stage < 3) {
+		stage += 1;
+		background.SetFrameIndexOfBitmap(stage);
+	}
+}
+void CGameStateInit::previous_level() {
+	if (stage > 1) {
+		stage -= 1;
+		background.SetFrameIndexOfBitmap(stage);
+	}
+}
+
+void CGameStateInit::level_1to4(int x,int y) {
+	if (x > 384 && y > 562 && x < 459 && y < 630) {
+		//level = 1;
+		choose_map(1);
+	}
+	else if (x > 326 && y > 437 && x < 396 && y < 494) {
+		choose_map(2);
+	}
+	else if (x > 362 && y > 357 && x < 431 && y < 398) {
+		choose_map(3);
+	}
+	else if (x > 397 && y > 314 && x < 454 && y < 343) {
+		choose_map(4);
+	}
+}
+void CGameStateInit::choose_map(int level) {
+	ofstream ofs("Resources/map/choose_level.txt");
+	ofs << level;
+	ofs.close();
+	stage = 4;
+	background.SetFrameIndexOfBitmap(stage);
 }
