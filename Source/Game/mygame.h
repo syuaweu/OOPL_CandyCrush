@@ -73,6 +73,7 @@ namespace game_framework {
 		void level_1to4(int x,int y);
 		void choose_map(int level);
 		CMovingBitmap background;
+		CMovingBitmap property_status;
 		CMovingBitmap show_account;
 	};
 
