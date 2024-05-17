@@ -15,6 +15,7 @@
 #include<utility>
 #include <fstream>
 #include<queue>
+#include<algorithm>
 using namespace std;
 using namespace game_framework;
 int idx0 = 0, idx1 = 0;
@@ -53,7 +54,28 @@ vector<vector<int>> LoadMap(int *row, int *column) {
 	return map;
 }
 
+void CGameStateRun::LoadWinCondition(string map_name) {
+	ifstream in;
+	in.open("Resources/win_rules/" + map_name + ".txt");
+	in >> moves;
+	for (int i = 0; i < 3; i++) {
+		in >> has_conditon_type[i];
+		if (has_conditon_type[i]) {
+			int t, n;
+			in >> t;
+			while (t != -1) {
+				all_condition_number += 1;
+				in >> n;
+				condition_number[i].push_back({ t,n });
+				in >> t;
+			}
+		}
+	}
+	in.close();
+}
+
 vector<vector<int>> LoadStatus(int *row, int *column) {
+
 	ifstream in;
 	int map_name;
 	in.open("Resources/map/choose_level.txt");
@@ -382,6 +404,32 @@ vector < vector<int>> boom(vector<vector<int>> st, int ii, int jj, int x) {
 	return st;
 }
 
+bool is_animation_finished = 1;
+
+int image_index(int x) {
+	if (x == -1) {
+		return 26;
+	}
+	else if (x >= 60 && x <= 65) {
+		return x % 10 + x / 6 / 10 * 6;
+	}
+	else if (x >= 60) {
+		return 32;
+	}
+	else if (x <= -10) {
+		return std::abs(x) + 17;
+	}
+	else if (x == 7) {
+		return 34;
+	}
+	else if (x >= 0 && x <= 35) {
+		return x / 10 * 6 + x % 10;
+	}
+	else {
+		return 33;
+	}
+}
+
 void CGameStateRun::update_candy() {
 	if (is_animation_finished == false) {
 		return;
@@ -431,6 +479,38 @@ void CGameStateRun::update_candy() {
 	}
 }
 
+void CGameStateRun::ScoreAndMovesCalculate(vector<vector<int>> s) {
+	for (int i = 0; i < h; i++) {
+		for (int j = 0; j < h; j++) {
+			if (s[i][j] == 0) {
+				score += 40;
+				for (int k = 0; k < 3; k++) {
+					for (int l = 0; l<int(condition_number[k].size()); l++) {
+						if (s[i][j] == condition_number[k][l].first) {
+							condition_number[k][l].second -= 1;
+						}
+					}
+				}
+			}
+		}
+	}
+}
+bool CGameStateRun::isGameOver() {
+	if (moves > 0) {
+		return false;
+	}
+	return true;
+}
+bool CGameStateRun::isWin() {
+	for (int i = 0; i < 3; i++) {
+		for (int j = 0; j<int(condition_number[i].size()); j++) {
+			if (condition_number[i][j].second > 0) {
+				return false;
+			}
+		}
+	}
+	return true;
+}
 bool disapear = 0;
 
 vector<vector<int>> CGameStateRun::CheckMapStatus(int mp[9][9], int w, int h) { // 1:normal, 0.2:special
@@ -617,13 +697,7 @@ vector<vector<int>> CGameStateRun::CheckMapStatus(int mp[9][9], int w, int h) { 
 
 		}
 	}
-	for (int i = 0; i < h; i++) {
-		for (int j = 0; j < h; j++) {
-			if (status[i][j] == 0) {
-				score += 40;
-			}
-		}
-	}
+	
 	
 	
 	
@@ -778,6 +852,7 @@ void CGameStateRun::OnMove()
 	vector<vector<int>> status = CheckMapStatus(which_candy, w, h);
 	DropOneSquare();
 	if ((CheckInitCandy(which_candy, h, w) || disapear) && is_animation_finished) {
+		ScoreAndMovesCalculate(status);
 		disapear = 0;
 		TRACE("is_animation_finished\n");
 		update_candy();
@@ -822,11 +897,23 @@ void CGameStateRun::OnMove()
 	if (is_animation_finished) {
 		update_candy();
 	}
-
+	if (isGameOver() && game_over.GetTop() < 0) {
+		game_over.SetTopLeft(0, game_over.GetTop() + 40);
+	}
+	if (isWin() && win.GetTop() < 0) {
+		win.SetTopLeft(0, win.GetTop() + 40);
+	}
 }
 
 void CGameStateRun::OnInit()
 {
+	game_over.LoadBitmapByString({ "resources/texture_pack_original/bg_screens/gameover.bmp" });
+	game_over.SetTopLeft(0, -800);
+	game_over.SetFrameIndexOfBitmap(0);
+	win.LoadBitmapByString({ "resources/texture_pack_original/bg_screens/win.bmp" });
+	win.SetTopLeft(0, -800);
+	win.SetFrameIndexOfBitmap(0);
+	
 	background.LoadBitmapByString({
 		"resources/texture_pack_original/bg_screens/3.bmp",
 		"resources/texture_pack_original/bg_screens/2.bmp",
@@ -834,6 +921,9 @@ void CGameStateRun::OnInit()
 		"resources/texture_pack_original/bg_screens/0.bmp",
 		});
 	background.SetTopLeft(0, 0);
+	vector<vector<int>> mp = LoadMap("1", &h, &w);
+	vector<vector<int>> jellymp = LoadStatus("1", &h, &w);
+	LoadWinCondition("1");
 
 	chest_and_key.LoadBitmapByString({ "resources/chest.bmp", "resources/chest_ignore.bmp" }, RGB(255, 255, 255));
 	chest_and_key.SetTopLeft(150, 430);
@@ -844,6 +934,127 @@ void CGameStateRun::OnInit()
 
 	ball.LoadBitmapByString({ "resources/ball-3.bmp", "resources/ball-3.bmp", "resources/ball-2.bmp", "resources/ball-1.bmp", "resources/ball-ok.bmp" });
 	ball.SetTopLeft(150, 430);
+
+	for (int i = 0; i < h; i++) {
+		for (int j = 0; j < w; j++) {
+
+			candy[i][j].LoadBitmapByString({
+				"Resources/texture_pack_original/candy/0.bmp",
+				"Resources/texture_pack_original/candy/1.bmp",
+				"Resources/texture_pack_original/candy/2.bmp",
+				"Resources/texture_pack_original/candy/3.bmp",
+				"Resources/texture_pack_original/candy/4.bmp",
+				"Resources/texture_pack_original/candy/5.bmp",
+				"Resources/texture_pack_original/candy/10.bmp",
+				"Resources/texture_pack_original/candy/11.bmp",
+				"Resources/texture_pack_original/candy/12.bmp",
+				"Resources/texture_pack_original/candy/13.bmp",
+				"Resources/texture_pack_original/candy/14.bmp",
+				"Resources/texture_pack_original/candy/15.bmp",
+				"Resources/texture_pack_original/candy/20.bmp",
+				"Resources/texture_pack_original/candy/21.bmp",
+				"Resources/texture_pack_original/candy/22.bmp",
+				"Resources/texture_pack_original/candy/23.bmp",
+				"Resources/texture_pack_original/candy/24.bmp",
+				"Resources/texture_pack_original/candy/25.bmp",
+				"Resources/texture_pack_original/candy/30.bmp",
+				"Resources/texture_pack_original/candy/31.bmp",
+				"Resources/texture_pack_original/candy/32.bmp",
+				"Resources/texture_pack_original/candy/33.bmp",
+				"Resources/texture_pack_original/candy/34.bmp",
+				"Resources/texture_pack_original/candy/35.bmp",
+				"Resources/texture_pack_original/candy/40.bmp",
+				"Resources/texture_pack_original/candy/50.bmp",
+				"Resources/texture_pack_original/candy/-1.bmp",
+				"Resources/texture_pack_original/candy/-10.bmp",
+				"Resources/texture_pack_original/candy/-11.bmp",
+				"Resources/texture_pack_original/candy/-12.bmp",
+				"Resources/texture_pack_original/candy/-13.bmp",
+				"Resources/texture_pack_original/candy/-99.bmp",
+				"Resources/texture_pack_original/candy/99.bmp",
+				"Resources/texture_pack_original/candy/999.bmp",
+				"Resources/texture_pack_original/candy/7.bmp"
+				});
+			candy[i][j].SetTopLeft((400 - 25 * w) + j * 50, (400 - 25 * h) + i * 50);
+			which_candy[i][j] = mp[i][j];
+		}
+	}
+	for (int i = 0; i < h; i++) {
+		for (int j = 0; j < w; j++) {
+			jelly[i][j].LoadBitmapByString({
+				"Resources/texture_pack_original/ice/blank.bmp",
+				"Resources/texture_pack_original/ice/ice1.bmp",
+				"Resources/texture_pack_original/ice/ice2.bmp",
+				});
+			jelly[i][j].SetTopLeft((400 - 25 * w) + j * 50, (400 - 25 * h) + i * 50);
+			which_jelly[i][j] = jellymp[i][j];
+		}
+	}
+	is_animation_finished = 1;
+	update_candy();
+	/*cursor.LoadBitmapByString({ "Resources/texture_pack_original/cursor.bmp" }, RGB(255, 255, 255));
+	cursor.SetTopLeft((400 - 25 * w), (400 - 25 * h));*/
+	for (int i = 0; i < h; i++) {
+		std::vector<std::pair<int, int>> inner_vector(9);
+		for (int j = 0; j < w; j++) {
+			inner_vector.push_back(std::make_pair(0, 0));
+		}
+		candy_xy_position[i] = inner_vector;
+	}
+	
+	/*character.LoadBitmapByString({ "resources/giraffe.bmp" });
+	character.SetTopLeft(0, 0);*/
+	int k = 0;
+	for (int i = 0; i < 3; i++) {
+		for (int j = 0; j < int(condition_number[i].size()); j++) {
+			condition_icon[k].LoadBitmapByString({
+				"Resources/texture_pack_original/candy/0.bmp",
+				"Resources/texture_pack_original/candy/1.bmp",
+				"Resources/texture_pack_original/candy/2.bmp",
+				"Resources/texture_pack_original/candy/3.bmp",
+				"Resources/texture_pack_original/candy/4.bmp",
+				"Resources/texture_pack_original/candy/5.bmp",
+				"Resources/texture_pack_original/candy/10.bmp",
+				"Resources/texture_pack_original/candy/11.bmp",
+				"Resources/texture_pack_original/candy/12.bmp",
+				"Resources/texture_pack_original/candy/13.bmp",
+				"Resources/texture_pack_original/candy/14.bmp",
+				"Resources/texture_pack_original/candy/15.bmp",
+				"Resources/texture_pack_original/candy/20.bmp",
+				"Resources/texture_pack_original/candy/21.bmp",
+				"Resources/texture_pack_original/candy/22.bmp",
+				"Resources/texture_pack_original/candy/23.bmp",
+				"Resources/texture_pack_original/candy/24.bmp",
+				"Resources/texture_pack_original/candy/25.bmp",
+				"Resources/texture_pack_original/candy/30.bmp",
+				"Resources/texture_pack_original/candy/31.bmp",
+				"Resources/texture_pack_original/candy/32.bmp",
+				"Resources/texture_pack_original/candy/33.bmp",
+				"Resources/texture_pack_original/candy/34.bmp",
+				"Resources/texture_pack_original/candy/35.bmp",
+				"Resources/texture_pack_original/candy/40.bmp",
+				"Resources/texture_pack_original/candy/50.bmp",
+				"Resources/texture_pack_original/candy/-1.bmp",
+				"Resources/texture_pack_original/candy/-10.bmp",
+				"Resources/texture_pack_original/candy/-11.bmp",
+				"Resources/texture_pack_original/candy/-12.bmp",
+				"Resources/texture_pack_original/candy/-13.bmp",
+				"Resources/texture_pack_original/candy/-99.bmp",
+				"Resources/texture_pack_original/candy/99.bmp",
+				"Resources/texture_pack_original/candy/999.bmp",
+				"Resources/texture_pack_original/candy/7.bmp",
+				"Resources/texture_pack_original/ice/ice1.bmp"});
+			condition_icon[k].SetFrameIndexOfBitmap(image_index(condition_number[i][j].first));
+			condition_icon[k].SetTopLeft(400 - (130 * all_condition_number) / 2 + k * 130, 50);
+			k++;
+		}
+	}
+	for (int i = 0; i < all_condition_number; i++) {
+		
+		
+	}
+	
+
 }
 
 void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
@@ -1003,8 +1214,10 @@ void CGameStateRun::OnLButtonDown(UINT nFlags, CPoint point)
 	idy1 = point.y;
 	if (!inSquare()||!CanDelete()) {
 		idx0 = idx1;
-		idy0 = idy1;
-		
+		idy0 = idy1;	
+	}
+	else {
+		moves -= 1;
 	}
 
 	/*if (oneInSquare()) {
@@ -1039,6 +1252,8 @@ void CGameStateRun::OnShow()
 {
 	show_image_by_phase();
 	show_text_by_phase();
+	game_over.ShowBitmap();
+	win.ShowBitmap();
 }
 
 void CGameStateRun::show_image_by_phase() {
@@ -1054,6 +1269,11 @@ void CGameStateRun::show_image_by_phase() {
 				
 			}
 		}
+
+		for (int i = 0; i < all_condition_number; i++) {
+			condition_icon[i].ShowBitmap();
+		}
+
 		
 		for (int i = 0; i < h; i++) {
 			for (int j = 0; j < w; j++) {
@@ -1061,6 +1281,7 @@ void CGameStateRun::show_image_by_phase() {
 			}
 		}
 		
+
 		/*cursor.ShowBitmap();*/
 
 		if (phase == 3 && sub_phase == 1) {
@@ -1085,8 +1306,15 @@ void CGameStateRun::show_text_by_phase() {
 	CTextDraw::ChangeFontLog(pDC, 21, "", RGB(0, 0, 0), 800);
 	CTextDraw::Print(pDC, 237, 128, "");
 	CTextDraw::Print(pDC, 55, 163, "");
-	CTextDraw::Print(pDC, 50, 50, to_string(score));
+	CTextDraw::Print(pDC, 50, 60, to_string(score));
+	CTextDraw::Print(pDC, 50, 30, to_string(moves));
 	/*CTextDraw::Print(pDC, 50, 50, "timer:" + to_string(clock()));*/
+	int k = 0;
+	for (int i = 0; i < 3; i++) {
+		for (int j = 0; j < int(condition_number[i].size()); j++) {
+			CTextDraw::Print(pDC, 400 - (130 * all_condition_number) / 2 + k * 130 + 60, 50, to_string(condition_number[i][j].second>0? condition_number[i][j].second:0));
+		}
+	}
 	CDDraw::ReleaseBackCDC();
 }
 

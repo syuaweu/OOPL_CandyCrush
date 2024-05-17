@@ -116,7 +116,18 @@ namespace game_framework {
 		CMovingBitmap door[3];
 		CMovingBitmap candy[9][9];
 		CMovingBitmap jelly[9][9];
+		CMovingBitmap condition_icon[10];
+		CMovingBitmap game_over;
+		CMovingBitmap win;
+		int all_condition_number = 0;
 		int score = 0;
+		int moves;
+		bool has_conditon_type[3];
+		vector<pair<int, int>> condition_number[3];
+		void LoadWinCondition(string map_name);
+		void ScoreAndMovesCalculate(vector<vector<int>> s);
+		bool isGameOver();
+		bool isWin();
 
 		void show_image_by_phase();
 		void show_text_by_phase();
