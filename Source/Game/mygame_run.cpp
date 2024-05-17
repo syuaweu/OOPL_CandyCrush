@@ -404,8 +404,6 @@ vector < vector<int>> boom(vector<vector<int>> st, int ii, int jj, int x) {
 	return st;
 }
 
-bool is_animation_finished = 1;
-
 int image_index(int x) {
 	if (x == -1) {
 		return 26;
@@ -921,8 +919,8 @@ void CGameStateRun::OnInit()
 		"resources/texture_pack_original/bg_screens/0.bmp",
 		});
 	background.SetTopLeft(0, 0);
-	vector<vector<int>> mp = LoadMap("1", &h, &w);
-	vector<vector<int>> jellymp = LoadStatus("1", &h, &w);
+	vector<vector<int>> mp = LoadMap(&h, &w);
+	vector<vector<int>> jellymp = LoadStatus(&h, &w);
 	LoadWinCondition("1");
 
 	chest_and_key.LoadBitmapByString({ "resources/chest.bmp", "resources/chest_ignore.bmp" }, RGB(255, 255, 255));
