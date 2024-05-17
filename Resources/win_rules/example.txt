@@ -1,11 +1,11 @@
 int [moves]
-bool [has_type1]
+bool [has_type0]
 int [condition type] int [number]
-bool [has_type2]
+bool [has_type1]
 int [number]
-bool [has_type3]
+bool [has_type2]
 int [condition type] int [number]
 
-//type1: clear obstacle
-//type2: cherry fall
-//type3: candy order
+//type0: clear obstacle
+//type1: cherry fall
+//type2: candy order
