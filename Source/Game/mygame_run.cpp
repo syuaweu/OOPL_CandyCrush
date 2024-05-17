@@ -414,6 +414,16 @@ bool CGameStateRun::isGameOver() {
 	}
 	return true;
 }
+bool CGameStateRun::isWin() {
+	for (int i = 0; i < 3; i++) {
+		for (int j = 0; j<int(condition_number[i].size()); j++) {
+			if (condition_number[i][j].second > 0) {
+				return false;
+			}
+		}
+	}
+	return true;
+}
 bool disapear = 0;
 
 vector<vector<int>> CGameStateRun::CheckMapStatus(int mp[9][9], int w, int h) { // 1:normal, 0.2:special
@@ -805,6 +815,9 @@ void CGameStateRun::OnMove()
 	if (isGameOver() && game_over.GetTop() < 0) {
 		game_over.SetTopLeft(0, game_over.GetTop() + 40);
 	}
+	if (isWin() && win.GetTop() < 0) {
+		win.SetTopLeft(0, win.GetTop() + 40);
+	}
 }
 
 void CGameStateRun::OnInit()
@@ -812,6 +825,9 @@ void CGameStateRun::OnInit()
 	game_over.LoadBitmapByString({ "resources/texture_pack_original/bg_screens/gameover.bmp" });
 	game_over.SetTopLeft(0, -800);
 	game_over.SetFrameIndexOfBitmap(0);
+	win.LoadBitmapByString({ "resources/texture_pack_original/bg_screens/win.bmp" });
+	win.SetTopLeft(0, -800);
+	win.SetFrameIndexOfBitmap(0);
 	
 	background.LoadBitmapByString({
 		"resources/texture_pack_original/bg_screens/3.bmp",
@@ -822,7 +838,7 @@ void CGameStateRun::OnInit()
 	background.SetTopLeft(0, 0);
 	vector<vector<int>> mp = LoadMap("1", &h, &w);
 	vector<vector<int>> jellymp = LoadStatus("1", &h, &w);
-	LoadWinCondition("999");
+	LoadWinCondition("1");
 	chest_and_key.LoadBitmapByString({ "resources/chest.bmp", "resources/chest_ignore.bmp" }, RGB(255, 255, 255));
 	chest_and_key.SetTopLeft(150, 430);
 
@@ -1151,6 +1167,7 @@ void CGameStateRun::OnShow()
 	show_image_by_phase();
 	show_text_by_phase();
 	game_over.ShowBitmap();
+	win.ShowBitmap();
 }
 
 void CGameStateRun::show_image_by_phase() {
