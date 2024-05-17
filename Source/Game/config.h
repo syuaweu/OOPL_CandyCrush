@@ -2,7 +2,7 @@
 // �w�q�C���i�]�w�����һP����
 /////////////////////////////////////////////////////////////////////////////
 
-#define GAME_TITLE           "Game"
+#define GAME_TITLE           "Candy Crush Saga"
 #define SIZE_X				 800		// �]�w�C���e�����ѪR�׬�640x480
 #define SIZE_Y				 800		// ���G�Y���ϥμзǪ��ѪR�סA�h�����������ù�
 #define OPEN_AS_FULLSCREEN	 false		// �O�_�H���ù��覡�}�ҹC��

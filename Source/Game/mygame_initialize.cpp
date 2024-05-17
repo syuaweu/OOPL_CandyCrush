@@ -13,6 +13,9 @@ using namespace game_framework;
 bool isAccountSettingOpen = 0;
 bool isGameOn = 0;
 int stage = 0;
+int max_stage = 4;
+int heart_time = 0;
+int heart_number = 5;
 /////////////////////////////////////////////////////////////////////////////
 // 這個class為遊戲的遊戲開頭畫面物件
 /////////////////////////////////////////////////////////////////////////////
@@ -55,8 +58,12 @@ void CGameStateInit::OnMove()
 			show_account.SetTopLeft(0, show_account.GetTop() - 40);
 		}
 	}
-	if (stage == 4) {
+	if (stage > 0 && stage < max_stage) {
+		property_status.SetTopLeft(0, 0);
+	}
+	if (stage == max_stage) {
 		stage = 5;
+		property_status.SetTopLeft(0, -71);
 	}
 	else if (stage == 5) {
 		Sleep(1000);
@@ -106,6 +113,7 @@ void CGameStateInit::OnShow()
 {
 	background.ShowBitmap();
 	show_account.ShowBitmap();
+	property_status.ShowBitmap();
 	draw_text();
 }
 
@@ -119,6 +127,8 @@ void CGameStateInit::load_background() {
 	background.SetTopLeft(0, 0);
 	show_account.LoadBitmapByString({ "Resources/texture_pack_original/bg_screens/account_setting.bmp" }, RGB(255,255,255));
 	show_account.SetTopLeft(0, -800);
+	property_status.LoadBitmapByString({ "Resources/texture_pack_original/property/status.bmp" });
+	property_status.SetTopLeft(0, -71);
 }
 
 void CGameStateInit::draw_text() {
@@ -157,6 +167,6 @@ void CGameStateInit::choose_map(int level) {
 	ofstream ofs("Resources/map/choose_level.txt");
 	ofs << level;
 	ofs.close();
-	stage = 4;
+	stage = max_stage;
 	background.SetFrameIndexOfBitmap(stage);
 }
