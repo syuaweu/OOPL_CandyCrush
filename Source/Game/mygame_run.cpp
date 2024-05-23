@@ -1051,79 +1051,39 @@ void CGameStateRun::OnInit()
 
 void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-	/*int tp = character.GetTop(), lft = character.GetLeft();
 	if (nChar == VK_LEFT) {
-		character.SetTopLeft(lft - 10, tp);
+		previous_map();
 	}
 	if (nChar == VK_RIGHT) {
-		character.SetTopLeft(lft + 10, tp);
+		next_map();
 	}
-	if (nChar == VK_UP) {
-		character.SetTopLeft(lft, tp - 10);
-	}
-	if (nChar == VK_DOWN) {
-		character.SetTopLeft(lft, tp + 10);
-	}
-
-	if (nChar == VK_RETURN) {
-		if (phase == 1) {
-			if (sub_phase == 1) {
-				sub_phase += validate_phase_1();
-			}
-			else if (sub_phase == 2) {
-				sub_phase = 1;
-				phase += 1;
-			}
-		}
-		else if (phase == 2) {
-			if (sub_phase == 1) {
-				sub_phase += validate_phase_2();
-			}
-			else if (sub_phase == 2) {
-				sub_phase = 1;
-				phase += 1;
-			}
-		}
-		else if (phase == 3) {
-			if (sub_phase == 1) {
-				sub_phase += validate_phase_3();
-			}
-			else if (sub_phase == 2) {
-				sub_phase = 1;
-				phase += 1;
-			}
-		}
-		else if (phase == 4) {
-			if (sub_phase == 1) {
-				sub_phase += validate_phase_4();
-			}
-			else if (sub_phase == 2) {
-				sub_phase = 1;
-				phase += 1;
-			}
-		}
-		else if (phase == 5) {
-			if (sub_phase == 1) {
-				sub_phase += validate_phase_5();
-			}
-			else if (sub_phase == 2) {
-				sub_phase = 1;
-				phase += 1;
-			}
-		}
-		else if (phase == 6) {
-			if (sub_phase == 1) {
-				sub_phase += validate_phase_6();
-			}
-			else if (sub_phase == 2) {
-				sub_phase = 1;
-				phase += 1;
-				GotoGameState(GAME_STATE_OVER);
-			}
-		}
-	}*/
 }
-
+void CGameStateRun::previous_map() {
+	ifstream in;
+	int map_name;
+	in.open("Resources/map/choose_level.txt");
+	in >> map_name;
+	in.close();
+	if (map_name - 1 >= 0) {
+		ofstream ofs("Resources/map/choose_level.txt");
+		ofs << map_name - 1;
+		ofs.close();
+	}
+	GotoGameState(GAME_STATE_INIT);
+}
+void CGameStateRun::next_map() {
+	ifstream in;
+	int map_name;
+	in.open("Resources/map/choose_level.txt");
+	in >> map_name;
+	in.close();
+	if (map_name + 1 <= 30) {
+		ofstream ofs("Resources/map/choose_level.txt");
+		ofs << map_name + 1;
+		ofs.close();
+	}
+	GotoGameState(GAME_STATE_INIT);
+}
 void CGameStateRun::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
 
