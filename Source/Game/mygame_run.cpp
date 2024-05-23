@@ -118,7 +118,6 @@ void CGameStateRun::OnBeginState()
 
 	for (int i = 0; i < h; i++) {
 		for (int j = 0; j < w; j++) {
-			TRACE("AGGG");
 			candy[i][j].LoadBitmapByString({
 				"Resources/texture_pack_original/candy/0.bmp",
 				"Resources/texture_pack_original/candy/1.bmp",
@@ -443,7 +442,7 @@ void CGameStateRun::update_candy() {
 			else if (which_candy[i][j] >= 60) {
 				candy[i][j].SetFrameIndexOfBitmap(32);
 			}
-			else if (which_candy[i][j] <= -10) {
+			else if (which_candy[i][j] <= -10 && which_candy[i][j] >= -20) {
 				candy[i][j].SetFrameIndexOfBitmap(std::abs(which_candy[i][j]) + 17);
 			}
 			else if (which_candy[i][j] == 7) {
@@ -732,6 +731,7 @@ vector<vector<int>> CGameStateRun::CheckMapStatus(int mp[9][9], int w, int h) { 
 
 
 void CGameStateRun::StartDropOneSquare(int i, int j, int direction) {
+	TRACE("start%d\n", which_candy[0][0]);
 	TRACE("StartDropOneSquare%d %d %d\n",i,j,direction);
 	if (candy_xy_position[i][j].first == 0 && candy_xy_position[i][j].second == 0) {
 		is_animation_finished = 0;
@@ -746,7 +746,7 @@ void CGameStateRun::StartDropOneSquare(int i, int j, int direction) {
 		// TRACE("%d %d", i - 1, j);
 		return;
 	}
-	if (j >= 0) {
+	if (j > 0) {
 		if (which_candy[i - 1][j - 1] >= -5) {
 			StartDropOneSquare(i - 1, j - 1, -1);
 			// TRACE("%d %d", i - 1, j - 1);
@@ -763,6 +763,7 @@ void CGameStateRun::StartDropOneSquare(int i, int j, int direction) {
 }
 
 void CGameStateRun::DropOneSquare() {
+	TRACE("drop%d\n", which_candy[0][0]);
 	for (int i = 0; i < h; i++) {
 		for (int j = 0; j < w; j++) {
 			if (candy_xy_position[i][j].second != 0 || candy_xy_position[i][j].first != 0) {
@@ -787,13 +788,8 @@ void CGameStateRun::DropOneSquare() {
 //}
 
 void CGameStateRun::vertical_fall_candy(int i, int j) {
-	//for (int i = 0; i < h; i++) { // status2: fall one layer
-	//	for (int j = 0; j < w; j++) {
-	//		TRACE("%d %d,%d ",i,j,which_candy[i][j]);
-	//	}
-	//	TRACE("\n");
-	//}
 	if (i == 0) {
+		which_candy[i][j] = rnd_number(0, 3);
 		return;
 	}
 	if (which_candy[i - 1][j] >= -5 || which_candy[i - 1][j] == -10) {
@@ -801,7 +797,7 @@ void CGameStateRun::vertical_fall_candy(int i, int j) {
 		vertical_fall_candy(i - 1, j);
 		return;
 	}
-	if (j >= 0) {
+	if (j > 0) {
 		if (which_candy[i - 1][j - 1] >= -5) {
 			which_candy[i][j] = which_candy[i - 1][j - 1];
 			vertical_fall_candy(i - 1, j - 1);
@@ -824,22 +820,22 @@ void CGameStateRun::remove_obstacle_layer(int i, int j) {
 		score += 1000;
 	}
 	if (i > 0) {
-		if (which_candy[i - 1][j] < 0 && which_candy[i - 1][j] != -10 && which_candy[i - 1][j] != 99) {
+		if (which_candy[i - 1][j] > -15 && which_candy[i - 1][j] < 0 && which_candy[i - 1][j] != -10 && which_candy[i - 1][j] != 99) {
 			which_candy[i - 1][j] += 1;
 		}
 	}
 	if (j > 0) {
-		if (which_candy[i][j - 1] < 0 && which_candy[i][j - 1] != -10 && which_candy[i][j - 1] != 99) {
+		if (which_candy[i][j - 1] > -15 && which_candy[i][j - 1] < 0 && which_candy[i][j - 1] != -10 && which_candy[i][j - 1] != 99) {
 			which_candy[i][j - 1] += 1;
 		}
 	}
 	if (i < h - 1) {
-		if (which_candy[i + 1][j] < 0 && which_candy[i + 1][j] != -10 && which_candy[i + 1][j] != 99) {
+		if (which_candy[i + 1][j] > -15 && which_candy[i + 1][j] < 0 && which_candy[i + 1][j] != -10 && which_candy[i + 1][j] != 99) {
 			which_candy[i + 1][j] += 1;
 		}
 	}
 	if (j < w - 1) {
-		if (which_candy[i][j + 1] < 0 && which_candy[i][j + 1] != -10 && which_candy[i][j + 1] != 99) {
+		if (which_candy[i][j + 1] > -15 && which_candy[i][j + 1] < 0 && which_candy[i][j + 1] != -10 && which_candy[i][j + 1] != 99) {
 			which_candy[i][j + 1] += 1;
 		}
 	}
@@ -863,8 +859,6 @@ void CGameStateRun::OnMove()
 					isFallCandy = true;
 					StartDropOneSquare(i, j, 0);
 					vertical_fall_candy(i, j);
-					which_candy[0][j] = rnd_number(0, 3);
-					
 				}
 				if (isFallCandy == true) {
 					update_candy();
