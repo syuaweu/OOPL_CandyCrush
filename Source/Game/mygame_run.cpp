@@ -527,6 +527,9 @@ bool CGameStateRun::isWin() {
 			}
 		}
 	}
+	if (score < star_score[0]) {
+		return false;
+	}
 	return true;
 }
 bool disapear = 0;
@@ -918,8 +921,20 @@ void CGameStateRun::OnMove()
 	if (isGameOver() && game_over.GetTop() < 0) {
 		game_over.SetTopLeft(0, game_over.GetTop() + 40);
 	}
-	if (isWin() && win.GetTop() < 0) {
-		win.SetTopLeft(0, win.GetTop() + 40);
+	if (isWin()) {
+		if (score >= star_score[2]) {
+			win.SetFrameIndexOfBitmap(2);
+		}
+		else if (score >= star_score[1]) {
+			win.SetFrameIndexOfBitmap(1);
+		}
+		else {
+			win.SetFrameIndexOfBitmap(0);
+		}
+		if (win.GetTop() < 0) {
+			win.SetTopLeft(0, win.GetTop() + 40);
+		}
+		
 	}
 }
 
@@ -928,7 +943,10 @@ void CGameStateRun::OnInit()
 	game_over.LoadBitmapByString({ "resources/texture_pack_original/bg_screens/gameover.bmp" });
 	game_over.SetTopLeft(0, -800);
 	game_over.SetFrameIndexOfBitmap(0);
-	win.LoadBitmapByString({ "resources/texture_pack_original/bg_screens/win.bmp" });
+	win.LoadBitmapByString({ 
+		"resources/texture_pack_original/bg_screens/win1.bmp",
+		"resources/texture_pack_original/bg_screens/win2.bmp" ,
+		"resources/texture_pack_original/bg_screens/win3.bmp" });
 	win.SetTopLeft(0, -800);
 	win.SetFrameIndexOfBitmap(0);
 	for (int i = 0; i < 250; i++) {
