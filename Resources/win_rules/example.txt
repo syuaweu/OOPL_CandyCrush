@@ -1,10 +1,12 @@
 int [moves]
+int [one star] int [two star] int [three star]
 bool [has_type0]
 int [condition type] int [number]
 bool [has_type1]
 int [number]
 bool [has_type2]
 int [condition type] int [number]
+
 
 //type0: clear obstacle
 //type1: cherry fall
