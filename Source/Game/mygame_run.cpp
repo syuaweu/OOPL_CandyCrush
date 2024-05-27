@@ -54,10 +54,17 @@ vector<vector<int>> LoadMap(int *row, int *column) {
 	return map;
 }
 
-void CGameStateRun::LoadWinCondition(string map_name) {
+void CGameStateRun::LoadWinCondition() {
 	ifstream in;
-	in.open("Resources/win_rules/" + map_name + ".txt");
+	int map_name;
+	in.open("Resources/map/choose_level.txt");
+	in >> map_name;
+	in.close();
+	in.open("Resources/win_rules/" + to_string(map_name) + ".txt");
 	in >> moves;
+	for (int i = 0; i < 3; i++) {
+		in >> star_score[i];
+	}
 	for (int i = 0; i < 3; i++) {
 		in >> has_conditon_type[i];
 		if (has_conditon_type[i]) {
@@ -484,12 +491,25 @@ void CGameStateRun::ScoreAndMovesCalculate(vector<vector<int>> s) {
 				score += 40;
 				for (int k = 0; k < 3; k++) {
 					for (int l = 0; l<int(condition_number[k].size()); l++) {
-						if (s[i][j] == condition_number[k][l].first) {
-							condition_number[k][l].second -= 1;
+						if (condition_number[k][l].first >= 10 && condition_number[k][l].first <= 35) {
+							if (which_candy[i][j]/10 == condition_number[k][l].first/10) {
+								condition_number[k][l].second -= 1;
+							}
 						}
+						else {
+							if (which_candy[i][j] == condition_number[k][l].first) {
+								condition_number[k][l].second -= 1;
+							}
+						}
+						
 					}
 				}
 			}
+		}
+	}
+	for (int i = 0; i < 250; i++) {
+		if (i < 250 * score / star_score[2]) {
+			score_image[i].SetTopLeft(20 + i, 100);
 		}
 	}
 }
@@ -506,6 +526,9 @@ bool CGameStateRun::isWin() {
 				return false;
 			}
 		}
+	}
+	if (score < star_score[0]) {
+		return false;
 	}
 	return true;
 }
@@ -898,8 +921,20 @@ void CGameStateRun::OnMove()
 	if (isGameOver() && game_over.GetTop() < 0) {
 		game_over.SetTopLeft(0, game_over.GetTop() + 40);
 	}
-	if (isWin() && win.GetTop() < 0) {
-		win.SetTopLeft(0, win.GetTop() + 40);
+	if (isWin()) {
+		if (score >= star_score[2]) {
+			win.SetFrameIndexOfBitmap(2);
+		}
+		else if (score >= star_score[1]) {
+			win.SetFrameIndexOfBitmap(1);
+		}
+		else {
+			win.SetFrameIndexOfBitmap(0);
+		}
+		if (win.GetTop() < 0) {
+			win.SetTopLeft(0, win.GetTop() + 40);
+		}
+		
 	}
 }
 
@@ -908,10 +943,20 @@ void CGameStateRun::OnInit()
 	game_over.LoadBitmapByString({ "resources/texture_pack_original/bg_screens/gameover.bmp" });
 	game_over.SetTopLeft(0, -800);
 	game_over.SetFrameIndexOfBitmap(0);
-	win.LoadBitmapByString({ "resources/texture_pack_original/bg_screens/win.bmp" });
+	win.LoadBitmapByString({ 
+		"resources/texture_pack_original/bg_screens/win1.bmp",
+		"resources/texture_pack_original/bg_screens/win2.bmp" ,
+		"resources/texture_pack_original/bg_screens/win3.bmp" });
 	win.SetTopLeft(0, -800);
 	win.SetFrameIndexOfBitmap(0);
-	
+	for (int i = 0; i < 250; i++) {
+		score_image[i].LoadBitmapByString({ "resources/texture_pack_original/bg_screens/score.bmp" });
+		score_image[i].SetTopLeft(20, 100);
+		score_image[i].SetFrameIndexOfBitmap(0);
+	}
+	score_edge.LoadBitmapByString({ "resources/texture_pack_original/bg_screens/score_edge.bmp" });
+	score_edge.SetTopLeft(18, 98);
+	score_edge.SetFrameIndexOfBitmap(0);
 	background.LoadBitmapByString({
 		"resources/texture_pack_original/bg_screens/3.bmp",
 		"resources/texture_pack_original/bg_screens/2.bmp",
@@ -921,7 +966,7 @@ void CGameStateRun::OnInit()
 	background.SetTopLeft(0, 0);
 	vector<vector<int>> mp = LoadMap(&h, &w);
 	vector<vector<int>> jellymp = LoadStatus(&h, &w);
-	LoadWinCondition("1");
+	LoadWinCondition();
 
 	chest_and_key.LoadBitmapByString({ "resources/chest.bmp", "resources/chest_ignore.bmp" }, RGB(255, 255, 255));
 	chest_and_key.SetTopLeft(150, 430);
@@ -1252,6 +1297,7 @@ void CGameStateRun::OnShow()
 	show_text_by_phase();
 	game_over.ShowBitmap();
 	win.ShowBitmap();
+	
 }
 
 void CGameStateRun::show_image_by_phase() {
@@ -1278,6 +1324,11 @@ void CGameStateRun::show_image_by_phase() {
 				candy[i][j].ShowBitmap();
 			}
 		}
+		score_edge.ShowBitmap();
+		for (int i = 0; i < 250; i++) {
+			score_image[i].ShowBitmap();
+		}
+		
 		
 
 		/*cursor.ShowBitmap();*/
@@ -1304,7 +1355,10 @@ void CGameStateRun::show_text_by_phase() {
 	CTextDraw::ChangeFontLog(pDC, 21, "", RGB(0, 0, 0), 800);
 	CTextDraw::Print(pDC, 237, 128, "");
 	CTextDraw::Print(pDC, 55, 163, "");
-	CTextDraw::Print(pDC, 50, 60, to_string(score));
+	for (int i = 0; i < 3; i++) {
+		CTextDraw::Print(pDC, 20+250*star_score[i]/star_score[2], 60, "¡¹");
+	}
+	//CTextDraw::Print(pDC, 50, 60, to_string(score));
 	CTextDraw::Print(pDC, 50, 30, to_string(moves));
 	/*CTextDraw::Print(pDC, 50, 50, "timer:" + to_string(clock()));*/
 	int k = 0;
