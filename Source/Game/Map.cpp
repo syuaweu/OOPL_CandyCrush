@@ -15,45 +15,62 @@ Map::Map() {
 	
 }
 
-void Map::Init() {
+void Map::OnInit() {
 	for (int i = 0; i < 9; i++) {
-		vector<Candy> x;
-		vector<Ice> y;
+		vector<Candy> temp_candy_row;
+		vector<Ice> temp_ice_row;
 		for (int j = 0; j < 9; j++) {
-			Candy c;
-			Ice ic;
-			x.push_back(c);
-			y.push_back(ic);
+			Candy candy;
+			Ice ice;
+			temp_candy_row.push_back(candy);
+			temp_ice_row.push_back(ice);
 		}
-		this->_candy_map.push_back(x);
-		this->_ice_map.push_back(y);
+		this->_candy_map.push_back(temp_candy_row);
+		this->_ice_map.push_back(temp_ice_row);
 	}
+}
+
+void Map::OnBeginState(){
+	loadLevel();
+	loadMapWidthAndHeight();
+	loadCandyMap();
+	loadIceMap();
+}
+
+int Map::level() {
+	return _level;
 }
 
 int Map::width(){
 	return _width;
 }
+
 int Map::height(){
 	return _height;
 }
 
+void Map::loadLevel() {
+	ifstream in;
+	in.open("Resources/init_map/choose_level.txt");
+	in >> this->_level;
+	in.close();
+}
+
+void Map::loadMapWidthAndHeight() {
+	ifstream in;
+	in.open("Resources/init_map/" + to_string(level()) + ".txt");
+	in >> this->_height >> this->_width;
+	in.close();
+}
+
 void Map::loadCandyMap() {
 	ifstream in;
-	int map_name;
-	in.open("Resources/map/choose_level.txt");
-	in >> map_name;
-	in.close();
-	in.open("Resources/map/" + to_string(map_name) + ".txt");
-	int r, c;
-	in >> r >> c;
-	this->_width = c;
-	this->_height = r;
-
-	for (int i = 0; i < r; i++) {
-		for (int j = 0; j < c; j++) {
+	in.open("Resources/candy_maps/" + to_string(level()) + ".txt");
+	for (int i = 0; i < height(); i++) {
+		for (int j = 0; j < width(); j++) {
 			int x = 0;
 			in >> x;
-			_candy_map[i][j]._type = x;
+			_ice_map[i][j]._layer = x;
 		}
 	}
 	in.close();
@@ -62,21 +79,9 @@ void Map::loadCandyMap() {
 
 void Map::loadIceMap() {
 	ifstream in;
-	int map_name;
-	in.open("Resources/map/choose_level.txt");
-	in >> map_name;
-	in.close();
-	in.open("Resources/map/" + to_string(map_name) + ".txt");
-	int r, c;
-	in >> r >> c;
-	for (int i = 0; i < r; i++) {
-		for (int j = 0; j < c; j++) {
-			int x = 0;
-			in >> x;
-		}
-	}
-	for (int i = 0; i < r; i++) {
-		for (int j = 0; j < c; j++) {
+	in.open("Resources/ice_maps/" + to_string(level()) + ".txt");
+	for (int i = 0; i < height(); i++) {
+		for (int j = 0; j < width(); j++) {
 			int x = 0;
 			in >> x;
 			_ice_map[i][j]._layer = x;
@@ -86,8 +91,7 @@ void Map::loadIceMap() {
 	updateIceMap();
 }
 
-void  Map::updateCandyMap() {
-
+void Map::updateCandyMap() {
 	for (int i = 0; i < height(); i++) {
 		for (int j = 0; j < width(); j++) {
 			_candy_map[i][j]._position.first = (400 - 25 * width()) + j * 50;
@@ -97,8 +101,7 @@ void  Map::updateCandyMap() {
 	}
 }
 
-void  Map::updateIceMap() {
-
+void Map::updateIceMap() {
 	for (int i = 0; i < height(); i++) {
 		for (int j = 0; j < width(); j++) {
 			_ice_map[i][j]._position.first = (400 - 25 * width()) + j * 50;

@@ -17,6 +17,7 @@ public:
 	pair<int, int> _index;
 	pair<int, int> _position;
 	bool _is_special_candy;
+
 	Candy();
 	CMovingBitmap candy();
 	int type();
@@ -25,6 +26,7 @@ public:
 	int x();
 	int y();
 	bool is_special_candy();
+
 	void Init();
 	void updateCandy();
 };
