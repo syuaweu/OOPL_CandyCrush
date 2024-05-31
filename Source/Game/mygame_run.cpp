@@ -16,6 +16,8 @@
 #include <fstream>
 #include<queue>
 #include<algorithm>
+#include"Map.h"
+#include"Candy.h"
 using namespace std;
 using namespace game_framework;
 int idx0 = 0, idx1 = 0;
