@@ -102,6 +102,8 @@ namespace game_framework {
 		void remove_obstacle_layer(int i, int j);
 		bool CanDelete();
 		void StartDropOneSquare(int i, int j,int direction);
+		void previous_map();
+		void next_map();
 	protected:
 		void OnMove();									// 移�???????��??�??
 		void OnShow();									// 顯示????????????????????��?��??
