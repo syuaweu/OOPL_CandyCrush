@@ -28,6 +28,8 @@ void Map::Init() {
 		this->_candy_map.push_back(temp_candy_row);
 		this->_ice_map.push_back(temp_ice_row);
 	}
+	_is_animation_finished = true;
+	_is_fall_candy = false;
 }
 
 void Map::BeginState(){
@@ -111,32 +113,45 @@ void Map::updateIceMap() {
 	}
 }
 
-//void Map::fallCandy() {
-//	if (this->i() == 0 && this->j() == 0) {
-//		this->_position.first = this->candy.GetLeft();
-//		this->_position.second = this->candy.GetTop() + 50;
-//			
-//	}
-//	if (this->i() == 0) { //potential bug (fall candy probably not start from i=0)
-//		return;
-//	}
-//	if (this->_map[this->i() - 1][this->j()] >= 0) {
-//		fallCandy(this->i() - 1, this->j());
-//		// TRACE("%d %d", i - 1, j);
-//		return;
-//	}
-//	else if (this->j() >= 0) {
-//		if (this->_map[this->i() - 1][this->j() - 1] >= 0) {
-//			fallCandy(this->i() - 1, this->j() - 1);
-//			// TRACE("%d %d", i - 1, j - 1);
-//			return;
-//		}
-//	}
-//	else if (j <= this->width() - 1) {
-//		if (this->_map[this->i() - 1][this->j() + 1] >= 0) {
-//			fallCandy(this->i() - 1, this->j() + 1);
-//			// TRACE("%d %d", i - 1, j + 1);
-//			return;
-//		}
-//	}
-//}
+void Map::fallCandyAll() {
+	for (int j = 0; j < width(); j++) { // status2: fall one layer
+		for (int i = 0; i < height(); i++) {
+			if (_candy_map[i][j].is_fall() && !_candy_map[i][j].is_remove_obstacle()) {
+				_is_fall_candy = true;
+				startCandyAnimation(i, j, 0);
+				fallCandy(i, j, 0);
+			}
+		}
+	}
+}
+
+void Map::startCandyAnimation(int i, int j, int direction) {
+	if (_candy_map[i][j].i() == 0 && _candy_map[i][j].j() == 0) {
+		_is_animation_finished = 0;
+	}
+	_candy_map[i][j]._index.first = direction;
+	_candy_map[i][j]._index.second = _candy_map[i][j].candy().GetTop() + 50;
+	if (i == 0) { //potential bug (fall candy probably not start from i=0)
+		return;
+	}
+	if (_candy_map[i - 1][j].type() >= -5 || _candy_map[i - 1][j].type() == -10) {
+		startCandyAnimation(i - 1, j, 0);
+		return;
+	}
+	if (j > 0) {
+		if (_candy_map[i - 1][j - 1].type() >= -5) {
+			startCandyAnimation(i - 1, j - 1, -1);
+			return;
+		}
+	}
+	if (j <= width() - 1) {
+		if (_candy_map[i - 1][j + 1].type() >= -5) {
+			startCandyAnimation(i - 1, j + 1, 1);
+			return;
+		}
+	}
+}
+
+void Map::fallCandy(int i, int j, int direction) {
+
+}

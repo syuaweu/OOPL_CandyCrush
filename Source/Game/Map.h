@@ -17,9 +17,11 @@ public:
 	int _level;
 	int _width;
 	int _height;
+	
 	vector<vector<Candy>> _candy_map;
 	vector<vector<Ice>> _ice_map;
 	bool _is_animation_finished;
+	bool _is_fall_candy;
 
 	Map();
 	int level();
@@ -34,5 +36,8 @@ public:
 	void loadIceMap();
 	void updateCandyMap();
 	void updateIceMap();
-	// void fallCandy();
+	void fallCandyAll();
+	void startCandyAnimation(int i, int j, int direction);
+	void fallCandy(int i, int j, int direction);
+	//void fallCandy();
 };
