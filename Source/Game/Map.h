@@ -26,8 +26,8 @@ public:
 	int width();
 	int height();
 
-	void OnInit();
-	void OnBeginState();
+	void Init();
+	void BeginState();
 	void loadLevel();
 	void loadMapWidthAndHeight();
 	void loadCandyMap();

@@ -15,7 +15,7 @@ Map::Map() {
 	
 }
 
-void Map::OnInit() {
+void Map::Init() {
 	for (int i = 0; i < 9; i++) {
 		vector<Candy> temp_candy_row;
 		vector<Ice> temp_ice_row;
@@ -30,7 +30,7 @@ void Map::OnInit() {
 	}
 }
 
-void Map::OnBeginState(){
+void Map::BeginState(){
 	loadLevel();
 	loadMapWidthAndHeight();
 	loadCandyMap();
