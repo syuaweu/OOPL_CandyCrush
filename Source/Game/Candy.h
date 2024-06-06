@@ -14,10 +14,11 @@ private:
 	
 public:
 	int _type;
-	int _fall_status; // 0:不用掉, 1:本人掉一次糖果+四周障礙物消一層, 2:本人消一層障礙物或掉一次糖果, -1:不能消
+	int _fall_status;
 	pair<int, int> _index;
 	pair<int, int> _position;
 	bool _is_special_candy;
+	bool _will_be_special_candy;
 
 	Candy();
 	CMovingBitmap candy();
@@ -31,8 +32,10 @@ public:
 	bool is_frosting();
 	bool is_fall();
 	bool is_remove_obstacle();
+  bool can_remove_obstacle();
 	bool can_dropped();
-	bool can_remove_obstacle();
+	bool will_be_special_candy();
+	bool is_sameColor_candy(Candy c);
 
 	void Init();
 	void updateCandy();

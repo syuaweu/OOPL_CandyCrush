@@ -44,5 +44,12 @@ public:
 	void removeObstacle(int i, int j);
 	void produceCandy(int i, int j);
 	void checkMapStatus();
-	//
+  
+	bool is_LTypeCandy(int i, int j);
+	bool is_ITypeCandy(int i, int j);
+	bool is_TTypeCandy(int i, int j);
+	bool is_ETypeCandy(int i, int j);
+	bool is_ChocoCandy(int i, int j);
+	void deleteRow(int i, int j);
+	void deleteColumn(int i, int j);
 };
