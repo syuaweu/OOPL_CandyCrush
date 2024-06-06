@@ -73,14 +73,35 @@ int Candy::fall_status() {
 }
 
 bool Candy::is_fall() {
-	if (_fall_status) {
+	if (fall_status()) {
+		return true;
+	}
+	return false;
+}
+
+bool Candy::is_frosting() {
+	if (-13 <= type() && type() <= -11) {
 		return true;
 	}
 	return false;
 }
 
 bool Candy::is_remove_obstacle() {
-	if (_fall_status == 1) {
+	if (fall_status() == 1) {
+		return true;
+	}
+	return false;
+}
+
+bool Candy::can_remove_obstacle() {
+	if (type() <= -5) {
+		return true;
+	}
+	return false;
+}
+
+bool Candy::can_dropped() {
+	if (type() >= -5 && type() == -10) {
 		return true;
 	}
 	return false;

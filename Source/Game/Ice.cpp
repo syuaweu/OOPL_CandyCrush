@@ -50,6 +50,12 @@ int Ice::y() {
 	return _position.second;
 }
 
+bool Ice::isIce() {
+	if (layer() != 0) {
+		return true;
+	}
+	return false;
+}
 
 void Ice::updateIce() {
 	_ice.SetTopLeft(x(), y());

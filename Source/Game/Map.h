@@ -36,9 +36,15 @@ public:
 	void loadIceMap();
 	void updateCandyMap();
 	void updateIceMap();
+	void updateMap();
 	void fallCandyAll();
 	void startCandyAnimation(int i, int j, int direction);
-	void fallCandy(int i, int j, int direction);
+	void fallCandy(int i, int j);
+	void removeAroundObstacle(int i, int j);
+	void removeObstacle(int i, int j);
+	void produceCandy(int i, int j);
+	void checkMapStatus();
+  
 	bool is_LTypeCandy(int i, int j);
 	bool is_ITypeCandy(int i, int j);
 	bool is_TTypeCandy(int i, int j);
@@ -46,5 +52,4 @@ public:
 	bool is_ChocoCandy(int i, int j);
 	void deleteRow(int i, int j);
 	void deleteColumn(int i, int j);
-	//void fallCandy();
 };
