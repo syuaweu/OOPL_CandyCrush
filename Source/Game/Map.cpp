@@ -113,14 +113,33 @@ void Map::updateIceMap() {
 	}
 }
 
+void Map::updateMap() {
+	updateCandyMap();
+	updateIceMap();
+}
+
 void Map::fallCandyAll() {
 	for (int j = 0; j < width(); j++) { // status2: fall one layer
-		for (int i = 0; i < height(); i++) {
-			if (_candy_map[i][j].is_fall() && !_candy_map[i][j].is_remove_obstacle()) {
+		for (int i = 0; i < height(); i++)
+		{
+			if (_candy_map[i][j].fall_status() == 1) {
 				_is_fall_candy = true;
-				startCandyAnimation(i, j, 0);
-				fallCandy(i, j, 0);
+				fallCandy(i, j);
+				removeObstacle(i, j);
+				removeAroundObstacle(i, j);
 			}
+			if (_candy_map[i][j].fall_status() == 2) {
+				_is_fall_candy = true;
+				removeObstacle(i, j);
+			}
+			if (_is_fall_candy == true) {
+				updateMap();
+				return;
+			}
+		}
+		if (_is_fall_candy == true) {
+			updateMap();
+			return;
 		}
 	}
 }
@@ -151,7 +170,76 @@ void Map::startCandyAnimation(int i, int j, int direction) {
 		}
 	}
 }
+void Map::produceCandy(int i, int j) {
+	int min = 0;
+	int max = 3;
+	int x = rand() % (max - min + 1) + min;
+	_candy_map[i][j]._type = x;
+}
 
-void Map::fallCandy(int i, int j, int direction) {
+void Map::fallCandy(int i, int j) {
+	if (i == 0) { // 要開始掉落的值不一定 i = 0
+		produceCandy(i, j);
+		return;
+	}
+	if (_candy_map[i - 1][j].can_dropped()) {
+		_candy_map[i][j]._type = _candy_map[i - 1][j].type();
+		fallCandy(i - 1, j);
+		return;
+	}
+	if (j > 0) {
+		if (_candy_map[i - 1][j - 1].can_dropped()) {
+			_candy_map[i][j]._type = _candy_map[i - 1][j - 1].type();
+			fallCandy(i - 1, j - 1);
+			return;
+		}
+	}
+	if (j <= width() - 1) {
+		if (_candy_map[i - 1][j + 1].can_dropped()) {
+			_candy_map[i][j]._type = _candy_map[i - 1][j + 1].type();
+			fallCandy(i - 1, j + 1);
+			return;
+		}
+	}
+	_candy_map[i][j]._type = -10;
+}
 
+void Map::removeObstacle(int i, int j) {
+	if (_ice_map[i][j].isIce() != 0) {
+		_ice_map[i][j]._layer -= 1;
+		//score += 1000;
+	}
+	if (_candy_map[i][j].is_frosting()) {
+		_candy_map[i][j]._type += 1;
+	}
+	if (!_candy_map[i][j].is_frosting()) {
+		fallCandy(i, j);
+	}
+}
+
+void Map::removeAroundObstacle(int i, int j) {
+	if (_ice_map[i][j].isIce() != 0) {
+		_ice_map[i][j]._layer -= 1;
+		//score += 1000;
+	}
+	if (i > 0) {
+		if (_candy_map[i - 1][j].type() > -15 && _candy_map[i - 1][j].type() < 0 && _candy_map[i - 1][j].type() != -10 && _candy_map[i - 1][j].type() != 99) {
+			_candy_map[i - 1][j]._type += 1;
+		}
+	}
+	if (j > 0) {
+		if (_candy_map[i][j - 1].type() > -15 && _candy_map[i][j - 1].type() < 0 && _candy_map[i][j - 1].type() != -10 && _candy_map[i][j - 1].type() != 99) {
+			_candy_map[i][j - 1]._type += 1;
+		}
+	}
+	if (i < height() - 1) {
+		if (_candy_map[i + 1][j].type() > -15 && _candy_map[i + 1][j].type() < 0 && _candy_map[i + 1][j].type() != -10 && _candy_map[i + 1][j].type() != 99) {
+			_candy_map[i + 1][j]._type += 1;
+		}
+	}
+	if (j < width() - 1) {
+		if (_candy_map[i][j + 1].type() > -15 && _candy_map[i][j + 1].type() < 0 && _candy_map[i][j + 1].type() != -10 && _candy_map[i][j + 1].type() != 99) {
+			_candy_map[i][j + 1]._type += 1;
+		}
+	}
 }

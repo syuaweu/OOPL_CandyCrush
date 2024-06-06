@@ -35,7 +35,7 @@ vector<vector<int>> jellymp;
 int c_x = 0;
 int c_y = 0;
 std::vector<std::vector<std::pair<int, int>>> candy_xy_position(9);
-vector<vector<int>> LoadMap(int *row, int *column) {
+vector<vector<int>> LoadMap(int *row, int *column) {//v
 	ifstream in;
 	int map_name;
 	in.open("Resources/map/choose_level.txt");
@@ -56,7 +56,7 @@ vector<vector<int>> LoadMap(int *row, int *column) {
 	return map;
 }
 
-void CGameStateRun::LoadWinCondition() {
+void CGameStateRun::LoadWinCondition() {//v
 	ifstream in;
 	int map_name;
 	in.open("Resources/map/choose_level.txt");
@@ -83,7 +83,7 @@ void CGameStateRun::LoadWinCondition() {
 	in.close();
 }
 
-vector<vector<int>> LoadStatus(int *row, int *column) {
+vector<vector<int>> LoadStatus(int *row, int *column) {//v
 
 	ifstream in;
 	int map_name;
@@ -197,7 +197,7 @@ void CGameStateRun::OnBeginState()
 
 
 
-int rnd_number(int start, int end) {
+int rnd_number(int start, int end) { //v
 	int min = start;
 	int max = end;
 	int x = rand() % (max - min + 1) + min;
@@ -389,6 +389,7 @@ vector < vector<int>> delete_row(vector<vector<int>> st,int r) {
 	}
 	return st;
 }
+
 vector < vector<int>> delete_column(vector<vector<int>> st, int c) {
 	if (c >= w || c < 0) {
 		return st;
@@ -398,6 +399,7 @@ vector < vector<int>> delete_column(vector<vector<int>> st, int c) {
 	}
 	return st;
 }
+
 vector < vector<int>> boom(vector<vector<int>> st, int ii, int jj, int x) {
 	if (ii >= h || ii < 0 || jj >= w || jj < 0) {
 		return st;
@@ -440,7 +442,7 @@ int image_index(int x) {
 	}
 }
 
-void CGameStateRun::update_candy() {
+void CGameStateRun::update_candy() { //v
 	if (is_animation_finished == false) {
 		return;
 	}
@@ -506,7 +508,6 @@ void CGameStateRun::ScoreAndMovesCalculate(vector<vector<int>> s) {
 								condition_number[k][l].second -= 1;
 							}
 						}
-						
 					}
 				}
 			}
@@ -818,7 +819,7 @@ void CGameStateRun::DropOneSquare() {
 //	return mp;
 //}
 
-void CGameStateRun::vertical_fall_candy(int i, int j) {
+void CGameStateRun::vertical_fall_candy(int i, int j) {//v
 	if (i == 0) {
 		which_candy[i][j] = rnd_number(0, 3);
 		return;
@@ -845,7 +846,7 @@ void CGameStateRun::vertical_fall_candy(int i, int j) {
 	which_candy[i][j] = -10;
 }
 
-void CGameStateRun::remove_obstacle_layer(int i, int j) {
+void CGameStateRun::remove_obstacle_layer(int i, int j) {//v
 	if (which_jelly[i][j] != 0) {
 		which_jelly[i][j] -= 1;
 		score += 1000;

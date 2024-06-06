@@ -14,7 +14,7 @@ private:
 	
 public:
 	int _type;
-	int _fall_status;
+	int _fall_status; // 0:不用掉, 1:本人掉一次糖果+四周障礙物消一層, 2:本人消一層障礙物或掉一次糖果, -1:不能消
 	pair<int, int> _index;
 	pair<int, int> _position;
 	bool _is_special_candy;
@@ -28,8 +28,11 @@ public:
 	int x();
 	int y();
 	bool is_special_candy();
+	bool is_frosting();
 	bool is_fall();
 	bool is_remove_obstacle();
+	bool can_dropped();
+	bool can_remove_obstacle();
 
 	void Init();
 	void updateCandy();

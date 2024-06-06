@@ -36,8 +36,13 @@ public:
 	void loadIceMap();
 	void updateCandyMap();
 	void updateIceMap();
+	void updateMap();
 	void fallCandyAll();
 	void startCandyAnimation(int i, int j, int direction);
-	void fallCandy(int i, int j, int direction);
-	//void fallCandy();
+	void fallCandy(int i, int j);
+	void removeAroundObstacle(int i, int j);
+	void removeObstacle(int i, int j);
+	void produceCandy(int i, int j);
+	void checkMapStatus();
+	//
 };
