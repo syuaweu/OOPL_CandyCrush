@@ -53,4 +53,5 @@ public:
 	bool can_change_candy();
 	void deleteRow(int i, int j);
 	void deleteColumn(int i, int j);
+	void Switch(int i1, int j1, int i2, int j2);
 };

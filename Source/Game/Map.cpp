@@ -464,3 +464,9 @@ bool Map::can_change_candy() {
 	}
 	return false;
 }
+
+void Map::Switch(int i1, int j1, int i2, int j2) {
+	Candy xx = _candy_map[i1][j1];
+	_candy_map[i1][j1] = _candy_map[i2][j2];
+	_candy_map[i2][j2] = xx;
+}
