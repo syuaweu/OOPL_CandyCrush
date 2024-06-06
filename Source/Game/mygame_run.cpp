@@ -35,7 +35,7 @@ vector<vector<int>> jellymp;
 int c_x = 0;
 int c_y = 0;
 std::vector<std::vector<std::pair<int, int>>> candy_xy_position(9);
-vector<vector<int>> LoadMap(int *row, int *column) {//v
+vector<vector<int>> LoadMap(int *row, int *column) { //v
 	ifstream in;
 	int map_name;
 	in.open("Resources/map/choose_level.txt");
@@ -56,7 +56,7 @@ vector<vector<int>> LoadMap(int *row, int *column) {//v
 	return map;
 }
 
-void CGameStateRun::LoadWinCondition() {//v
+void CGameStateRun::LoadWinCondition() { //v
 	ifstream in;
 	int map_name;
 	in.open("Resources/map/choose_level.txt");
@@ -83,7 +83,7 @@ void CGameStateRun::LoadWinCondition() {//v
 	in.close();
 }
 
-vector<vector<int>> LoadStatus(int *row, int *column) {//v
+vector<vector<int>> LoadStatus(int *row, int *column) { //v
 
 	ifstream in;
 	int map_name;
