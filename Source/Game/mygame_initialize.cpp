@@ -27,20 +27,11 @@ CGameStateInit::CGameStateInit(CGame *g) : CGameState(g)
 
 void CGameStateInit::OnInit()
 {	
-	
-	//
-	// 當圖很多時，OnInit載入所有的圖要花很多時間。為避免玩遊戲的人
-	//     等的不耐煩，遊戲會出現「Loading ...」，顯示Loading的進度。
-	//
-	
 	load_background();
 	for (int i = 0; i < 25; i++) {
 		ShowInitProgress(i * 4, "");
 		Sleep(1);
 	}
-	//
-	// 此OnInit動作會接到CGameStaterRun::OnInit()，所以進度還沒到100%
-	//
 }
 
 void CGameStateInit::OnBeginState()
@@ -150,7 +141,6 @@ void CGameStateInit::previous_level() {
 
 void CGameStateInit::level_1to4(int x,int y) {
 	if (x > 384 && y > 562 && x < 459 && y < 630) {
-		//level = 1;
 		choose_map(1);
 	}
 	else if (x > 326 && y > 437 && x < 396 && y < 494) {
@@ -163,6 +153,7 @@ void CGameStateInit::level_1to4(int x,int y) {
 		choose_map(4);
 	}
 }
+
 void CGameStateInit::choose_map(int level) {
 	ofstream ofs1("Resources/map/choose_level.txt");
 	ofs1 << level;
@@ -172,5 +163,4 @@ void CGameStateInit::choose_map(int level) {
 	ofs2.close();
 	stage = max_stage;
 	background.SetFrameIndexOfBitmap(stage);
-	
 }

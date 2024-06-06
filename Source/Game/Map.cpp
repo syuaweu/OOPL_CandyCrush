@@ -439,3 +439,28 @@ void Map::deleteColumn(int i, int j) {
 		_candy_map[ii][j]._fall_status = 2;
 	}
 }
+
+bool Map::can_change_candy() {
+	for (int i = 0; i < height(); i++) {
+		for (int j = 0; j < width(); j++) {
+			if (_candy_map[i][j].type() == 99 || _candy_map[i][j].type() == -10) {
+				return true;
+			}
+			if (_candy_map[i][j].type() < 0) {
+			}
+			else {
+				if (i >= 2) {
+					if (_candy_map[i][j].type() % 10 == _candy_map[i - 1][j].type() % 10 && _candy_map[i][j].type() % 10 == _candy_map[i - 2][j].type() % 10) {
+						return true;
+					}
+				}
+				if (j >= 2) {
+					if (_candy_map[i][j].type() % 10 == _candy_map[i][j - 1].type() % 10 && _candy_map[i][j].type() % 10 == _candy_map[i][j - 2].type() % 10) {
+						return true;
+					}
+				}
+			}
+		}
+	}
+	return false;
+}
