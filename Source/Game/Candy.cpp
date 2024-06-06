@@ -57,6 +57,7 @@ void Candy::Init() {
 	_index = {0, 0};
 	_position = {0, 0};
 	_fall_status = 0;
+	_will_be_special_candy = 0;
 }
 
 CMovingBitmap Candy::candy(){
@@ -83,6 +84,10 @@ bool Candy::is_remove_obstacle() {
 		return true;
 	}
 	return false;
+}
+
+bool Candy::will_be_special_candy() {
+	return _will_be_special_candy;
 }
 
 int Candy::i(){
@@ -128,4 +133,13 @@ void Candy::updateCandy() {
 	else {
 		this->_candy.SetFrameIndexOfBitmap(33);
 	}
+}
+
+bool Candy::is_sameColor_candy(Candy c) {
+	if (c.type() >= 0 && c.type() <= 35 && this->type() >= 0 && this->type() <= 35) {
+		if (c.type() % 10 == this->type() % 10) {
+			return true;
+		}
+	}
+	return false;
 }
