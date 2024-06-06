@@ -133,26 +133,27 @@ bool Candy::is_special_candy() {
 
 void Candy::updateCandy() {
 	_candy.SetTopLeft(x(), y());
+	_candy.SetFrameIndexOfBitmap(5);
 	if (this->type() == -1) {
-		this->_candy.SetFrameIndexOfBitmap(26);
+		_candy.SetFrameIndexOfBitmap(26);
 	}
 	else if (this->type() >= 60 && this->type() <= 65) {
-		this->_candy.SetFrameIndexOfBitmap(this->type() % 10 + this->type() / 6 / 10 * 6);
+		_candy.SetFrameIndexOfBitmap(this->type() % 10 + this->type() / 6 / 10 * 6);
 	}
 	else if (this->type() >= 60) {
-		this->_candy.SetFrameIndexOfBitmap(32);
+		_candy.SetFrameIndexOfBitmap(32);
 	}
 	else if (this->type() <= -10) {
-		this->_candy.SetFrameIndexOfBitmap(std::abs(this->type()) + 17);
+		_candy.SetFrameIndexOfBitmap(std::abs(this->type()) + 17);
 	}
 	else if (this->type() == 7) {
-		this->_candy.SetFrameIndexOfBitmap(34);
+		_candy.SetFrameIndexOfBitmap(34);
 	}
 	else if (this->type() >= 0 && this->type() <= 35) {
-		this->_candy.SetFrameIndexOfBitmap(this->type() / 10 * 6 + this->type() % 10);
+		_candy.SetFrameIndexOfBitmap(this->type() / 10 * 6 + this->type() % 10);
 	}
 	else {
-		this->_candy.SetFrameIndexOfBitmap(33);
+		_candy.SetFrameIndexOfBitmap(33);
 	}
 }
 

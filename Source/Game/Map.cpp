@@ -22,6 +22,8 @@ void Map::Init() {
 		for (int j = 0; j < 9; j++) {
 			Candy candy;
 			Ice ice;
+			candy.Init();
+			ice.Init();
 			temp_candy_row.push_back(candy);
 			temp_ice_row.push_back(ice);
 		}
@@ -39,6 +41,16 @@ void Map::BeginState(){
 	loadIceMap();
 }
 
+void Map::Show() {
+	for (int i = 0; i < height(); i++) {
+		for (int j = 0; j < width(); j++) {
+			_ice_map[i][j].ice().ShowBitmap();
+			_candy_map[i][j].candy().ShowBitmap();
+		}
+	}
+}
+
+
 int Map::level() {
 	return _level;
 }
@@ -53,7 +65,7 @@ int Map::height(){
 
 void Map::loadLevel() {
 	ifstream in;
-	in.open("Resources/init_map/choose_level.txt");
+	in.open("Resources/init_map/choose_level.txt"); //"Resources/init_map/choose_level.txt"
 	in >> this->_level;
 	in.close();
 }
@@ -72,7 +84,7 @@ void Map::loadCandyMap() {
 		for (int j = 0; j < width(); j++) {
 			int x = 0;
 			in >> x;
-			_ice_map[i][j]._layer = x;
+			_candy_map[i][j]._type = x;
 		}
 	}
 	in.close();

@@ -37,7 +37,7 @@
  *      2. Replace the demonstration of animation as a new bouncing ball.
  *      3. Use ShowInitProgress(percent) to display loading progress.
 */
-
+#include"Map.h"
 
 namespace game_framework {
 	/////////////////////////////////////////////////////////////////////////////
@@ -143,6 +143,8 @@ namespace game_framework {
 		bool validate_phase_4();
 		bool validate_phase_5();
 		bool validate_phase_6();
+		//---reconstruct object
+		Map map;
 	};
 
 	/////////////////////////////////////////////////////////////////////////////

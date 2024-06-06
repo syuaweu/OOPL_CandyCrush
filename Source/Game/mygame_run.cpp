@@ -120,7 +120,8 @@ CGameStateRun::~CGameStateRun()
 }
 
 void CGameStateRun::OnBeginState()
-{
+{	
+	map.BeginState();
 	
 	vector<vector<int>> mp = LoadMap(&h, &w);
 	vector<vector<int>> jellymp = LoadStatus(&h, &w);
@@ -944,6 +945,7 @@ void CGameStateRun::OnMove()
 
 void CGameStateRun::OnInit()
 {
+	map.Init();
 	game_over.LoadBitmapByString({ "resources/texture_pack_original/bg_screens/gameover.bmp" });
 	game_over.SetTopLeft(0, -800);
 	game_over.SetFrameIndexOfBitmap(0);
@@ -1261,7 +1263,7 @@ void CGameStateRun::OnShow()
 	show_text_by_phase();
 	game_over.ShowBitmap();
 	win.ShowBitmap();
-	
+	map.Show();
 }
 
 void CGameStateRun::show_image_by_phase() {

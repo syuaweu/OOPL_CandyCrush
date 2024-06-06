@@ -164,9 +164,13 @@ void CGameStateInit::level_1to4(int x,int y) {
 	}
 }
 void CGameStateInit::choose_map(int level) {
-	ofstream ofs("Resources/map/choose_level.txt");
-	ofs << level;
-	ofs.close();
+	ofstream ofs1("Resources/map/choose_level.txt");
+	ofs1 << level;
+	ofs1.close();
+	ofstream ofs2("Resources/init_map/choose_level.txt");
+	ofs2 << level;
+	ofs2.close();
 	stage = max_stage;
 	background.SetFrameIndexOfBitmap(stage);
+	
 }

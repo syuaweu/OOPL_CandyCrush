@@ -43,7 +43,7 @@ public:
 	void removeAroundObstacle(int i, int j);
 	void removeObstacle(int i, int j);
 	void produceCandy(int i, int j);
-	void checkMapStatus();
+	void Show();
   
 	bool is_LTypeCandy(int i, int j);
 	bool is_ITypeCandy(int i, int j);
