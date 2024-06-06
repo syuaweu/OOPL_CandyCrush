@@ -56,6 +56,7 @@ void Candy::Init() {
 	_is_special_candy = 0;
 	_index = {0, 0};
 	_position = {0, 0};
+	_fall_status = 0;
 }
 
 CMovingBitmap Candy::candy(){
@@ -64,6 +65,24 @@ CMovingBitmap Candy::candy(){
 
 int Candy::type(){
 	return _type;
+}
+
+int Candy::fall_status() {
+	return _fall_status;
+}
+
+bool Candy::is_fall() {
+	if (_fall_status) {
+		return true;
+	}
+	return false;
+}
+
+bool Candy::is_remove_obstacle() {
+	if (_fall_status == 1) {
+		return true;
+	}
+	return false;
 }
 
 int Candy::i(){

@@ -16,6 +16,7 @@ public:
 	int _layer;
 	pair<int, int> _index;
 	pair<int, int> _position;
+
 	Ice();
 	CMovingBitmap ice();
 	int layer();
@@ -23,6 +24,7 @@ public:
 	int j();
 	int x();
 	int y();
+
 	void Init();
 	void updateIce();
 };
