@@ -439,3 +439,9 @@ void Map::deleteColumn(int i, int j) {
 		_candy_map[ii][j]._fall_status = 2;
 	}
 }
+
+void Map::Switch(int i1, int j1, int i2, int j2) {
+	Candy xx = _candy_map[i1][j1];
+	_candy_map[i1][j1] = _candy_map[i2][j2];
+	_candy_map[i2][j2] = xx;
+}
