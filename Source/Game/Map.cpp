@@ -305,14 +305,14 @@ void Map::deleteRow(int i, int j) {
 	}
 	for (int jj = j; jj >=0; jj--) {
 		if (_candy_map[i][jj].type() == -1) {
-			_candy_map[i][jj]._fall_status = 3;
+			_candy_map[i][jj]._fall_status = 2;
 			break;
 		}
 		_candy_map[i][jj]._fall_status = 2;
 	}
 	for (int jj = j; jj < width(); jj++) {
 		if (_candy_map[i][jj].type() == -1) {
-			_candy_map[i][jj]._fall_status = 3;
+			_candy_map[i][jj]._fall_status = 2;
 			break;
 		}
 		_candy_map[i][jj]._fall_status = 2;
@@ -325,14 +325,14 @@ void Map::deleteColumn(int i, int j) {
 	}
 	for (int ii = i; i >= 0; i--) {
 		if (_candy_map[ii][j].type() == -1) {
-			_candy_map[ii][j]._fall_status = 3;
+			_candy_map[ii][j]._fall_status = 2;
 			break;
 		}
 		_candy_map[ii][j]._fall_status = 2;
 	}
 	for (int ii = i; ii < height(); ii++) {
 		if (_candy_map[ii][j].type() == -1) {
-			_candy_map[ii][j]._fall_status = 3;
+			_candy_map[ii][j]._fall_status = 2;
 			break;
 		}
 		_candy_map[ii][j]._fall_status = 2;
