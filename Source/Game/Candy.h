@@ -32,7 +32,7 @@ public:
 	bool is_frosting();
 	bool is_fall();
 	bool is_remove_obstacle();
-  bool can_remove_obstacle();
+	bool can_remove_obstacle();
 	bool can_dropped();
 	bool will_be_special_candy();
 	bool is_sameColor_candy(Candy c);
