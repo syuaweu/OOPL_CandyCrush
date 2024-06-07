@@ -27,6 +27,8 @@ public:
 	int level();
 	int width();
 	int height();
+	int idx0 = 0, idx1 = 0;
+	int idy0 = 0, idy1 = 0;
 
 	void Init();
 	void BeginState();
@@ -51,7 +53,10 @@ public:
 	bool is_ETypeCandy(int i, int j);
 	bool is_ChocoCandy(int i, int j);
 	bool can_change_candy();
+	bool can_switch_then_switch();
+	bool is_inSquare();
 	void deleteRow(int i, int j);
 	void deleteColumn(int i, int j);
 	void Switch(int i1, int j1, int i2, int j2);
+	void checkMapStatus();
 };
