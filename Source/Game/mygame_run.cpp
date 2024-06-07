@@ -877,6 +877,7 @@ void CGameStateRun::remove_obstacle_layer(int i, int j) {//v
 void CGameStateRun::OnMove()
 {	
 	vector<vector<int>> status = CheckMapStatus(which_candy, w, h);
+	map.checkMapStatus();
 	DropOneSquare();
 	if ((CheckInitCandy(which_candy, h, w) || disapear) && is_animation_finished) {
 		
@@ -918,6 +919,7 @@ void CGameStateRun::OnMove()
 		}
 		idx0 = 0, idx1 = 0;
 		idy0 = 0, idy1 = 0;
+		map.idx0 = 0, map.idx1 = 0, map.idy0 = 0, map.idy1 = 0;
 		which_mou = 0;
 	}
 	if (is_animation_finished) {
@@ -1221,12 +1223,19 @@ void CGameStateRun::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	idx1 = point.x;
 	idy1 = point.y;
+	map.idx1 = point.x;
+	map.idy1 = point.y;
 	if (!inSquare()||!CanDelete()) {
 		idx0 = idx1;
 		idy0 = idy1;	
 	}
 	else {
 		moves -= 1;
+	}
+
+	if (!map.is_inSquare() || !map.can_switch_then_switch()) {
+		map.idx0 = map.idx1;
+		map.idy0 = map.idy1;
 	}
 
 	/*if (oneInSquare()) {
