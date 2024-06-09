@@ -40,24 +40,24 @@ void Candy::Init() {
 		"Resources/texture_pack_original/candy/33.bmp",
 		"Resources/texture_pack_original/candy/34.bmp",
 		"Resources/texture_pack_original/candy/35.bmp",
-		"Resources/texture_pack_original/candy/40.bmp",
+		"Resources/texture_pack_original/candy/40.bmp", //24
 		"Resources/texture_pack_original/candy/50.bmp",
 		"Resources/texture_pack_original/candy/-1.bmp",
-		"Resources/texture_pack_original/candy/-10.bmp",
 		"Resources/texture_pack_original/candy/-11.bmp",
 		"Resources/texture_pack_original/candy/-12.bmp",
 		"Resources/texture_pack_original/candy/-13.bmp",
+		"Resources/texture_pack_original/candy/99.bmp", //30
 		"Resources/texture_pack_original/candy/-99.bmp",
-		"Resources/texture_pack_original/candy/99.bmp",
-		"Resources/texture_pack_original/candy/999.bmp",
-		"Resources/texture_pack_original/candy/7.bmp"});
+		"Resources/texture_pack_original/candy/err.bmp" });
 	_candy.SetTopLeft(0, 0);
 	_candy.SetFrameIndexOfBitmap(0);
 	_is_special_candy = 0;
 	_index = {0, 0};
 	_position = {0, 0};
+	_next_position = {0, 0};
 	_fall_status = 0;
 	_will_be_special_candy = 0;
+	_is_animating = 0;
 }
 
 CMovingBitmap Candy::candy(){
@@ -86,6 +86,20 @@ bool Candy::is_frosting() {
 	return false;
 }
 
+bool Candy::is_spiral() {
+	if (type() == -1) {
+		return true;
+	}
+	return false;
+}
+
+bool Candy::is_obstacle() {
+	if (is_frosting() || is_spiral()) {
+		return true;
+	}
+	return false;
+}
+
 bool Candy::is_remove_obstacle() {
 	if (fall_status() == 1) {
 		return true;
@@ -93,15 +107,8 @@ bool Candy::is_remove_obstacle() {
 	return false;
 }
 
-bool Candy::can_remove_obstacle() {
-	if (type() <= -5) {
-		return true;
-	}
-	return false;
-}
-
 bool Candy::can_dropped() {
-	if (type() >= -5 && type() == -10) {
+	if (type() >= -5) {
 		return true;
 	}
 	return false;
@@ -109,6 +116,10 @@ bool Candy::can_dropped() {
 
 bool Candy::will_be_special_candy() {
 	return _will_be_special_candy;
+}
+
+bool Candy::is_animating() {
+	return _is_animating;
 }
 
 int Candy::i(){
@@ -127,6 +138,13 @@ int Candy::y(){
 	return _position.second;
 }
 
+int Candy::next_direction() {
+	return _next_position.first;
+}
+int Candy::next_y() {
+	return _next_position.second;
+}
+
 bool Candy::is_special_candy() {
 	return _is_special_candy;
 }
@@ -134,34 +152,52 @@ bool Candy::is_special_candy() {
 void Candy::updateCandy() {
 	_candy.SetTopLeft(x(), y());
 	_candy.SetFrameIndexOfBitmap(5);
-	if (this->type() == -1) {
+	
+	if (type() == -1) {
 		_candy.SetFrameIndexOfBitmap(26);
 	}
-	else if (this->type() >= 60 && this->type() <= 65) {
-		_candy.SetFrameIndexOfBitmap(this->type() % 10 + this->type() / 6 / 10 * 6);
+	else if (-13 <= type() && type() <= -11) {
+		_candy.SetFrameIndexOfBitmap(std::abs(type()) + 16);
 	}
-	else if (this->type() >= 60) {
-		_candy.SetFrameIndexOfBitmap(32);
+	else if (type() == 7) {
+		_candy.SetFrameIndexOfBitmap(24);
 	}
-	else if (this->type() <= -10) {
-		_candy.SetFrameIndexOfBitmap(std::abs(this->type()) + 17);
+	else if (type() >= 0 && type() <= 35) {
+		_candy.SetFrameIndexOfBitmap(type() / 10 * 6 + type() % 10);
 	}
-	else if (this->type() == 7) {
-		_candy.SetFrameIndexOfBitmap(34);
+	else if (type() >= 60 && type() <= 65) {
+		_candy.SetFrameIndexOfBitmap(type() % 10 + type() / 6 / 10 * 6);
 	}
-	else if (this->type() >= 0 && this->type() <= 35) {
-		_candy.SetFrameIndexOfBitmap(this->type() / 10 * 6 + this->type() % 10);
+	else if (type() == 99) {
+		_candy.SetFrameIndexOfBitmap(30);
+	}
+	else if (type() == -99) {
+		_candy.SetFrameIndexOfBitmap(31);
 	}
 	else {
-		_candy.SetFrameIndexOfBitmap(33);
+		_candy.SetFrameIndexOfBitmap(32);
 	}
 }
 
 bool Candy::is_sameColor_candy(Candy c) {
-	if (c.type() >= 0 && c.type() <= 35 && this->type() >= 0 && this->type() <= 35) {
-		if (c.type() % 10 == this->type() % 10) {
+	if (c.type() >= 0 && c.type() <= 35 && type() >= 0 && type() <= 35) {
+		if (c.type() % 10 == type() % 10) {
 			return true;
 		}
 	}
 	return false;
+}
+
+void Candy::changeToBlank() {
+	_fall_status = 3;
+	_type = 99;
+	updateCandy();
+}
+
+void Candy::removeOneObstacleLayer() {
+	if (_type == -1 || _type == -11) {
+		changeToBlank();
+		return;
+	}
+	_type += 1;
 }

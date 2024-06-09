@@ -165,7 +165,8 @@ void CGameStateRun::OnBeginState()
 				"Resources/texture_pack_original/candy/999.bmp",
 				"Resources/texture_pack_original/candy/7.bmp"
 				});
-			candy[i][j].SetTopLeft((400 - 25 * w) + j * 50, (400 - 25 * h) + i * 50);
+			candy[i][j].SetTopLeft(0,0);
+			//candy[i][j].SetTopLeft((400 - 25 * w) + j * 50, (400 - 25 * h) + i * 50);
 			which_candy[i][j] = mp[i][j];
 		}
 	}
@@ -176,7 +177,7 @@ void CGameStateRun::OnBeginState()
 				"Resources/texture_pack_original/ice/ice1.bmp",
 				"Resources/texture_pack_original/ice/ice2.bmp",
 				});
-			jelly[i][j].SetTopLeft((400 - 25 * w) + j * 50, (400 - 25 * h) + i * 50);
+			//jelly[i][j].SetTopLeft((400 - 25 * w) + j * 50, (400 - 25 * h) + i * 50);
 			which_jelly[i][j] = jellymp[i][j];
 		}
 	}
@@ -474,7 +475,7 @@ void CGameStateRun::update_candy() { //v
 	}
 	for (int i = 0; i < h; i++) {
 		for (int j = 0; j < w; j++) {
-			candy[i][j].SetTopLeft((400 - 25 * w) + j * 50, (400 - 25 * h) + i * 50);
+			//candy[i][j].SetTopLeft((400 - 25 * w) + j * 50, (400 - 25 * h) + i * 50);
 		}
 	}
 	for (int i = h - 1; i >= 0; i--) {
@@ -717,7 +718,6 @@ vector<vector<int>> CGameStateRun::CheckMapStatus(int mp[9][9], int w, int h) { 
 				return status;
 			}
 			if (ITypeCandy(mp, ii, jj)) {
-				TRACE("AAAAAAAAA %d %d: %d", ii, jj, ITypeCandy(mp, ii, jj));
 				status[ii][jj] = 1;
 				which_candy[ii][jj] %= 10;
 				which_candy[ii][jj] += 20;
@@ -764,8 +764,6 @@ vector<vector<int>> CGameStateRun::CheckMapStatus(int mp[9][9], int w, int h) { 
 
 
 void CGameStateRun::StartDropOneSquare(int i, int j, int direction) {
-	TRACE("start%d\n", which_candy[0][0]);
-	TRACE("StartDropOneSquare%d %d %d\n",i,j,direction);
 	if (candy_xy_position[i][j].first == 0 && candy_xy_position[i][j].second == 0) {
 		is_animation_finished = 0;
 	}
@@ -796,11 +794,10 @@ void CGameStateRun::StartDropOneSquare(int i, int j, int direction) {
 }
 
 void CGameStateRun::DropOneSquare() {
-	TRACE("drop%d\n", which_candy[0][0]);
 	for (int i = 0; i < h; i++) {
 		for (int j = 0; j < w; j++) {
 			if (candy_xy_position[i][j].second != 0 || candy_xy_position[i][j].first != 0) {
-				candy[i][j].SetTopLeft(candy[i][j].GetLeft() - candy_xy_position[i][j].first * 5, candy[i][j].GetTop() + 5);
+				//candy[i][j].SetTopLeft(candy[i][j].GetLeft() - candy_xy_position[i][j].first * 5, candy[i][j].GetTop() + 5);
 				if (candy[i][j].GetTop() == candy_xy_position[i][j].second) {
 					candy_xy_position[i][j].first = 0;
 					candy_xy_position[i][j].second = 0;
@@ -878,19 +875,27 @@ void CGameStateRun::OnMove()
 {	
 	vector<vector<int>> status = CheckMapStatus(which_candy, w, h);
 	map.checkMapStatus();
+	map.animatedCandy();
 	DropOneSquare();
+
+	if (!map.is_animating()) {
+		map.updateMap();
+	}
+
+	if (map.can_change_candy() && !map.is_animating()) {
+		map.fallCandyAll();
+	}
+	
 	if ((CheckInitCandy(which_candy, h, w) || disapear) && is_animation_finished) {
 		
 		ScoreAndMovesCalculate(status);
 		disapear = 0;
-		TRACE("is_animation_finished%d %d %d\n", CheckInitCandy(which_candy, h, w),disapear, is_animation_finished);
 		update_candy();
 		bool isFallCandy = false;
 		for (int j = 0; j < w; j++) { // status2: fall one layer
 			for (int i = 0; i < h; i++) 
 			{
 				if (status[i][j] == 2) {
-					TRACE("StartDropOneSquare:%d %d\n",i,j);
 					isFallCandy = true;
 					StartDropOneSquare(i, j, 0);
 					vertical_fall_candy(i, j);
@@ -910,7 +915,6 @@ void CGameStateRun::OnMove()
 		for (int i = 0; i < h; i++) {
 			for (int j = 0; j < w; j++) {
 				if (status[i][j] == 0) {
-					TRACE("changeStatus\n");
 					candy[i][j].SetFrameIndexOfBitmap(32);
 					which_candy[i][j] = 99;
 					remove_obstacle_layer(i, j);
@@ -1026,7 +1030,8 @@ void CGameStateRun::OnInit()
 				"Resources/texture_pack_original/candy/999.bmp",
 				"Resources/texture_pack_original/candy/7.bmp"
 				});
-			candy[i][j].SetTopLeft((400 - 25 * w) + j * 50, (400 - 25 * h) + i * 50);
+			candy[i][j].SetTopLeft(0, 0);
+			//candy[i][j].SetTopLeft((400 - 25 * w) + j * 50, (400 - 25 * h) + i * 50);
 			which_candy[i][j] = mp[i][j];
 		}
 	}
@@ -1037,7 +1042,8 @@ void CGameStateRun::OnInit()
 				"Resources/texture_pack_original/ice/ice1.bmp",
 				"Resources/texture_pack_original/ice/ice2.bmp",
 				});
-			jelly[i][j].SetTopLeft((400 - 25 * w) + j * 50, (400 - 25 * h) + i * 50);
+			jelly[i][j].SetTopLeft(0, 0);
+			//jelly[i][j].SetTopLeft((400 - 25 * w) + j * 50, (400 - 25 * h) + i * 50);
 			which_jelly[i][j] = jellymp[i][j];
 		}
 	}
