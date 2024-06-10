@@ -7,11 +7,11 @@
 #include "../Library/audio.h"
 #include "../Library/gameutil.h"
 #include "../Library/gamecore.h"
-#include "WinRule.h"
+#include "Level.h"
 
 using namespace game_framework;
 
-WinRule::WinRule() {
+Level::Level() {
 
 }
 void WinRule::Init() {
@@ -33,7 +33,6 @@ void WinRule::Init() {
 	score_edge.SetTopLeft(18, 98);
 	score_edge.SetFrameIndexOfBitmap(0);
 }
-
 void WinRule::LoadWinCondition() {
 	ifstream in;
 	int map_name;

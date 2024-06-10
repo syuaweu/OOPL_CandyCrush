@@ -165,7 +165,7 @@ void CGameStateRun::OnBeginState()
 				"Resources/texture_pack_original/candy/999.bmp",
 				"Resources/texture_pack_original/candy/7.bmp"
 				});
-			candy[i][j].SetTopLeft(0,0);
+			candy[i][j].SetTopLeft(-100,-100);
 			//candy[i][j].SetTopLeft((400 - 25 * w) + j * 50, (400 - 25 * h) + i * 50);
 			which_candy[i][j] = mp[i][j];
 		}
@@ -515,7 +515,7 @@ void CGameStateRun::ScoreAndMovesCalculate(vector<vector<int>> s) {
 			}
 		}
 	}
-	for (int i = 0; i < 250; i++) {
+	for (int i = 0; i < 245; i++) {
 		if (i < 250 * score / star_score[2]) {
 			score_image[i].SetTopLeft(20 + i, 100);
 		}
@@ -950,7 +950,7 @@ void CGameStateRun::OnMove()
 }
 
 void CGameStateRun::OnInit()
-{
+{	
 	map.Init();
 	game_over.LoadBitmapByString({ "resources/texture_pack_original/bg_screens/gameover.bmp" });
 	game_over.SetTopLeft(0, -800);
@@ -963,13 +963,14 @@ void CGameStateRun::OnInit()
 	win.SetFrameIndexOfBitmap(0);
 	for (int i = 0; i < 250; i++) {
 		score_image[i].LoadBitmapByString({ "resources/texture_pack_original/bg_screens/score.bmp" });
-		score_image[i].SetTopLeft(20, 100);
+		score_image[i].SetTopLeft(270, 27);
 		score_image[i].SetFrameIndexOfBitmap(0);
 	}
 	score_edge.LoadBitmapByString({ "resources/texture_pack_original/bg_screens/score_edge.bmp" });
-	score_edge.SetTopLeft(18, 98);
+	score_edge.SetTopLeft(267, 25);
 	score_edge.SetFrameIndexOfBitmap(0);
 	background.LoadBitmapByString({
+		"resources/texture_pack_original/bg_screens/game.bmp",
 		"resources/texture_pack_original/bg_screens/3.bmp",
 		"resources/texture_pack_original/bg_screens/2.bmp",
 		"resources/texture_pack_original/bg_screens/1.bmp",
@@ -1042,7 +1043,7 @@ void CGameStateRun::OnInit()
 				"Resources/texture_pack_original/ice/ice1.bmp",
 				"Resources/texture_pack_original/ice/ice2.bmp",
 				});
-			jelly[i][j].SetTopLeft(0, 0);
+			jelly[i][j].SetTopLeft(-100, -100);
 			//jelly[i][j].SetTopLeft((400 - 25 * w) + j * 50, (400 - 25 * h) + i * 50);
 			which_jelly[i][j] = jellymp[i][j];
 		}
@@ -1102,7 +1103,7 @@ void CGameStateRun::OnInit()
 				"Resources/texture_pack_original/candy/7.bmp",
 				"Resources/texture_pack_original/ice/ice1.bmp"});
 			condition_icon[k].SetFrameIndexOfBitmap(image_index(condition_number[i][j].first));
-			condition_icon[k].SetTopLeft(400 - (130 * all_condition_number) / 2 + k * 130, 50);
+			condition_icon[k].SetTopLeft(420 - (130 * all_condition_number) / 2 + k * 130, 70);
 			k++;
 		}
 	}
@@ -1126,11 +1127,11 @@ void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 void CGameStateRun::previous_map() {
 	ifstream in;
 	int map_name;
-	in.open("Resources/map/choose_level.txt");
+	in.open("Resources/init_map/choose_level.txt");
 	in >> map_name;
 	in.close();
 	if (map_name - 1 > 0) {
-		ofstream ofs("Resources/map/choose_level.txt");
+		ofstream ofs("Resources/init_map/choose_level.txt");
 		ofs << map_name - 1;
 		ofs.close();
 	}
@@ -1139,11 +1140,11 @@ void CGameStateRun::previous_map() {
 void CGameStateRun::next_map() {
 	ifstream in;
 	int map_name;
-	in.open("Resources/map/choose_level.txt");
+	in.open("Resources/init_map/choose_level.txt");
 	in >> map_name;
 	in.close();
 	if (map_name + 1 <= 30) {
-		ofstream ofs("Resources/map/choose_level.txt");
+		ofstream ofs("Resources/init_map/choose_level.txt");
 		ofs << map_name + 1;
 		ofs.close();
 	}
@@ -1333,19 +1334,18 @@ void CGameStateRun::show_image_by_phase() {
 
 void CGameStateRun::show_text_by_phase() {
 	CDC *pDC = CDDraw::GetBackCDC();
-	CTextDraw::ChangeFontLog(pDC, 21, "", RGB(0, 0, 0), 800);
-	CTextDraw::Print(pDC, 237, 128, "");
-	CTextDraw::Print(pDC, 55, 163, "");
-	for (int i = 0; i < 3; i++) {
-		CTextDraw::Print(pDC, 20+250*star_score[i]/star_score[2], 60, "¡¹");
-	}
+	/*for (int i = 0; i < 3; i++) {
+		CTextDraw::Print(pDC, 20+250*star_score[i]/star_score[2], 60, "s");
+	}*/
 	//CTextDraw::Print(pDC, 50, 60, to_string(score));
-	CTextDraw::Print(pDC, 50, 30, to_string(moves));
+	CTextDraw::ChangeFontLog(pDC, 30, "Forte", RGB(181, 48, 87), 800);
+	CTextDraw::Print(pDC, 100, 64, to_string(moves));
 	/*CTextDraw::Print(pDC, 50, 50, "timer:" + to_string(clock()));*/
 	int k = 0;
+	CTextDraw::ChangeFontLog(pDC, 21, "Forte", RGB(255, 255, 255), 800);
 	for (int i = 0; i < 3; i++) {
 		for (int j = 0; j < int(condition_number[i].size()); j++) {
-			CTextDraw::Print(pDC, 400 - (130 * all_condition_number) / 2 + k * 130 + 60, 50, to_string(condition_number[i][j].second>0? condition_number[i][j].second:0));
+			CTextDraw::Print(pDC, 420 - (130 * all_condition_number) / 2 + k * 130 + 60, 85, to_string(condition_number[i][j].second>0? condition_number[i][j].second:0));
 		}
 	}
 	CDDraw::ReleaseBackCDC();

@@ -218,12 +218,14 @@ void Map::fallCandy(int i, int j) {
 	}
 	if (_candy_map[i - 1][j].can_dropped()) {
 		_candy_map[i][j]._type = _candy_map[i - 1][j].type();
+		_candy_map[i][j]._fall_status = _candy_map[i - 1][j].fall_status();
 		fallCandy(i - 1, j);
 		return;
 	}
 	if (j > 0) {
 		if (_candy_map[i - 1][j - 1].can_dropped()) {
 			_candy_map[i][j]._type = _candy_map[i - 1][j - 1].type();
+			_candy_map[i][j]._fall_status = _candy_map[i - 1][j - 1].fall_status();
 			fallCandy(i - 1, j - 1);
 			return;
 		}
@@ -231,6 +233,7 @@ void Map::fallCandy(int i, int j) {
 	if (j <= width() - 1) {
 		if (_candy_map[i - 1][j + 1].can_dropped()) {
 			_candy_map[i][j]._type = _candy_map[i - 1][j + 1].type();
+			_candy_map[i][j]._fall_status = _candy_map[i - 1][j + 1].fall_status();
 			fallCandy(i - 1, j + 1);
 			return;
 		}
@@ -776,7 +779,7 @@ void Map::checkMapWithoutObstacle() {
 	bool isFallCandy = false;
 	for (int j = 0; j < width(); j++) {
 		for (int i = 0; i < height(); i++) {
-			if (_candy_map[i][j].fall_status() == 3) {
+			if (_candy_map[i][j].fall_status() == 3 || _candy_map[i][j].type() == 99) {
 				isFallCandy = true;
 				startCandyAnimation(i, j, 0);
 				fallCandy(i, j);
