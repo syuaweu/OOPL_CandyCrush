@@ -19,7 +19,7 @@ public:
 
 	Ice();
 	CMovingBitmap ice();
-	bool isIce();
+	bool is_ice();
 	int layer();
 	int i();
 	int j();

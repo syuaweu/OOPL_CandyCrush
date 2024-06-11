@@ -9,16 +9,17 @@
 using namespace game_framework;
 
 class Candy {
-private:
-	CMovingBitmap _candy;
-	
+
 public:
+	CMovingBitmap _candy;
 	int _type;
 	int _fall_status;
 	pair<int, int> _index;
 	pair<int, int> _position;
+	pair<int, int> _next_position;
 	bool _is_special_candy;
 	bool _will_be_special_candy;
+	bool _is_animating;
 
 	Candy();
 	CMovingBitmap candy();
@@ -28,11 +29,15 @@ public:
 	int j();
 	int x();
 	int y();
+	int next_direction();
+	int next_y();
 	bool is_special_candy();
+	bool is_animating();
 	bool is_frosting();
+	bool is_spiral();
+	bool is_obstacle();
 	bool is_fall();
 	bool is_remove_obstacle();
-	bool can_remove_obstacle();
 
 	bool can_dropped();
 	bool will_be_special_candy();
@@ -40,5 +45,7 @@ public:
 
 	void Init();
 	void updateCandy();
+	void changeToBlank();
+	void removeOneObstacleLayer();
 };
 

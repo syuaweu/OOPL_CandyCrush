@@ -50,7 +50,7 @@ int Ice::y() {
 	return _position.second;
 }
 
-bool Ice::isIce() {
+bool Ice::is_ice() {
 	if (layer() != 0) {
 		return true;
 	}
