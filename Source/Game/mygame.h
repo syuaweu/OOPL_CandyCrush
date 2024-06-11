@@ -71,8 +71,8 @@ namespace game_framework {
 		void draw_text();
 		void next_level();
 		void previous_level();
-		void level_1to4(int x,int y);
-		void choose_map(int level);
+		void pressLevel(int stage, int x, int y);
+		void chooseLevel(int level);
 		CMovingBitmap background;
 		CMovingBitmap property_status;
 		CMovingBitmap show_account;
@@ -132,7 +132,7 @@ namespace game_framework {
 		int star_score[3];
 		vector<pair<int, int>> condition_number[3];
 		void LoadWinCondition();
-		void ScoreAndMovesCalculate(vector<vector<int>> s);
+		//void ScoreAndMovesCalculate(vector<vector<int>> s);
 		bool isGameOver();
 		bool isWin();
 
