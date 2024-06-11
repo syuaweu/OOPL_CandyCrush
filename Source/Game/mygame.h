@@ -38,6 +38,7 @@
  *      3. Use ShowInitProgress(percent) to display loading progress.
 */
 #include"Map.h"
+#include "WinRule.h"
 
 namespace game_framework {
 	/////////////////////////////////////////////////////////////////////////////
@@ -70,8 +71,8 @@ namespace game_framework {
 		void draw_text();
 		void next_level();
 		void previous_level();
-		void pressLevel(int stage, int x, int y);
-		void chooseLevel(int level);
+		void level_1to4(int x,int y);
+		void choose_map(int level);
 		CMovingBitmap background;
 		CMovingBitmap property_status;
 		CMovingBitmap show_account;
@@ -145,6 +146,7 @@ namespace game_framework {
 		bool validate_phase_6();
 		//---reconstruct object
 		Map map;
+		
 	};
 
 	/////////////////////////////////////////////////////////////////////////////

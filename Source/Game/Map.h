@@ -7,6 +7,7 @@
 #include "../Library/gamecore.h"
 #include "Candy.h"
 #include"Ice.h"
+#include "WinRule.h"
 
 class Map {
 private:
@@ -20,6 +21,8 @@ public:
 	
 	vector<vector<Candy>> _candy_map;
 	vector<vector<Ice>> _ice_map;
+	WinRule _win_rule;
+	bool _is_animation_finished;
 	bool _is_fall_candy;
 
 	Map();
@@ -36,12 +39,10 @@ public:
 	void loadCandyMap();
 	void loadIceMap();
 	void updateCandyMap();
-	void updateObstacleMap();
 	void updateIceMap();
 	void updateMap();
 	void fallCandyAll();
 	void startCandyAnimation(int i, int j, int direction);
-	void animatedCandy();
 	void fallCandy(int i, int j);
 	void removeAroundObstacle(int i, int j);
 	void removeObstacle(int i, int j);
@@ -56,11 +57,9 @@ public:
 	bool can_change_candy();
 	bool can_switch_then_switch();
 	bool is_inSquare();
-	bool is_animating();
-	bool still_fall();
 	void deleteRow(int i, int j);
 	void deleteColumn(int i, int j);
 	void Switch(int i1, int j1, int i2, int j2);
 	void checkMapStatus();
-	void checkMapWithoutObstacle();
+	void ScoreAndMovesCalculate();
 };

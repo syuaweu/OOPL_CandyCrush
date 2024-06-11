@@ -32,12 +32,52 @@ void WinRule::Init() {
 	score_edge.LoadBitmapByString({ "resources/texture_pack_original/bg_screens/score_edge.bmp" });
 	score_edge.SetTopLeft(18, 98);
 	score_edge.SetFrameIndexOfBitmap(0);
+	for (int i = 0; i < 10; i++) {
+		condition_icon[i].LoadBitmapByString({
+			"Resources/texture_pack_original/candy/0.bmp",
+			"Resources/texture_pack_original/candy/1.bmp",
+			"Resources/texture_pack_original/candy/2.bmp",
+			"Resources/texture_pack_original/candy/3.bmp",
+			"Resources/texture_pack_original/candy/4.bmp",
+			"Resources/texture_pack_original/candy/5.bmp",
+			"Resources/texture_pack_original/candy/10.bmp",
+			"Resources/texture_pack_original/candy/11.bmp",
+			"Resources/texture_pack_original/candy/12.bmp",
+			"Resources/texture_pack_original/candy/13.bmp",
+			"Resources/texture_pack_original/candy/14.bmp",
+			"Resources/texture_pack_original/candy/15.bmp",
+			"Resources/texture_pack_original/candy/20.bmp",
+			"Resources/texture_pack_original/candy/21.bmp",
+			"Resources/texture_pack_original/candy/22.bmp",
+			"Resources/texture_pack_original/candy/23.bmp",
+			"Resources/texture_pack_original/candy/24.bmp",
+			"Resources/texture_pack_original/candy/25.bmp",
+			"Resources/texture_pack_original/candy/30.bmp",
+			"Resources/texture_pack_original/candy/31.bmp",
+			"Resources/texture_pack_original/candy/32.bmp",
+			"Resources/texture_pack_original/candy/33.bmp",
+			"Resources/texture_pack_original/candy/34.bmp",
+			"Resources/texture_pack_original/candy/35.bmp",
+			"Resources/texture_pack_original/candy/40.bmp",
+			"Resources/texture_pack_original/candy/50.bmp",
+			"Resources/texture_pack_original/candy/-1.bmp",
+			"Resources/texture_pack_original/candy/-10.bmp",
+			"Resources/texture_pack_original/candy/-11.bmp",
+			"Resources/texture_pack_original/candy/-12.bmp",
+			"Resources/texture_pack_original/candy/-13.bmp",
+			"Resources/texture_pack_original/candy/-99.bmp",
+			"Resources/texture_pack_original/candy/99.bmp",
+			"Resources/texture_pack_original/candy/999.bmp",
+			"Resources/texture_pack_original/candy/7.bmp",
+			"Resources/texture_pack_original/ice/ice1.bmp" });
+	}
+	
 }
-
 void WinRule::LoadWinCondition() {
+	TRACE("winnnnn");
 	ifstream in;
 	int map_name;
-	in.open("Resources/map/choose_level.txt");
+	in.open("Resources/init_map/choose_level.txt");
 	in >> map_name;
 	in.close();
 	in.open("Resources/win_rules/" + to_string(map_name) + ".txt");
@@ -59,4 +99,51 @@ void WinRule::LoadWinCondition() {
 		}
 	}
 	in.close();
+	int k = 0;
+	
+	for (int i = 0; i < 3; i++) {
+		for (int j = 0; j < int(condition_number[i].size()); j++) {
+			TRACE("number:%d\n", condition_number[i][j].first);
+			condition_icon[k].SetFrameIndexOfBitmap(image_index(condition_number[i][j].first));
+			condition_icon[k].SetTopLeft(400 - (130 * all_condition_number) / 2 + k * 130, 50);
+			k++;
+		}
+	}
 }
+
+void WinRule::Show() {
+	game_over.ShowBitmap();
+	win.ShowBitmap();
+	score_edge.ShowBitmap();
+	for (int i = 0; i < 250; i++) {
+		score_image[i].ShowBitmap();
+	}
+	for (int i = 0; i < all_condition_number; i++) {
+		condition_icon[i].ShowBitmap();
+	}
+}
+
+int WinRule::image_index(int x) {
+	if (x == -1) {
+		return 26;
+	}
+	else if (x >= 60 && x <= 65) {
+		return x % 10 + x / 6 / 10 * 6;
+	}
+	else if (x >= 60) {
+		return 32;
+	}
+	else if (x <= -10) {
+		return std::abs(x) + 17;
+	}
+	else if (x == 7) {
+		return 34;
+	}
+	else if (x >= 0 && x <= 35) {
+		return x / 10 * 6 + x % 10;
+	}
+	else {
+		return 33;
+	}
+}
+

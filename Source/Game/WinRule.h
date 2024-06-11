@@ -5,7 +5,6 @@
 #include "../Library/audio.h"
 #include "../Library/gameutil.h"
 #include "../Library/gamecore.h"
-#include "Map.h"
 
 using namespace game_framework;
 
@@ -26,7 +25,10 @@ public:
 	bool has_conditon_type[3];
 	int star_score[3];
 	vector<pair<int, int>> condition_number[3];
+
 	void LoadWinCondition();
+	void Show();
+	int image_index(int x);
 	//void ScoreAndMovesCalculate(Map mp);
 	//bool isGameOver();
 	//bool isWin();
