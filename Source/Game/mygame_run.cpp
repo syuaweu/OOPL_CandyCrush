@@ -921,8 +921,8 @@ void CGameStateRun::OnMove()
 				}
 			}
 		}
-		idx0 = 0, idx1 = 0;
-		idy0 = 0, idy1 = 0;
+		//idx0 = 0, idx1 = 0;
+		//idy0 = 0, idy1 = 0;
 		map.idx0 = 0, map.idx1 = 0, map.idy0 = 0, map.idy1 = 0;
 		which_mou = 0;
 	}
@@ -1228,22 +1228,22 @@ bool oneInSquare() {
 
 void CGameStateRun::OnLButtonDown(UINT nFlags, CPoint point)
 {
-	idx1 = point.x;
-	idy1 = point.y;
+	//idx1 = point.x;
+	//idy1 = point.y;
 	map.idx1 = point.x;
 	map.idy1 = point.y;
-	if (!inSquare()||!CanDelete()) {
-		idx0 = idx1;
-		idy0 = idy1;	
+	if (!map.is_inSquare()||!map.can_switch_then_switch()) {
+		map.idx0 = map.idx1;
+		map.idy0 = map.idy1;	
 	}
 	else {
 		moves -= 1;
 	}
 
-	if (!map.is_inSquare() || !map.can_switch_then_switch()) {
+	/*if (!map.is_inSquare() || !map.can_switch_then_switch()) {
 		map.idx0 = map.idx1;
 		map.idy0 = map.idy1;
-	}
+	}*/
 
 	/*if (oneInSquare()) {
 		cursor.SetTopLeft((point.x - (400 - 25 * w)) / 50 * 50 + (400 - 25 * w),
