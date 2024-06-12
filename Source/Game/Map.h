@@ -7,6 +7,7 @@
 #include "../Library/gamecore.h"
 #include "Candy.h"
 #include"Ice.h"
+#include "WinRule.h"
 
 class Map {
 private:
@@ -20,6 +21,7 @@ public:
 	
 	vector<vector<Candy>> _candy_map;
 	vector<vector<Ice>> _ice_map;
+	WinRule _win_rule;
 	bool _is_fall_candy;
 
 	Map();
@@ -61,4 +63,6 @@ public:
 	void Switch(int i1, int j1, int i2, int j2);
 	void checkMapStatus();
 	void fallCandyAll();
+	void ScoreAndMovesCalculate();
+	void checkMapWithoutObstacle();
 };

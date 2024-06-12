@@ -21,10 +21,10 @@ void Map::Init() {
 		vector<Ice> temp_ice_row;
 		for (int j = 0; j < 9; j++) {
 			Candy candy;
-			candy.Init();
-			temp_candy_row.push_back(candy);
 			Ice ice;
+			candy.Init();
 			ice.Init();
+			temp_candy_row.push_back(candy);
 			temp_ice_row.push_back(ice);
 		}
 		this->_candy_map.push_back(temp_candy_row);
@@ -33,6 +33,7 @@ void Map::Init() {
 	_is_fall_candy = false;
 	idx0 = 0, idx1 = 0;
 	idy0 = 0, idy1 = 0;
+	_win_rule.Init();
 }
 
 void Map::BeginState(){
@@ -45,6 +46,7 @@ void Map::BeginState(){
 	loadMapWidthAndHeight();
 	loadCandyMap();
 	loadIceMap();
+	_win_rule.LoadWinCondition();
 }
 
 void Map::Show() {
@@ -58,7 +60,9 @@ void Map::Show() {
 			_candy_map[i][j].candy().ShowBitmap();
 		}
 	}
+	_win_rule.Show();
 }
+
 
 int Map::level() {
 	return _level;
@@ -120,15 +124,6 @@ void Map::updateCandyMap() {
 			_candy_map[i][j]._position.first = (400 - 25 * width()) + j * 50;
 			_candy_map[i][j]._position.second = (400 - 25 * height()) + i * 50;
 			_candy_map[i][j].updateCandy();
-		}
-	}
-}
-void Map::updateObstacleMap() {
-	for (int i = 0; i < height(); i++) {
-		for (int j = 0; j < width(); j++) {
-			if (_candy_map[i][j].is_obstacle()) {
-				_candy_map[i][j].updateCandy();
-			}
 		}
 	}
 }
@@ -214,7 +209,7 @@ void Map::animatedCandy() {
 	for (int i = 0; i < height(); i++) {
 		for (int j = 0; j < width(); j++) {
 			if (_candy_map[i][j].next_direction() != 0 || _candy_map[i][j].next_y() != 0) {
-				_candy_map[i][j]._candy.SetTopLeft(_candy_map[i][j].candy().GetLeft() - _candy_map[i][j].next_direction() * 1, _candy_map[i][j].candy().GetTop() + 1);
+				_candy_map[i][j]._candy.SetTopLeft(_candy_map[i][j].candy().GetLeft() - _candy_map[i][j].next_direction() * 5, _candy_map[i][j].candy().GetTop() + 5);
 				if (_candy_map[i][j].candy().GetTop() == _candy_map[i][j].next_y()) {
 					_candy_map[i][j]._next_position.first = 0;
 					_candy_map[i][j]._next_position.second = 0;
@@ -224,6 +219,7 @@ void Map::animatedCandy() {
 		}
 	}
 }
+
 
 void Map::produceCandy(int i, int j) {
 	int min = 0;
@@ -500,6 +496,7 @@ bool Map::still_fall() {
 	}
 	return false;
 }
+
 void Map::checkMapStatus() { // 1:normal, 0.2:special
 	for (int i = 0; i < height(); i++) {
 		for (int j = 0; j < width(); j++) {
@@ -511,22 +508,22 @@ void Map::checkMapStatus() { // 1:normal, 0.2:special
 					disapear = 1;
 					boom_que.push_back({ 1, {i,j} });
 				}*/
-				
+
 				if (i >= 2) {
 					if (_candy_map[i][j].is_sameColor_candy(_candy_map[i - 1][j]) && _candy_map[i][j].is_sameColor_candy(_candy_map[i - 2][j])) {
 						_candy_map[i][j]._fall_status = 1;
 						_candy_map[i - 1][j]._fall_status = 1;
 						_candy_map[i - 2][j]._fall_status = 1;
 						/*for (int k = i - 2; k <= i; k++) {
-							if (which_candy[k][j] / 10 == 2) {
+							if (_candy_map[k][j] / 10 == 2) {
 								status = delete_row(status, k);
 								score += 500;
 							}
-							if (which_candy[k][j] / 10 == 3) {
+							if (_candy_map[k][j] / 10 == 3) {
 								status = delete_column(status, j);
 								score += 500;
 							}
-							if (which_candy[k][j] / 10 == 1) {
+							if (_candy_map[k][j] / 10 == 1) {
 								disapear = 1;
 								boom_que.push_back({ 2, {k,j} });
 							}
@@ -540,13 +537,13 @@ void Map::checkMapStatus() { // 1:normal, 0.2:special
 						_candy_map[i][j - 1]._fall_status = 1;
 						_candy_map[i][j - 2]._fall_status = 1;
 						/*for (int k = j - 2; k <= j; k++) {
-							if (which_candy[i][k] / 10 == 2) {
+							if (_candy_map[i][k] / 10 == 2) {
 								status = delete_row(status, i);
 							}
-							if (which_candy[i][k] / 10 == 3) {
+							if (_candy_map[i][k] / 10 == 3) {
 								status = delete_column(status, k);
 							}
-							if (which_candy[i][k] / 10 == 1) {
+							if (_candy_map[i][k] / 10 == 1) {
 								disapear = 1;
 								boom_que.push_back({ 2, {i,k} });
 							}
@@ -563,32 +560,31 @@ void Map::checkMapStatus() { // 1:normal, 0.2:special
 	//	score += 1000;
 	//	if (i.first == 2) {
 	//		status[i.second.first][i.second.second] = 1;
-	//		which_candy[i.second.first][i.second.second] %= 10;
-	//		which_candy[i.second.first][i.second.second] += 60;
+	//		_candy_map[i.second.first][i.second.second] %= 10;
+	//		_candy_map[i.second.first][i.second.second] += 60;
 	//		update_candy();
 	//		disapear = 1;
 	//	}
 	//}
 	//boom_que.clear();
-	//int i0 = (idy0 - (400 - 25 * h)) / 50;
-	//int j0 = (idx0 - (400 - 25 * w)) / 50;
-	//int i1 = (idy1 - (400 - 25 * h)) / 50;
-	//int j1 = (idx1 - (400 - 25 * w)) / 50;
+	int i0 = (idy0 - (400 - 25 * height())) / 50;
+	int j0 = (idx0 - (400 - 25 * width())) / 50;
+	int i1 = (idy1 - (400 - 25 * height())) / 50;
+	int j1 = (idx1 - (400 - 25 * width())) / 50;
 	///*TRACE("\n0: %d %d\n1:%d %d\n", i0, j0, i1, j1);*/
-	//if (i0 >= 0 && i0 < h
-	//	&&i1 >= 0 && i1 < h
-	//	&&j0 >= 0 && j0 < w
-	//	&&j1 >= 0 && j1 < w
-	//	&& (i0 != i1 || j0 != j1)) {
-	//	if ((which_candy[i0][j0] / 10 == 2 || which_candy[i0][j0] / 10 == 3) &&
-	//		(which_candy[i1][j1] / 10 == 2 || which_candy[i1][j1] / 10 == 3)) {
-	//		disapear = 1;
-	//		status = delete_row(status, i1);
-	//		status = delete_column(status, j1);
-	//		return status;
+	if (i0 >= 0 && i0 < height()
+		&&i1 >= 0 && i1 < height()
+		&&j0 >= 0 && j0 < width()
+		&&j1 >= 0 && j1 < width()
+		&& (i0 != i1 || j0 != j1)) {
+	//	if ((_candy_map[i0][j0].type() / 10 == 2 || _candy_map[i0][j0].type() / 10 == 3) &&
+	//		(_candy_map[i1][j1].type() / 10 == 2 || _candy_map[i1][j1].type() / 10 == 3)) {
+	//		//disapear = 1;
+	//		deleteRow(i1, j1);
+	//		deleteColumn(i1, j1);
 	//	}
-	//	else if (((which_candy[i0][j0] / 10 == 2 || which_candy[i0][j0] / 10 == 3) && which_candy[i1][j1] / 10 == 1) ||
-	//		((which_candy[i1][j1] / 10 == 2 || which_candy[i1][j1] / 10 == 3) && which_candy[i0][j0] / 10 == 1)) {
+	//	else if (((_candy_map[i0][j0].type() / 10 == 2 || _candy_map[i0][j0].type() / 10 == 3) && _candy_map[i1][j1].type() / 10 == 1) ||
+	//		((_candy_map[i1][j1].type() / 10 == 2 || _candy_map[i1][j1].type() / 10 == 3) && _candy_map[i0][j0].type() / 10 == 1)) {
 	//		disapear = 1;
 	//		status = delete_row(status, i1);
 	//		status = delete_column(status, j1);
@@ -598,15 +594,15 @@ void Map::checkMapStatus() { // 1:normal, 0.2:special
 	//		status = delete_column(status, j1 + 1);
 	//		return status;
 	//	}
-	//	else if (which_candy[i0][j0] == 7) {
+	//	else if (_candy_map[i0][j0].type() == 7) {
 	//		disapear = 1;
 	//		score += 5000;
-	//		if (which_candy[i1][j1] < 7 && which_candy[i1][j1] >= 0) {
+	//		if (_candy_map[i1][j1].type() < 7 && _candy_map[i1][j1].type() >= 0) {
 	//			status[i0][j0] = 0;
-	//			int x = which_candy[i1][j1];
+	//			int x = _candy_map[i1][j1].type();
 	//			for (int i = 0; i < h; i++) {
 	//				for (int j = 0; j < w; j++) {
-	//					if (which_candy[i][j] % 10 == x) {
+	//					if (_candy_map[i][j] % 10 == x) {
 	//						status[i][j] = 0;
 	//					}
 	//				}
@@ -617,15 +613,15 @@ void Map::checkMapStatus() { // 1:normal, 0.2:special
 	//		}
 	//		return status;
 	//	}
-	//	else if (which_candy[i1][j1] == 7) {
+	//	else if (_candy_map[i1][j1].type() == 7) {
 	//		disapear = 1;
 	//		score += 5000;
-	//		if (which_candy[i0][j0] < 7 && which_candy[i0][j0] >= 0) {
+	//		if (_candy_map[i0][j0].type() < 7 && _candy_map[i0][j0].type() >= 0) {
 	//			status[i1][j1] = 0;
-	//			int x = which_candy[i0][j0];
+	//			int x = _candy_map[i0][j0].type();
 	//			for (int i = 0; i < h; i++) {
 	//				for (int j = 0; j < w; j++) {
-	//					if (which_candy[i][j] % 10 == x) {
+	//					if (_candy_map[i][j] % 10 == x) {
 	//						status[i][j] = 0;
 	//					}
 	//				}
@@ -636,49 +632,47 @@ void Map::checkMapStatus() { // 1:normal, 0.2:special
 	//		}
 	//		return status;
 	//	}
-	//	for (int i = 0; i < 2; i++) {
-	//		int ii = (idy0 - (400 - 25 * h)) / 50;
-	//		int jj = (idx0 - (400 - 25 * w)) / 50;
-	//		if (i == 1) {
-	//			ii = (idy1 - (400 - 25 * h)) / 50;
-	//			jj = (idx1 - (400 - 25 * w)) / 50;
-	//		}
+		for (int i = 0; i < 2; i++) {
+			int ii = (idy0 - (400 - 25 * height())) / 50;
+			int jj = (idx0 - (400 - 25 * width())) / 50;
+			if (i == 1) {
+				ii = (idy1 - (400 - 25 * height())) / 50;
+				jj = (idx1 - (400 - 25 * width())) / 50;
+			}
 
-	//		if (ChocoCandy(mp, ii, jj)) {
-	//			status[ii][jj] = 1;
+			/*if (ChocoCandy(mp, ii, jj)) {
+				status[ii][jj] = 1;
 
-	//			which_candy[ii][jj] = 7;
-	//			update_candy();
-	//			disapear = 1;
-	//			return status;
-	//		}
-	//		if (LTypeCandy(mp, ii, jj) || TTypeCandy(mp, ii, jj)) {
-	//			status[ii][jj] = 1;
-	//			which_candy[ii][jj] %= 10;
-	//			which_candy[ii][jj] += 10;
-	//			disapear = 1;
-	//			update_candy();
-	//			return status;
-	//		}
-	//		if (ETypeCandy(mp, ii, jj)) {
-	//			status[ii][jj] = 1;
-	//			which_candy[ii][jj] %= 10;
-	//			which_candy[ii][jj] += 30;
-	//			update_candy();
-	//			disapear = 1;
-	//			return status;
-	//		}
-	//		if (ITypeCandy(mp, ii, jj)) {
-	//			TRACE("AAAAAAAAA %d %d: %d", ii, jj, ITypeCandy(mp, ii, jj));
-	//			status[ii][jj] = 1;
-	//			which_candy[ii][jj] %= 10;
-	//			which_candy[ii][jj] += 20;
-	//			disapear = 1;
-	//			update_candy();
-	//		}
+				_candy_map[ii][jj]._type = 7;
+				update_candy();
+				disapear = 1;
+				return status;
+			}*/
+			if (is_LTypeCandy(ii, jj) || is_TTypeCandy(ii, jj)) {
+				_candy_map[ii][jj]._fall_status = 0;
+				_candy_map[ii][jj]._type %= 10;
+				_candy_map[ii][jj]._type += 10;
+				//disapear = 1;
+				updateCandyMap();
+			}
+			if (is_ETypeCandy(ii, jj)) {
+				_candy_map[ii][jj]._fall_status = 0;
+				_candy_map[ii][jj]._type %= 10;
+				_candy_map[ii][jj]._type += 30;
+				updateCandyMap();
+				//disapear = 1;
+			}
+			if (is_ITypeCandy(ii, jj)) {
+				//TRACE("AAAAAAAAA %d %d: %d", ii, jj, ITypeCandy(mp, ii, jj));
+				_candy_map[ii][jj]._fall_status = 0;
+				_candy_map[ii][jj]._type %= 10;
+				_candy_map[ii][jj]._type += 20;
+				//disapear = 1;
+				updateCandyMap();
+			}
 
-	//	}
-	//}
+		}
+	}
 
 
 
@@ -688,29 +682,29 @@ void Map::checkMapStatus() { // 1:normal, 0.2:special
 		for (int j = 0; j < w; j++) {
 			if (LTypeCandy(mp, i, j) || TTypeCandy(mp, i, j)) {
 				status[i][j] = 1;
-				which_candy[i][j] %= 10;
-				which_candy[i][j] += 10;
+				_candy_map[i][j] %= 10;
+				_candy_map[i][j] += 10;
 				disapear = 1;
 				update_candy();
 			}
 			if (ITypeCandy(mp, i, j)) {
 				status[i][j] = 1;
-				which_candy[i][j] %= 10;
-				which_candy[i][j] += 20;
+				_candy_map[i][j] %= 10;
+				_candy_map[i][j] += 20;
 				disapear = 1;
 				update_candy();
 			}
 			if (ETypeCandy(mp, i, j)) {
 				status[i][j] = 1;
-				which_candy[i][j] %= 10;
-				which_candy[i][j] += 30;
+				_candy_map[i][j] %= 10;
+				_candy_map[i][j] += 30;
 				disapear = 1;
 				update_candy();
 			}
 		}
 	}
 	*/
-	TRACE("\ncheckMapStatus\n");
+
 	for (int i = 0; i < height(); i++) {
 		for (int j = 0; j < width(); j++) {
 			TRACE("%d", _candy_map[i][j].fall_status());
@@ -800,3 +794,31 @@ bool Map::can_change_candy() {
 	return false;
 }
 
+void Map::ScoreAndMovesCalculate() {
+	for (int i = 0; i < height(); i++) {
+		for (int j = 0; j < width(); j++) {
+			if (this->_candy_map[i][j].fall_status() == 1) {
+				this->_win_rule.score += 40;
+				for (int k = 0; k < 3; k++) {
+					for (int l = 0; l<int(this->_win_rule.condition_number[k].size()); l++) {
+						if (this->_win_rule.condition_number[k][l].first >= 10 && this->_win_rule.condition_number[k][l].first <= 35) {
+							if (this->_candy_map[i][j].type() / 10 == this->_win_rule.condition_number[k][l].first / 10) {
+								this->_win_rule.condition_number[k][l].second -= 1;
+							}
+						}
+						else {
+							if (this->_candy_map[i][j].type() == this->_win_rule.condition_number[k][l].first) {
+								this->_win_rule.condition_number[k][l].second -= 1;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	for (int i = 0; i < 245; i++) {
+		if (i < 245 * this->_win_rule.score / this->_win_rule.star_score[2]) {
+			this->_win_rule.score_image[i].SetTopLeft(20 + i, 100);
+		}
+	}
+}
