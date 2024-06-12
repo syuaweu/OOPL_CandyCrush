@@ -15,6 +15,9 @@ WinRule::WinRule() {
 
 }
 void WinRule::Init() {
+	for (int i = 0; i < 3; i++) {
+		condition_number[i].clear();
+	}
 	game_over.LoadBitmapByString({ "resources/texture_pack_original/bg_screens/gameover.bmp" });
 	game_over.SetTopLeft(0, -800);
 	game_over.SetFrameIndexOfBitmap(0);
