@@ -38,6 +38,7 @@
  *      3. Use ShowInitProgress(percent) to display loading progress.
 */
 #include"Map.h"
+#include "WinRule.h"
 
 namespace game_framework {
 	/////////////////////////////////////////////////////////////////////////////
@@ -131,7 +132,7 @@ namespace game_framework {
 		int star_score[3];
 		vector<pair<int, int>> condition_number[3];
 		void LoadWinCondition();
-		void ScoreAndMovesCalculate(vector<vector<int>> s);
+		//void ScoreAndMovesCalculate(vector<vector<int>> s);
 		bool isGameOver();
 		bool isWin();
 
@@ -145,6 +146,7 @@ namespace game_framework {
 		bool validate_phase_6();
 		//---reconstruct object
 		Map map;
+		
 	};
 
 	/////////////////////////////////////////////////////////////////////////////
