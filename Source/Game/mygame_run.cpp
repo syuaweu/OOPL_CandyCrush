@@ -894,7 +894,7 @@ void CGameStateRun::OnMove()
 	}
 
 	if ((CheckInitCandy(which_candy, h, w) || disapear) && is_animation_finished) {
-		ScoreAndMovesCalculate(status);
+		//ScoreAndMovesCalculate();
 		disapear = 0;
 		update_candy();
 		bool isFallCandy = false;
