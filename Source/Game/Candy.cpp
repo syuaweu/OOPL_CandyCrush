@@ -60,6 +60,13 @@ void Candy::Init() {
 	_is_animating = 0;
 }
 
+void Candy::BeginState() {
+	_index = {0, 0};
+	_next_position = {0, 0};
+	_fall_status = 0;
+	_is_animating = 0;
+}
+
 CMovingBitmap Candy::candy(){
 	return _candy;
 }
@@ -78,6 +85,17 @@ bool Candy::is_fall() {
 	}
 	return false;
 }
+
+bool Candy::can_dropped() {
+	if (is_frosting()) {
+		return false;
+	}
+	if (type() == -99) {
+		return false;
+	}
+	return true;
+}
+
 
 bool Candy::is_frosting() {
 	if (-13 <= type() && type() <= -11) {
@@ -102,13 +120,6 @@ bool Candy::is_obstacle() {
 
 bool Candy::is_remove_obstacle() {
 	if (fall_status() == 1) {
-		return true;
-	}
-	return false;
-}
-
-bool Candy::can_dropped() {
-	if (type() >= -5) {
 		return true;
 	}
 	return false;
@@ -194,8 +205,8 @@ void Candy::changeToBlank() {
 	updateCandy();
 }
 
-void Candy::removeOneObstacleLayer() {
-	if (_type == -1 || _type == -11) {
+void Candy::removeObstacleLayer() {
+	if (type() == -1 || type() == -11) {
 		changeToBlank();
 		return;
 	}

@@ -874,20 +874,23 @@ void CGameStateRun::remove_obstacle_layer(int i, int j) {//v
 void CGameStateRun::OnMove()
 {	
 	vector<vector<int>> status = CheckMapStatus(which_candy, w, h);
-	map.checkMapStatus();
-	map.animatedCandy();
 	DropOneSquare();
+
+	map.animatedCandy();
+
+	if (!map.still_fall() && !map.is_animating()) {
+		map.checkMapStatus();
+		map.removeObstacleLayerAll();
+	}
 
 	if (!map.is_animating()) {
 		map.updateMap();
 	}
-
-	if (map.can_change_candy() && !map.is_animating()) {
+	if (map.still_fall() && !map.is_animating()) {
 		map.fallCandyAll();
 	}
 	
 	if ((CheckInitCandy(which_candy, h, w) || disapear) && is_animation_finished) {
-		
 		ScoreAndMovesCalculate(status);
 		disapear = 0;
 		update_candy();

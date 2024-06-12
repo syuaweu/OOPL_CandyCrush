@@ -44,8 +44,9 @@ public:
 	bool is_sameColor_candy(Candy c);
 
 	void Init();
+	void BeginState();
 	void updateCandy();
 	void changeToBlank();
-	void removeOneObstacleLayer();
+	void removeObstacleLayer();
 };
 
