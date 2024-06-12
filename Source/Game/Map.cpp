@@ -146,6 +146,10 @@ void Map::updateMap() {
 void Map::removeObstacleLayerAll() {
 	for (int i = 0; i < height(); i++) {
 		for (int j = 0; j < width(); j++) {
+			if (_candy_map[i][j].fall_status() == 4) {
+				removeAroundObstacle(i, j);
+				_candy_map[i][j]._fall_status = 0;
+			}
 			if (_candy_map[i][j].fall_status() == 2) {
 				_candy_map[i][j].removeObstacleLayer();
 			}
@@ -155,18 +159,9 @@ void Map::removeObstacleLayerAll() {
 			}
 		}
 	}
-	TRACE("\nremoveObstacleLayerAll\n");
-	for (int i = 0; i < height(); i++) {
-		for (int j = 0; j < width(); j++) {
-			TRACE("%d",_candy_map[i][j].fall_status());
-		}
-		TRACE("\n");
-	}
-	TRACE("\nremoveObstacleLayerAll\n");
 }
 
 void Map::startCandyAnimation(int i, int j, int direction) {
-	TRACE("\nstartCandyAnimation%d%d\n",i,j);
 	if (_candy_map[i][j].next_direction() == 0 && _candy_map[i][j].next_y() == 0) {
 		_candy_map[i][j]._is_animating = true;
 		_candy_map[i][j]._next_position.first = direction; // x
@@ -649,14 +644,14 @@ void Map::checkMapStatus() { // 1:normal, 0.2:special
 				return status;
 			}*/
 			if (is_LTypeCandy(ii, jj) || is_TTypeCandy(ii, jj)) {
-				_candy_map[ii][jj]._fall_status = 0;
+				_candy_map[ii][jj]._fall_status = 4;
 				_candy_map[ii][jj]._type %= 10;
 				_candy_map[ii][jj]._type += 10;
 				//disapear = 1;
 				updateCandyMap();
 			}
 			if (is_ETypeCandy(ii, jj)) {
-				_candy_map[ii][jj]._fall_status = 0;
+				_candy_map[ii][jj]._fall_status = 4;
 				_candy_map[ii][jj]._type %= 10;
 				_candy_map[ii][jj]._type += 30;
 				updateCandyMap();
@@ -664,7 +659,7 @@ void Map::checkMapStatus() { // 1:normal, 0.2:special
 			}
 			if (is_ITypeCandy(ii, jj)) {
 				//TRACE("AAAAAAAAA %d %d: %d", ii, jj, ITypeCandy(mp, ii, jj));
-				_candy_map[ii][jj]._fall_status = 0;
+				_candy_map[ii][jj]._fall_status = 4;
 				_candy_map[ii][jj]._type %= 10;
 				_candy_map[ii][jj]._type += 20;
 				//disapear = 1;
@@ -704,14 +699,6 @@ void Map::checkMapStatus() { // 1:normal, 0.2:special
 		}
 	}
 	*/
-
-	for (int i = 0; i < height(); i++) {
-		for (int j = 0; j < width(); j++) {
-			TRACE("%d", _candy_map[i][j].fall_status());
-		}
-		TRACE("\n");
-	}
-	TRACE("\ncheckMapStatus\n");
 }
 
 bool Map::is_animating() {
@@ -731,42 +718,10 @@ void Map::fallCandyAll() {
 		for (int i = 0; i < height(); i++) {
 			if (_candy_map[i][j].fall_status() == 3) {
 				_candy_map[i][j]._fall_status = 0;
-				TRACE("\nbefore\n");
-				for (int i = 0; i < height(); i++) {
-					for (int j = 0; j < width(); j++) {
-						TRACE("%d", _candy_map[i][j].fall_status());
-					}
-					TRACE("\n");
-				}
-				TRACE("\nbeforestatus\n");
-				TRACE("\nbeforetype\n");
-				for (int i = 0; i < height(); i++) {
-					for (int j = 0; j < width(); j++) {
-						TRACE("%d", _candy_map[i][j].type());
-					}
-					TRACE("\n");
-				}
-				TRACE("\nbeforeAlltype\n");
 				isFallCandy = true;
 				startCandyAnimation(i, j, 0);
 			}
 			if (isFallCandy) {
-				TRACE("\nfallCandyAllstatus\n");
-				for (int i = 0; i < height(); i++) {
-					for (int j = 0; j < width(); j++) {
-						TRACE("%d", _candy_map[i][j].fall_status());
-					}
-					TRACE("\n");
-				}
-				TRACE("\nfallCandyAllstatus\n");
-				TRACE("\nfallCandyAlltype\n");
-				for (int i = 0; i < height(); i++) {
-					for (int j = 0; j < width(); j++) {
-						TRACE("%d", _candy_map[i][j].type());
-					}
-					TRACE("\n");
-				}
-				TRACE("\nfallCandyAlltype\n");
 				return;
 			}
 		}
