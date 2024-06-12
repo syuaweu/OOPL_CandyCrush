@@ -886,6 +886,7 @@ void CGameStateRun::OnMove()
 
 	if (map.can_change_candy() && !map.is_animating()) {
 		map.fallCandyAll();
+		map.idx0 = 0, map.idx1 = 0, map.idy0 = 0, map.idy1 = 0;
 	}
 
 	if ((CheckInitCandy(which_candy, h, w) || disapear) && is_animation_finished) {
