@@ -122,9 +122,6 @@ void Map::loadIceMap() {
 		for (int j = 0; j < width(); j++) {
 			int x = 0;
 			in >> x;
-			if (x == -999) {
-				break;
-			}
 			_ice_map[i][j]._layer = x;
 		}
 	}
