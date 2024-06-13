@@ -191,7 +191,11 @@ void Map::removeObstacleLayerAll() {
 				removeAroundObstacle(i, j);
 			}
 			if (_candy_map[i][j].fall_status() == 2) {
-				_candy_map[i][j].removeObstacleLayer();
+				if(_candy_map[i][j].is_obstacle())
+					_candy_map[i][j].removeObstacleLayer();
+				else if (_candy_map[i][j].can_remove()) {
+					_candy_map[i][j].changeToBlank();
+				}
 				_surface_map[i][j].removeJelly();
 				_surface_map[i][j].removeLock();
 			}
@@ -241,6 +245,7 @@ void Map::startCandyAnimation(int i, int j, int direction) {
 			return;
 		}
 	}
+	_candy_map[i][j]._fall_status = 0;
 	_candy_map[i][j]._is_animating = false;
 	_candy_map[i][j]._next_position.first = 0; // x
 	_candy_map[i][j]._next_position.second = 0; // y
@@ -655,6 +660,7 @@ void Map::checkMapStatus() { // 1:normal, 0.2:special
 								disapear = 1;
 								boom_que.push_back({ 2, {i,k} });
 							}*/
+
 						}
 
 					}

@@ -80,6 +80,13 @@ int Candy::fall_status() {
 	return _fall_status;
 }
 
+bool Candy::can_remove() {
+	if (type() == -99) {
+		return false;
+	}
+	return true;
+}
+
 bool Candy::is_fall() {
 	if (fall_status()) {
 		return true;
@@ -217,15 +224,25 @@ void Candy::changeToBlank() {
 }
 
 void Candy::removeObstacleLayer() {
-	if (!is_obstacle()) {
-		return;
-	}
 	if (type() == -1 || type() == -11) {
 		changeToBlank();
 		return;
 	}
-	_type += 1;
+	if (is_obstacle()) {
+		_type += 1;
+	}
 }
+
+//void Candy::removeObstacleLayer() {
+//	if (!is_obstacle()) {
+//		return;
+//	}
+//	if (type() == -1 || type() == -11) {
+//		changeToBlank();
+//		return;
+//	}
+//	_type += 1;
+//}
 
 void Candy::removeDragon() {
 	if (type() == -21) {
