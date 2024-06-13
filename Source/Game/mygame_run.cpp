@@ -876,15 +876,18 @@ void CGameStateRun::remove_obstacle_layer(int i, int j) {//v
 void CGameStateRun::OnMove()
 {	
 	vector<vector<int>> status = CheckMapStatus(which_candy, w, h);
-	map.checkMapStatus();
+
 	map.animatedCandy();
-	DropOneSquare();
+
+	if (!map.still_fall() && !map.is_animating()) {
+		map.checkMapStatus();
+		map.removeObstacleLayerAll();
+	}
 
 	if (!map.is_animating()) {
 		map.updateMap();
 	}
-
-	if (map.can_change_candy() && !map.is_animating()) {
+	if (map.still_fall() && !map.is_animating()) {
 		map.fallCandyAll();
 		map.idx0 = 0, map.idx1 = 0, map.idy0 = 0, map.idy1 = 0;
 		for (int i = 0; i < map.height(); i++) {
@@ -895,8 +898,7 @@ void CGameStateRun::OnMove()
 	}
 
 	if ((CheckInitCandy(which_candy, h, w) || disapear) && is_animation_finished) {
-
-		   
+		//ScoreAndMovesCalculate();
 		disapear = 0;
 		update_candy();
 		bool isFallCandy = false;
@@ -1036,7 +1038,7 @@ void CGameStateRun::OnInit()
 				"Resources/texture_pack_original/candy/999.bmp",
 				"Resources/texture_pack_original/candy/7.bmp"
 				});
-			candy[i][j].SetTopLeft((400 - 25 * w) + j * 50, (400 - 25 * h) + i * 50);
+			candy[i][j].SetTopLeft(-100,-100);
 			which_candy[i][j] = mp[i][j];
 		}
 	}
@@ -1047,7 +1049,7 @@ void CGameStateRun::OnInit()
 				"Resources/texture_pack_original/ice/ice1.bmp",
 				"Resources/texture_pack_original/ice/ice2.bmp",
 				});
-			jelly[i][j].SetTopLeft((400 - 25 * w) + j * 50, (400 - 25 * h) + i * 50);
+			jelly[i][j].SetTopLeft(-100, -100);
 			which_jelly[i][j] = jellymp[i][j];
 		}
 	}
@@ -1130,11 +1132,11 @@ void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 void CGameStateRun::previous_map() {
 	ifstream in;
 	int map_name;
-	in.open("Resources/map/choose_level.txt");
+	in.open("Resources/init_map/choose_level.txt");
 	in >> map_name;
 	in.close();
 	if (map_name - 1 > 0) {
-		ofstream ofs("Resources/map/choose_level.txt");
+		ofstream ofs("Resources/init_map/choose_level.txt");
 		ofs << map_name - 1;
 		ofs.close();
 	}
@@ -1143,11 +1145,11 @@ void CGameStateRun::previous_map() {
 void CGameStateRun::next_map() {
 	ifstream in;
 	int map_name;
-	in.open("Resources/map/choose_level.txt");
+	in.open("Resources/init_map/choose_level.txt");
 	in >> map_name;
 	in.close();
 	if (map_name + 1 <= 30) {
-		ofstream ofs("Resources/map/choose_level.txt");
+		ofstream ofs("Resources/init_map/choose_level.txt");
 		ofs << map_name + 1;
 		ofs.close();
 	}

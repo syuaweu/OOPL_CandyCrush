@@ -46,7 +46,8 @@ void Candy::Init() {
 		"Resources/texture_pack_original/candy/-11.bmp",
 		"Resources/texture_pack_original/candy/-12.bmp",
 		"Resources/texture_pack_original/candy/-13.bmp",
-		"Resources/texture_pack_original/candy/99.bmp", //30
+		"Resources/texture_pack_original/candy/-21.bmp",
+		"Resources/texture_pack_original/candy/99.bmp", //31
 		"Resources/texture_pack_original/candy/-99.bmp",
 		"Resources/texture_pack_original/candy/err.bmp" });
 	_candy.SetTopLeft(0, 0);
@@ -57,6 +58,13 @@ void Candy::Init() {
 	_next_position = {0, 0};
 	_fall_status = 0;
 	_will_be_special_candy = 0;
+	_is_animating = 0;
+}
+
+void Candy::BeginState() {
+	_index = {0, 0};
+	_next_position = {0, 0};
+	_fall_status = 0;
 	_is_animating = 0;
 }
 
@@ -72,12 +80,30 @@ int Candy::fall_status() {
 	return _fall_status;
 }
 
+bool Candy::can_remove() {
+	if (type() == -99) {
+		return false;
+	}
+	return true;
+}
+
 bool Candy::is_fall() {
 	if (fall_status()) {
 		return true;
 	}
 	return false;
 }
+
+bool Candy::can_dropped() {
+	if (is_frosting()) {
+		return false;
+	}
+	if (type() == -99) {
+		return false;
+	}
+	return true;
+}
+
 
 bool Candy::is_frosting() {
 	if (-13 <= type() && type() <= -11) {
@@ -102,13 +128,6 @@ bool Candy::is_obstacle() {
 
 bool Candy::is_remove_obstacle() {
 	if (fall_status() == 1) {
-		return true;
-	}
-	return false;
-}
-
-bool Candy::can_dropped() {
-	if (type() >= -5) {
 		return true;
 	}
 	return false;
@@ -159,6 +178,9 @@ void Candy::updateCandy() {
 	else if (-13 <= type() && type() <= -11) {
 		_candy.SetFrameIndexOfBitmap(std::abs(type()) + 16);
 	}
+	else if (-21 == type()) {
+		_candy.SetFrameIndexOfBitmap(30);
+	}
 	else if (type() == 7) {
 		_candy.SetFrameIndexOfBitmap(24);
 	}
@@ -169,13 +191,13 @@ void Candy::updateCandy() {
 		_candy.SetFrameIndexOfBitmap(type() % 10 + type() / 6 / 10 * 6);
 	}
 	else if (type() == 99) {
-		_candy.SetFrameIndexOfBitmap(30);
-	}
-	else if (type() == -99) {
 		_candy.SetFrameIndexOfBitmap(31);
 	}
-	else {
+	else if (type() == -99) {
 		_candy.SetFrameIndexOfBitmap(32);
+	}
+	else {
+		_candy.SetFrameIndexOfBitmap(33);
 	}
 }
 
@@ -201,10 +223,30 @@ void Candy::changeToBlank() {
 	updateCandy();
 }
 
-void Candy::removeOneObstacleLayer() {
-	if (_type == -1 || _type == -11) {
+void Candy::removeObstacleLayer() {
+	if (type() == -1 || type() == -11) {
 		changeToBlank();
 		return;
 	}
-	_type += 1;
+	if (is_obstacle()) {
+		_type += 1;
+	}
+}
+
+//void Candy::removeObstacleLayer() {
+//	if (!is_obstacle()) {
+//		return;
+//	}
+//	if (type() == -1 || type() == -11) {
+//		changeToBlank();
+//		return;
+//	}
+//	_type += 1;
+//}
+
+void Candy::removeDragon() {
+	if (type() == -21) {
+		changeToBlank();
+		return;
+	}
 }

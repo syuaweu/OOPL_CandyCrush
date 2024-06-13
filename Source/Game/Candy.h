@@ -38,6 +38,7 @@ public:
 	bool is_obstacle();
 	bool is_fall();
 	bool is_remove_obstacle();
+	bool can_remove();
 
 	bool can_dropped();
 	bool will_be_special_candy();
@@ -45,8 +46,10 @@ public:
 	bool is_sameColor_candy_plus(Candy c);
 
 	void Init();
+	void BeginState();
 	void updateCandy();
 	void changeToBlank();
-	void removeOneObstacleLayer();
+	void removeObstacleLayer();
+	void removeDragon();
 };
 
