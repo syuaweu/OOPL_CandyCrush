@@ -294,34 +294,54 @@ bool Map::is_LTypeCandy(int i, int j) {
 		return false;
 	}
 	if (j >= 2 && i < height() - 2) {
-		if (_candy_map[i][j].is_sameColor_candy(_candy_map[i][j - 1])
-			&& _candy_map[i][j].is_sameColor_candy(_candy_map[i][j - 2])
-			&& _candy_map[i][j].is_sameColor_candy(_candy_map[i + 1][j])
-			&& _candy_map[i][j].is_sameColor_candy(_candy_map[i + 2][j])) {
+		if (_candy_map[i][j].is_sameColor_candy_plus(_candy_map[i][j - 1])
+			&& _candy_map[i][j].is_sameColor_candy_plus(_candy_map[i][j - 2])
+			&& _candy_map[i][j].is_sameColor_candy_plus(_candy_map[i + 1][j])
+			&& _candy_map[i][j].is_sameColor_candy_plus(_candy_map[i + 2][j])) {
+			_candy_map[i][j]._will_be_special_candy = 1;
+			_candy_map[i][j - 1]._will_be_special_candy = 1;
+			_candy_map[i][j - 2]._will_be_special_candy = 1;
+			_candy_map[i+1][j]._will_be_special_candy = 1;
+			_candy_map[i+2][j]._will_be_special_candy = 1;
 			return true;
 		}
 	}
 	if (j < width() - 2 && i < height() - 2) {
-		if (_candy_map[i][j].is_sameColor_candy(_candy_map[i][j + 1])
-			&& _candy_map[i][j].is_sameColor_candy(_candy_map[i][j + 2])
-			&& _candy_map[i][j].is_sameColor_candy(_candy_map[i + 1][j])
-			&& _candy_map[i][j].is_sameColor_candy(_candy_map[i + 2][j])) {
+		if (_candy_map[i][j].is_sameColor_candy_plus(_candy_map[i][j + 1])
+			&& _candy_map[i][j].is_sameColor_candy_plus(_candy_map[i][j + 2])
+			&& _candy_map[i][j].is_sameColor_candy_plus(_candy_map[i + 1][j])
+			&& _candy_map[i][j].is_sameColor_candy_plus(_candy_map[i + 2][j])) {
+			_candy_map[i][j]._will_be_special_candy = 1;
+			_candy_map[i][j+1]._will_be_special_candy = 1;
+			_candy_map[i][j+2]._will_be_special_candy = 1;
+			_candy_map[i+1][j]._will_be_special_candy = 1;
+			_candy_map[i+2][j]._will_be_special_candy = 1;
 			return true;
 		}
 	}
 	if (j >= 2 && i >= 2) {
-		if (_candy_map[i][j].is_sameColor_candy(_candy_map[i][j - 1])
-			&& _candy_map[i][j].is_sameColor_candy(_candy_map[i][j - 2])
-			&& _candy_map[i][j].is_sameColor_candy(_candy_map[i - 1][j])
-			&& _candy_map[i][j].is_sameColor_candy(_candy_map[i - 2][j])) {
+		if (_candy_map[i][j].is_sameColor_candy_plus(_candy_map[i][j - 1])
+			&& _candy_map[i][j].is_sameColor_candy_plus(_candy_map[i][j - 2])
+			&& _candy_map[i][j].is_sameColor_candy_plus(_candy_map[i - 1][j])
+			&& _candy_map[i][j].is_sameColor_candy_plus(_candy_map[i - 2][j])) {
+			_candy_map[i][j]._will_be_special_candy = 1;
+			_candy_map[i][j-1]._will_be_special_candy = 1;
+			_candy_map[i][j-2]._will_be_special_candy = 1;
+			_candy_map[i-1][j]._will_be_special_candy = 1;
+			_candy_map[i-2][j]._will_be_special_candy = 1;
 			return true;
 		}
 	}
 	if (j < width() - 2 && i >= 2) {
-		if (_candy_map[i][j].is_sameColor_candy(_candy_map[i][j + 1])
-			&& _candy_map[i][j].is_sameColor_candy(_candy_map[i][j + 2])
-			&& _candy_map[i][j].is_sameColor_candy(_candy_map[i - 1][j])
-			&& _candy_map[i][j].is_sameColor_candy(_candy_map[i - 2][j])) {
+		if (_candy_map[i][j].is_sameColor_candy_plus(_candy_map[i][j + 1])
+			&& _candy_map[i][j].is_sameColor_candy_plus(_candy_map[i][j + 2])
+			&& _candy_map[i][j].is_sameColor_candy_plus(_candy_map[i - 1][j])
+			&& _candy_map[i][j].is_sameColor_candy_plus(_candy_map[i - 2][j])) {
+			_candy_map[i][j]._will_be_special_candy = 1;
+			_candy_map[i][j+1]._will_be_special_candy = 1;
+			_candy_map[i][j+2]._will_be_special_candy = 1;
+			_candy_map[i-1][j]._will_be_special_candy = 1;
+			_candy_map[i-2][j]._will_be_special_candy = 1;
 			return true;
 		}
 	}
@@ -333,16 +353,24 @@ bool Map::is_ITypeCandy(int i, int j) {
 		return false;
 	}
 	if (i >= 2 && i < height() - 1) {
-		if (_candy_map[i][j].is_sameColor_candy(_candy_map[i - 1][j])
-			&& _candy_map[i][j].is_sameColor_candy(_candy_map[i - 2][j])
-			&& _candy_map[i][j].is_sameColor_candy(_candy_map[i + 1][j])) {
+		if (_candy_map[i][j].is_sameColor_candy_plus(_candy_map[i - 1][j])
+			&& _candy_map[i][j].is_sameColor_candy_plus(_candy_map[i - 2][j])
+			&& _candy_map[i][j].is_sameColor_candy_plus(_candy_map[i + 1][j])) {
+			_candy_map[i][j]._will_be_special_candy = 1;
+			_candy_map[i-1][j]._will_be_special_candy = 1;
+			_candy_map[i-2][j]._will_be_special_candy = 1;
+			_candy_map[i+1][j]._will_be_special_candy = 1;
 			return true;
 		}
 	}
 	if (i >= 1 && i < height() - 2) {
-		if (_candy_map[i][j].is_sameColor_candy(_candy_map[i - 1][j])
-			&& _candy_map[i][j].is_sameColor_candy(_candy_map[i + 2][j])
-			&& _candy_map[i][j].is_sameColor_candy(_candy_map[i + 1][j])) {
+		if (_candy_map[i][j].is_sameColor_candy_plus(_candy_map[i - 1][j])
+			&& _candy_map[i][j].is_sameColor_candy_plus(_candy_map[i + 2][j])
+			&& _candy_map[i][j].is_sameColor_candy_plus(_candy_map[i + 1][j])) {
+			_candy_map[i][j]._will_be_special_candy = 1;
+			_candy_map[i-1][j]._will_be_special_candy = 1;
+			_candy_map[i+2][j]._will_be_special_candy = 1;
+			_candy_map[i+1][j]._will_be_special_candy = 1;
 			return true;
 		}
 	}
@@ -354,34 +382,54 @@ bool Map::is_TTypeCandy(int i, int j) {
 		return false;
 	}
 	if (j < width() - 2 && i >= 1 && i < height() - 1) {
-		if (_candy_map[i][j].is_sameColor_candy(_candy_map[i - 1][j])
-			&& _candy_map[i][j].is_sameColor_candy(_candy_map[i + 1][j])
-			&& _candy_map[i][j].is_sameColor_candy(_candy_map[i][j + 1])
-			&& _candy_map[i][j].is_sameColor_candy(_candy_map[i][j + 2])) {
+		if (_candy_map[i][j].is_sameColor_candy_plus(_candy_map[i - 1][j])
+			&& _candy_map[i][j].is_sameColor_candy_plus(_candy_map[i + 1][j])
+			&& _candy_map[i][j].is_sameColor_candy_plus(_candy_map[i][j + 1])
+			&& _candy_map[i][j].is_sameColor_candy_plus(_candy_map[i][j + 2])) {
+			_candy_map[i][j]._will_be_special_candy = 1;
+			_candy_map[i-1][j]._will_be_special_candy = 1;
+			_candy_map[i+1][j]._will_be_special_candy = 1;
+			_candy_map[i][j+1]._will_be_special_candy = 1;
+			_candy_map[i][j+2]._will_be_special_candy = 1;
 			return true;
 		}
 	}
 	if (j >= 2 && i >= 1 && i < height() - 1) {
-		if (_candy_map[i][j].is_sameColor_candy(_candy_map[i - 1][j])
-			&& _candy_map[i][j].is_sameColor_candy(_candy_map[i + 1][j])
-			&& _candy_map[i][j].is_sameColor_candy(_candy_map[i][j - 1])
-			&& _candy_map[i][j].is_sameColor_candy(_candy_map[i][j - 2])) {
+		if (_candy_map[i][j].is_sameColor_candy_plus(_candy_map[i - 1][j])
+			&& _candy_map[i][j].is_sameColor_candy_plus(_candy_map[i + 1][j])
+			&& _candy_map[i][j].is_sameColor_candy_plus(_candy_map[i][j - 1])
+			&& _candy_map[i][j].is_sameColor_candy_plus(_candy_map[i][j - 2])) {
+			_candy_map[i][j]._will_be_special_candy = 1;
+			_candy_map[i-1][j]._will_be_special_candy = 1;
+			_candy_map[i+1][j]._will_be_special_candy = 1;
+			_candy_map[i][j-1]._will_be_special_candy = 1;
+			_candy_map[i][j-2]._will_be_special_candy = 1;
 			return true;
 		}
 	}
 	if (i >= 2 && j >= 1 && j < width() - 1) {
-		if (_candy_map[i][j].is_sameColor_candy(_candy_map[i][j - 1])
-			&& _candy_map[i][j].is_sameColor_candy(_candy_map[i][j + 1])
-			&& _candy_map[i][j].is_sameColor_candy(_candy_map[i - 1][j])
-			&& _candy_map[i][j].is_sameColor_candy(_candy_map[i - 2][j])) {
+		if (_candy_map[i][j].is_sameColor_candy_plus(_candy_map[i][j - 1])
+			&& _candy_map[i][j].is_sameColor_candy_plus(_candy_map[i][j + 1])
+			&& _candy_map[i][j].is_sameColor_candy_plus(_candy_map[i - 1][j])
+			&& _candy_map[i][j].is_sameColor_candy_plus(_candy_map[i - 2][j])) {
+			_candy_map[i][j]._will_be_special_candy = 1;
+			_candy_map[i][j-1]._will_be_special_candy = 1;
+			_candy_map[i][j+1]._will_be_special_candy = 1;
+			_candy_map[i-1][j]._will_be_special_candy = 1;
+			_candy_map[i-2][j]._will_be_special_candy = 1;
 			return true;
 		}
 	}
 	if (i < height() - 2 && j >= 1 && j < width() - 1) {
-		if (_candy_map[i][j].is_sameColor_candy(_candy_map[i][j - 1])
-			&& _candy_map[i][j].is_sameColor_candy(_candy_map[i][j + 1])
-			&& _candy_map[i][j].is_sameColor_candy(_candy_map[i + 1][j])
-			&& _candy_map[i][j].is_sameColor_candy(_candy_map[i + 2][j])) {
+		if (_candy_map[i][j].is_sameColor_candy_plus(_candy_map[i][j - 1])
+			&& _candy_map[i][j].is_sameColor_candy_plus(_candy_map[i][j + 1])
+			&& _candy_map[i][j].is_sameColor_candy_plus(_candy_map[i + 1][j])
+			&& _candy_map[i][j].is_sameColor_candy_plus(_candy_map[i + 2][j])) {
+			_candy_map[i][j]._will_be_special_candy = 1;
+			_candy_map[i][j-1]._will_be_special_candy = 1;
+			_candy_map[i][j+1]._will_be_special_candy = 1;
+			_candy_map[i+1][j]._will_be_special_candy = 1;
+			_candy_map[i+2][j]._will_be_special_candy = 1;
 			return true;
 		}
 	}
@@ -393,17 +441,25 @@ bool Map::is_ETypeCandy(int i, int j) {
 		return false;
 	}
 	if (j > 0 && j < width() - 2) {
-		if (_candy_map[i][j].is_sameColor_candy(_candy_map[i][j - 1])
-			&& _candy_map[i][j].is_sameColor_candy(_candy_map[i][j + 1])
-			&& _candy_map[i][j].is_sameColor_candy(_candy_map[i][j + 2])) {
+		if (_candy_map[i][j].is_sameColor_candy_plus(_candy_map[i][j - 1])
+			&& _candy_map[i][j].is_sameColor_candy_plus(_candy_map[i][j + 1])
+			&& _candy_map[i][j].is_sameColor_candy_plus(_candy_map[i][j + 2])) {
+			_candy_map[i][j]._will_be_special_candy = 1;
+			_candy_map[i][j-1]._will_be_special_candy = 1;
+			_candy_map[i][j+1]._will_be_special_candy = 1;
+			_candy_map[i][j+2]._will_be_special_candy = 1;
 			return true;
 		}
 
 	}
 	if (j > 1 && j < width() - 1) {
-		if (_candy_map[i][j].is_sameColor_candy(_candy_map[i][j - 1])
-			&& _candy_map[i][j].is_sameColor_candy(_candy_map[i][j + 1])
-			&& _candy_map[i][j].is_sameColor_candy(_candy_map[i][j - 2])) {
+		if (_candy_map[i][j].is_sameColor_candy_plus(_candy_map[i][j - 1])
+			&& _candy_map[i][j].is_sameColor_candy_plus(_candy_map[i][j + 1])
+			&& _candy_map[i][j].is_sameColor_candy_plus(_candy_map[i][j - 2])) {
+			_candy_map[i][j]._will_be_special_candy = 1;
+			_candy_map[i][j-1]._will_be_special_candy = 1;
+			_candy_map[i][j+1]._will_be_special_candy = 1;
+			_candy_map[i][j-2]._will_be_special_candy = 1;
 			return true;
 		}
 	}
@@ -415,18 +471,28 @@ bool Map::is_ChocoCandy(int i, int j) {
 		return false;
 	}
 	if (i >= 2 && i < height() - 2) {
-		if (_candy_map[i][j].is_sameColor_candy(_candy_map[i - 1][j])
-			&& _candy_map[i][j].is_sameColor_candy(_candy_map[i - 2][j])
-			&& _candy_map[i][j].is_sameColor_candy(_candy_map[i + 1][j])
-			&& _candy_map[i][j].is_sameColor_candy(_candy_map[i + 2][j])) {
+		if (_candy_map[i][j].is_sameColor_candy_plus(_candy_map[i - 1][j])
+			&& _candy_map[i][j].is_sameColor_candy_plus(_candy_map[i - 2][j])
+			&& _candy_map[i][j].is_sameColor_candy_plus(_candy_map[i + 1][j])
+			&& _candy_map[i][j].is_sameColor_candy_plus(_candy_map[i + 2][j])) {
+			_candy_map[i][j]._will_be_special_candy = 1;
+			_candy_map[i-1][j]._will_be_special_candy = 1;
+			_candy_map[i-2][j]._will_be_special_candy = 1;
+			_candy_map[i+1][j]._will_be_special_candy = 1;
+			_candy_map[i+2][j]._will_be_special_candy = 1;
 			return true;
 		}
 	}
 	if (j >= 2 && j < width() - 2) {
-		if (_candy_map[i][j].is_sameColor_candy(_candy_map[i][j - 1])
-			&& _candy_map[i][j].is_sameColor_candy(_candy_map[i][j - 2])
-			&& _candy_map[i][j].is_sameColor_candy(_candy_map[i][j + 1])
-			&& _candy_map[i][j].is_sameColor_candy(_candy_map[i][j + 2])) {
+		if (_candy_map[i][j].is_sameColor_candy_plus(_candy_map[i][j - 1])
+			&& _candy_map[i][j].is_sameColor_candy_plus(_candy_map[i][j - 2])
+			&& _candy_map[i][j].is_sameColor_candy_plus(_candy_map[i][j + 1])
+			&& _candy_map[i][j].is_sameColor_candy_plus(_candy_map[i][j + 2])) {
+			_candy_map[i][j]._will_be_special_candy = 1;
+			_candy_map[i][j-1]._will_be_special_candy = 1;
+			_candy_map[i][j-2]._will_be_special_candy = 1;
+			_candy_map[i][j+1]._will_be_special_candy = 1;
+			_candy_map[i][j+2]._will_be_special_candy = 1;
 			return true;
 		}
 	}
@@ -457,7 +523,7 @@ void Map::deleteColumn(int i, int j) {
 	if (j >= width() || j < 0) {
 		return;
 	}
-	for (int ii = i; i >= 0; i--) {
+	for (int ii = i; ii >= 0; ii--) {
 		if (_candy_map[ii][j].type() == -1) {
 			_candy_map[ii][j]._fall_status = 2;
 			break;
@@ -555,21 +621,21 @@ void Map::checkMapStatus() { // 1:normal, 0.2:special
 						_candy_map[i][j]._fall_status = 1;
 						_candy_map[i - 1][j]._fall_status = 1;
 						_candy_map[i - 2][j]._fall_status = 1;
-						/*for (int k = i - 2; k <= i; k++) {
-							if (_candy_map[k][j] / 10 == 2) {
-								status = delete_row(status, k);
-								score += 500;
+						for (int k = i - 2; k <= i; k++) {
+							if (_candy_map[k][j].type() / 10 == 2) {
+								deleteRow(k, j);
+								_win_rule.score += 500;
 							}
-							if (_candy_map[k][j] / 10 == 3) {
-								status = delete_column(status, j);
-								score += 500;
+							if (_candy_map[k][j].type() / 10 == 3) {
+								deleteColumn(k, j);
+								_win_rule.score += 500;
 							}
-							if (_candy_map[k][j] / 10 == 1) {
+							/*if (_candy_map[k][j] / 10 == 1) {
 								disapear = 1;
 								boom_que.push_back({ 2, {k,j} });
-							}
+							}*/
 
-						}*/
+						}
 					}
 				}
 				if (j >= 2) {
@@ -577,18 +643,19 @@ void Map::checkMapStatus() { // 1:normal, 0.2:special
 						_candy_map[i][j]._fall_status = 1;
 						_candy_map[i][j - 1]._fall_status = 1;
 						_candy_map[i][j - 2]._fall_status = 1;
-						/*for (int k = j - 2; k <= j; k++) {
-							if (_candy_map[i][k] / 10 == 2) {
-								status = delete_row(status, i);
+						TRACE("\nqq\n");
+						for (int k = j - 2; k <= j; k++) {
+							if (_candy_map[i][k].type() / 10 == 2) {
+								deleteRow(i, k);
 							}
-							if (_candy_map[i][k] / 10 == 3) {
-								status = delete_column(status, k);
+							if (_candy_map[i][k].type() / 10 == 3) {
+								deleteColumn(i, k);
 							}
-							if (_candy_map[i][k] / 10 == 1) {
+							/*if (_candy_map[i][k] / 10 == 1) {
 								disapear = 1;
 								boom_que.push_back({ 2, {i,k} });
-							}
-						}*/
+							}*/
+						}
 
 					}
 				}
@@ -681,14 +748,12 @@ void Map::checkMapStatus() { // 1:normal, 0.2:special
 				jj = (idx1 - (400 - 25 * width())) / 50;
 			}
 
-			/*if (ChocoCandy(mp, ii, jj)) {
-				status[ii][jj] = 1;
-
+			if (is_ChocoCandy(ii, jj)) {
+				_candy_map[ii][jj]._fall_status = 0;
 				_candy_map[ii][jj]._type = 7;
-				update_candy();
-				disapear = 1;
-				return status;
-			}*/
+				//disapear = 1;
+				updateCandyMap();
+			}
 			if (is_LTypeCandy(ii, jj) || is_TTypeCandy(ii, jj)) {
 				_candy_map[ii][jj]._fall_status = 4;
 				_candy_map[ii][jj]._type %= 10;
@@ -717,34 +782,38 @@ void Map::checkMapStatus() { // 1:normal, 0.2:special
 
 
 
-
-	/*
-	for (int i = 0; i < h; i++) {
-		for (int j = 0; j < w; j++) {
-			if (LTypeCandy(mp, i, j) || TTypeCandy(mp, i, j)) {
-				status[i][j] = 1;
-				_candy_map[i][j] %= 10;
-				_candy_map[i][j] += 10;
-				disapear = 1;
-				update_candy();
-			}
-			if (ITypeCandy(mp, i, j)) {
-				status[i][j] = 1;
-				_candy_map[i][j] %= 10;
-				_candy_map[i][j] += 20;
-				disapear = 1;
-				update_candy();
-			}
-			if (ETypeCandy(mp, i, j)) {
-				status[i][j] = 1;
-				_candy_map[i][j] %= 10;
-				_candy_map[i][j] += 30;
-				disapear = 1;
-				update_candy();
-			}
-		}
-	}
-	*/
+	
+	//for (int i = 0; i < height(); i++) {
+	//	for (int j = 0; j < width(); j++) {
+	//		if (is_ChocoCandy(i, j)) {
+	//			_candy_map[i][j]._fall_status = 0;
+	//			_candy_map[i][j]._type = 7;
+	//			//disapear = 1;
+	//			updateCandyMap();
+	//		}
+	//		if (is_LTypeCandy(i, j) || is_TTypeCandy(i, j)) {
+	//			_candy_map[i][j]._fall_status = 0;
+	//			_candy_map[i][j]._type %= 10;
+	//			_candy_map[i][j]._type += 10;
+	//			//disapear = 1;
+	//			updateCandyMap();
+	//		}
+	//		if (is_ITypeCandy(i, j)) {
+	//			_candy_map[i][j]._fall_status = 0;
+	//			_candy_map[i][j]._type %= 10;
+	//			_candy_map[i][j]._type += 20;
+	//			//disapear = 1;
+	//			updateCandyMap();
+	//		}
+	//		if (is_ETypeCandy(i, j)) {
+	//			_candy_map[i][j]._fall_status = 0;
+	//			_candy_map[i][j]._type %= 10;
+	//			_candy_map[i][j]._type += 30;
+	//			//disapear = 1;
+	//			updateCandyMap();
+	//		}
+	//	}
+	//}
 }
 
 bool Map::is_animating() {
