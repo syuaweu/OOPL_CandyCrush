@@ -186,6 +186,7 @@ void Map::removeObstacleLayerAll() {
 			if (_candy_map[i][j].fall_status() == 4) { // :(
 				_candy_map[i][j]._fall_status = 0;
 				_surface_map[i][j].removeJelly();
+				_ice_map[i][j].removeIce();
 				removeAroundObstacle(i, j);
 			}
 			if (_candy_map[i][j].fall_status() == 2) {
@@ -199,11 +200,13 @@ void Map::removeObstacleLayerAll() {
 				}
 				_surface_map[i][j].removeJelly();
 				_surface_map[i][j].removeLock();
+				_ice_map[i][j].removeIce();
 			}
 			if (_candy_map[i][j].fall_status() == 1) {
 				_candy_map[i][j].changeToBlank();
 				_surface_map[i][j].removeJelly();
 				_surface_map[i][j].removeLock();
+				_ice_map[i][j].removeIce();
 				removeAroundObstacle(i, j);
 			}
 			if (i == height() - 1) {
