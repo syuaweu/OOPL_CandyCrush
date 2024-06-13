@@ -76,6 +76,7 @@ namespace game_framework {
 		CMovingBitmap background;
 		CMovingBitmap property_status;
 		CMovingBitmap show_account;
+
 	};
 
 	/////////////////////////////////////////////////////////////////////////////
@@ -160,12 +161,14 @@ namespace game_framework {
 		void OnBeginState();							// è¨­ï¿½??ï¿??æ¬¡ï¿½????ï¿½ï¿½????????ï¿?????
 		void OnInit();
 		void OnKeyDown(UINT, UINT, UINT);
+		void OnLButtonDown(UINT nFlags, CPoint point);
 	protected:
 		void OnMove();									// ç§»ï¿½???????ï¿½ï¿½??ï¿??
 		void OnShow();									// é¡¯ç¤º????????????????????ï¿½ï¿½?ï¿½ï¿½??
 	private:
 		CMovingBitmap background;
-		void load_background();
+		CMovingBitmap game_over;
+		CMovingBitmap win;
 	};
 
 }

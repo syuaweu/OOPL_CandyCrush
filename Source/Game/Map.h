@@ -23,6 +23,7 @@ public:
 	vector<vector<Candy>> _candy_map;
 	vector<vector<Ice>> _ice_map;
 	vector<vector<Surface>> _surface_map;
+	vector<std::pair<int, std::pair<int, int>>> boom_que;
 	WinRule _win_rule;
 	bool _is_fall_candy;
 
@@ -49,7 +50,6 @@ public:
 	void startCandyAnimation(int i, int j, int direction);
 	void animatedCandy();
 	void removeAroundObstacle(int i, int j);
-	void removeAroundJelly(int i, int j);
 	void produceCandy(int i, int j);
 	void Show();
   
@@ -65,9 +65,10 @@ public:
 	bool can_change_candy();
 	void deleteRow(int i, int j);
 	void deleteColumn(int i, int j);
+	void boom(int ii, int jj, int x);
 	void Switch(int i1, int j1, int i2, int j2);
 	void checkMapStatus();
 	void fallCandyAll();
 	void ScoreAndMovesCalculate();
-	void checkMapWithoutObstacle();
+	void checkWinOrDead();
 };

@@ -13,10 +13,9 @@ private:
 
 public:
 	WinRule();
-	CMovingBitmap condition_icon[10];
-	CMovingBitmap game_over;
-	CMovingBitmap win;
-	CMovingBitmap score_image[250];
+	CMovingBitmap condition_icon;
+	
+	CMovingBitmap score_image[255];
 	CMovingBitmap score_edge;
 	void Init();
 	int all_condition_number = 0;
@@ -30,7 +29,8 @@ public:
 	void Show();
 	int image_index(int x);
 	//void ScoreAndMovesCalculate(Map mp);
-	//bool isGameOver();
-	//bool isWin();
+	bool isGameOver();
+	bool isWin();
+	void BeginState();
 };
 

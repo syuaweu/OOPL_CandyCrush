@@ -122,7 +122,6 @@ CGameStateRun::~CGameStateRun()
 void CGameStateRun::OnBeginState()
 {	
 	map.BeginState();
-	
 	vector<vector<int>> mp = LoadMap(&h, &w);
 	vector<vector<int>> jellymp = LoadStatus(&h, &w);
 
@@ -936,24 +935,30 @@ void CGameStateRun::OnMove()
 	if (is_animation_finished) {
 		update_candy();
 	}
-	if (isGameOver() && game_over.GetTop() < 0) {
-		game_over.SetTopLeft(0, game_over.GetTop() + 40);
-	}
-
-	if (isWin()) {
-		if (score >= star_score[2]) {
-			win.SetFrameIndexOfBitmap(2);
+	map.ScoreAndMovesCalculate();
+	if (map._win_rule.isWin()) {
+		/*if (map._win_rule.score >= map._win_rule.star_score[2]) {
+			map._win_rule.win.SetFrameIndexOfBitmap(2);
 		}
-		else if (score >= star_score[1]) {
-			win.SetFrameIndexOfBitmap(1);
+		else if (map._win_rule.score >= map._win_rule.star_score[1]) {
+			map._win_rule.win.SetFrameIndexOfBitmap(1);
 		}
 		else {
-			win.SetFrameIndexOfBitmap(0);
-		}
-		if (win.GetTop() < 0) {
-			win.SetTopLeft(0, win.GetTop() + 40);
-		}
+			map._win_rule.win.SetFrameIndexOfBitmap(0);
+		}*/
+		ofstream ofs("Resources/win_or_loose.txt");
+		ofs << 'W';
+		ofs.close();
+		GotoGameState(GAME_STATE_OVER);
+		
 	}
+	else if (map._win_rule.isGameOver()) {
+		ofstream ofs("Resources/win_or_loose.txt");
+		ofs << 'L';
+		ofs.close();
+		GotoGameState(GAME_STATE_OVER);
+	}
+
 }
 
 void CGameStateRun::OnInit()
@@ -1249,6 +1254,9 @@ void CGameStateRun::OnLButtonDown(UINT nFlags, CPoint point)
 		map.idx0 = map.idx1;
 		map.idy0 = map.idy1;
 	}
+	else {
+		map._win_rule.moves -= 1;
+	}
 
 	/*if (oneInSquare()) {
 		cursor.SetTopLeft((point.x - (400 - 25 * w)) / 50 * 50 + (400 - 25 * w),
@@ -1345,15 +1353,15 @@ void CGameStateRun::show_text_by_phase() {
 	CTextDraw::Print(pDC, 237, 128, "");
 	CTextDraw::Print(pDC, 55, 163, "");
 	for (int i = 0; i < 3; i++) {
-		CTextDraw::Print(pDC, 20+250*map._win_rule.star_score[i]/map._win_rule.star_score[2], 60, "*");
+		//CTextDraw::Print(pDC, 20+250*map._win_rule.star_score[i]/map._win_rule.star_score[2], 60, "*");
 	}
 	//CTextDraw::Print(pDC, 50, 60, to_string(score));
-	CTextDraw::Print(pDC, 50, 30, to_string(map._win_rule.moves));
+	CTextDraw::Print(pDC, 100, 60, to_string(map._win_rule.moves));
 	/*CTextDraw::Print(pDC, 50, 50, "timer:" + to_string(clock()));*/
 	int k = 0;
 	for (int i = 0; i < 3; i++) {
 		for (int j = 0; j < int(map._win_rule.condition_number[i].size()); j++) {
-			CTextDraw::Print(pDC, 400 - (130 * map._win_rule.all_condition_number) / 2 + k * 130 + 60, 50, to_string(map._win_rule.condition_number[i][j].second>0? map._win_rule.condition_number[i][j].second:0));
+			CTextDraw::Print(pDC, 400, 80, to_string(map._win_rule.condition_number[i][j].second>0? map._win_rule.condition_number[i][j].second:0));
 		}
 	}
 	CDDraw::ReleaseBackCDC();
