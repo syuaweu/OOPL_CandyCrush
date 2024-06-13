@@ -147,7 +147,6 @@ namespace game_framework {
 		bool validate_phase_6();
 		//---reconstruct object
 		Map map;
-		
 	};
 
 	/////////////////////////////////////////////////////////////////////////////

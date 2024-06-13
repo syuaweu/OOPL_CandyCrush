@@ -39,6 +39,7 @@ void Map::Init() {
 	}
 	idx0 = 0, idx1 = 0;
 	idy0 = 0, idy1 = 0;
+	_animation_speed = 5;
 	_win_rule.Init();
 }
 
@@ -54,6 +55,7 @@ void Map::BeginState(){
 	loadIceMap();
 	loadSurfaceMap();
 	_win_rule.BeginState();
+	_animation_speed = 5;
 }
 
 void Map::Show() {
@@ -86,6 +88,9 @@ int Map::width(){
 
 int Map::height(){
 	return _height;
+}
+int Map::animation_speed() {
+	return _animation_speed;
 }
 
 void Map::loadLevel() {
@@ -260,8 +265,8 @@ void Map::animatedCandy() {
 	for (int i = 0; i < height(); i++) {
 		for (int j = 0; j < width(); j++) {
 			if (_candy_map[i][j].next_direction() != 0 || _candy_map[i][j].next_y() != 0) {
-				_candy_map[i][j]._candy.SetTopLeft(_candy_map[i][j].candy().GetLeft() - _candy_map[i][j].next_direction() * 5, _candy_map[i][j].candy().GetTop() + 5);
-				if (_candy_map[i][j].candy().GetTop() == _candy_map[i][j].next_y()) {
+				_candy_map[i][j]._candy.SetTopLeft(_candy_map[i][j].candy().GetLeft() - _candy_map[i][j].next_direction() * animation_speed(), _candy_map[i][j].candy().GetTop() + animation_speed());
+				if (_candy_map[i][j].candy().GetTop() >= _candy_map[i][j].next_y()) {
 					_candy_map[i][j]._next_position.first = 0;
 					_candy_map[i][j]._next_position.second = 0;
 					_candy_map[i][j]._is_animating = false;
