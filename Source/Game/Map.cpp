@@ -7,6 +7,7 @@
 #include "../Library/audio.h"
 #include "../Library/gameutil.h"
 #include "../Library/gamecore.h"
+#include "mygame.h"
 #include "Candy.h"
 #include "Map.h"
 #include "Ice.h"
@@ -52,7 +53,7 @@ void Map::BeginState(){
 	loadCandyMap();
 	loadIceMap();
 	loadSurfaceMap();
-	_win_rule.LoadWinCondition();
+	_win_rule.BeginState();
 }
 
 void Map::Show() {
@@ -512,6 +513,7 @@ void Map::deleteRow(int i, int j) {
 		return;
 	}
 	for (int jj = j; jj >=0; jj--) {
+		if (_candy_map[i][jj].fall_status() == 4) continue;
 		if (_candy_map[i][jj].type() == -1) {
 			_candy_map[i][jj]._fall_status = 2;
 			break;
@@ -519,6 +521,7 @@ void Map::deleteRow(int i, int j) {
 		_candy_map[i][jj]._fall_status = 2;
 	}
 	for (int jj = j; jj < width(); jj++) {
+		if (_candy_map[i][jj].fall_status() == 4) continue;
 		if (_candy_map[i][jj].type() == -1) {
 			_candy_map[i][jj]._fall_status = 2;
 			break;
@@ -532,6 +535,7 @@ void Map::deleteColumn(int i, int j) {
 		return;
 	}
 	for (int ii = i; ii >= 0; ii--) {
+		if (_candy_map[ii][j].fall_status() == 4) continue;
 		if (_candy_map[ii][j].type() == -1) {
 			_candy_map[ii][j]._fall_status = 2;
 			break;
@@ -539,12 +543,30 @@ void Map::deleteColumn(int i, int j) {
 		_candy_map[ii][j]._fall_status = 2;
 	}
 	for (int ii = i; ii < height(); ii++) {
+		if (_candy_map[ii][j].fall_status() == 4) continue;
 		if (_candy_map[ii][j].type() == -1) {
 			_candy_map[ii][j]._fall_status = 2;
 			break;
 		}
 		_candy_map[ii][j]._fall_status = 2;
 	}
+}
+
+void Map::boom(int ii, int jj, int x) {
+	if (ii >= height() || ii < 0 || jj >= width() || jj < 0) {
+		return;
+	}
+	for (int i = ii - 1; i <= ii + 1; i++) {
+		for (int j = jj - 1; j <= jj + 1; j++) {
+			if (i >= height() || i < 0 || j >= width() || j < 0) {
+				continue;
+			}
+			//TRACE("AAAAA %d %d || %d %d\n",i,j,ii,jj);
+			_candy_map[i][j]._fall_status = 2;
+		}
+
+	}
+	//TRACE("24242424 %d\n", st[2][4]);
 }
 
 void Map::Switch(int i1, int j1, int i2, int j2) {
@@ -620,10 +642,10 @@ void Map::checkMapStatus() { // 1:normal, 0.2:special
 
 			}
 			else {
-				/*if (_candy_map[i][j].type() / 10 == 6) {
-					disapear = 1;
+				if (_candy_map[i][j].type() / 10 == 6) {
+					//disapear = 1;
 					boom_que.push_back({ 1, {i,j} });
-				}*/
+				}
 
 				if (i >= 2) {
 					if (_candy_map[i][j].is_sameColor_candy(_candy_map[i - 1][j]) && _candy_map[i][j].is_sameColor_candy(_candy_map[i - 2][j])) {
@@ -639,10 +661,10 @@ void Map::checkMapStatus() { // 1:normal, 0.2:special
 								deleteColumn(k, j);
 								_win_rule.score += 500;
 							}
-							/*if (_candy_map[k][j] / 10 == 1) {
-								disapear = 1;
+							if (_candy_map[k][j].type() / 10 == 1) {
+								//disapear = 1;
 								boom_que.push_back({ 2, {k,j} });
-							}*/
+							}
 
 						}
 					}
@@ -659,10 +681,10 @@ void Map::checkMapStatus() { // 1:normal, 0.2:special
 							if (_candy_map[i][k].type() / 10 == 3) {
 								deleteColumn(i, k);
 							}
-							/*if (_candy_map[i][k] / 10 == 1) {
-								disapear = 1;
+							if (_candy_map[i][k].type() / 10 == 1) {
+								//disapear = 1;
 								boom_que.push_back({ 2, {i,k} });
-							}*/
+							}
 
 						}
 
@@ -672,18 +694,18 @@ void Map::checkMapStatus() { // 1:normal, 0.2:special
 		}
 	}
 	/*TRACE("wryyyyy %d\n", boom_que.size());*/
-	//for (auto i : boom_que) {
-	//	status = boom(status, i.second.first, i.second.second, i.first);
-	//	score += 1000;
-	//	if (i.first == 2) {
-	//		status[i.second.first][i.second.second] = 1;
-	//		_candy_map[i.second.first][i.second.second] %= 10;
-	//		_candy_map[i.second.first][i.second.second] += 60;
-	//		update_candy();
-	//		disapear = 1;
-	//	}
-	//}
-	//boom_que.clear();
+	for (auto i : boom_que) {
+		boom(i.second.first, i.second.second, i.first);
+		_win_rule.score += 1000;
+		if (i.first == 2) {
+			_candy_map[i.second.first][i.second.second]._fall_status = 0;
+			_candy_map[i.second.first][i.second.second]._type %= 10;
+			_candy_map[i.second.first][i.second.second]._type += 60;
+			updateCandyMap();
+			//disapear = 1;
+		}
+	}
+	boom_que.clear();
 	int i0 = (idy0 - (400 - 25 * height())) / 50;
 	int j0 = (idx0 - (400 - 25 * width())) / 50;
 	int i1 = (idy1 - (400 - 25 * height())) / 50;
@@ -709,6 +731,35 @@ void Map::checkMapStatus() { // 1:normal, 0.2:special
 			deleteColumn(i1, j1 - 1);
 			deleteRow(i1 + 1, j1);
 			deleteColumn(i1, j1 + 1);
+		}
+		else if ((_candy_map[i0][j0].type() / 10 == 1 && _candy_map[i1][j1].type() / 10 == 1)) {
+			for (int i = i0 - 2; i <= i0 + 2; i++) {
+				for (int j = j0 - 2; j <= j0 + 2; j++) {
+					if (i >= height() || i < 0 || j >= width() || j < 0) {
+						continue;
+					}
+					//TRACE("AAAAA %d %d || %d %d\n",i,j,ii,jj);
+					_candy_map[i][j]._fall_status = 2;
+				}
+
+			}
+			for (int i = i1 - 2; i <= i1 + 2; i++) {
+				for (int j = j1 - 2; j <= j1 + 2; j++) {
+					if (i >= height() || i < 0 || j >= width() || j < 0) {
+						continue;
+					}
+					//TRACE("AAAAA %d %d || %d %d\n",i,j,ii,jj);
+					_candy_map[i][j]._fall_status = 2;
+				}
+
+			}
+			
+			_candy_map[i0][j0]._type %= 10;
+			_candy_map[i0][j0]._type += 60;
+			_candy_map[i1][j1]._type %= 10;
+			_candy_map[i1][j1]._type += 60;
+			_candy_map[i0][j0]._fall_status = 0;
+			_candy_map[i1][j1]._fall_status = 0;
 		}
 		else if (_candy_map[i0][j0].type() == 7) {
 			//disapear = 1;
@@ -824,6 +875,9 @@ void Map::checkMapStatus() { // 1:normal, 0.2:special
 				if (_candy_map[i][j].type() / 10 == 3) {
 					deleteColumn(i, j);
 				}
+				if (_candy_map[i][j].type() / 10 == 1) {
+					boom_que.push_back({ 2, {i,j} });
+				}
 			}
 		}
 	}
@@ -870,6 +924,8 @@ void Map::checkMapStatus() { // 1:normal, 0.2:special
 			}
 		}
 	}
+
+	ScoreAndMovesCalculate();
 }
 
 bool Map::is_animating() {
@@ -929,30 +985,52 @@ bool Map::can_change_candy() {
 }
 
 void Map::ScoreAndMovesCalculate() {
+	int cnt = 0;
 	for (int i = 0; i < height(); i++) {
 		for (int j = 0; j < width(); j++) {
-			if (this->_candy_map[i][j].fall_status() == 1) {
-				this->_win_rule.score += 40;
-				for (int k = 0; k < 3; k++) {
-					for (int l = 0; l<int(this->_win_rule.condition_number[k].size()); l++) {
-						if (this->_win_rule.condition_number[k][l].first >= 10 && this->_win_rule.condition_number[k][l].first <= 35) {
-							if (this->_candy_map[i][j].type() / 10 == this->_win_rule.condition_number[k][l].first / 10) {
-								this->_win_rule.condition_number[k][l].second -= 1;
+			this->_win_rule.score += 40;
+			for (int k = 0; k < 3; k++) {
+				for (int l = 0; l<int(this->_win_rule.condition_number[k].size()); l++) {
+					if (k == 2) {
+						if (this->_candy_map[i][j].fall_status() != 0 && this->_candy_map[i][j].fall_status() != 4) {
+							if (this->_win_rule.condition_number[k][l].first >= 10 && this->_win_rule.condition_number[k][l].first <= 35) {
+								if (this->_candy_map[i][j].type() / 10 == this->_win_rule.condition_number[k][l].first / 10) {
+									this->_win_rule.condition_number[k][l].second -= 1;
+								}
 							}
-						}
-						else {
-							if (this->_candy_map[i][j].type() == this->_win_rule.condition_number[k][l].first) {
-								this->_win_rule.condition_number[k][l].second -= 1;
+							else {
+								if (this->_candy_map[i][j].type() == this->_win_rule.condition_number[k][l].first) {
+									_win_rule.condition_number[k][l].second -= 1;
+								}
 							}
 						}
 					}
+					if (k == 0) {
+						
+						if (_win_rule.condition_number[k][l].first == _candy_map[i][j].type()) {
+							TRACE("cnttttt\n");
+							cnt++;
+						}
+								
+						_win_rule.condition_number[k][l].second = cnt;
+						TRACE("con: %d\n", _win_rule.condition_number[k][l].second);
+					}
+						
 				}
 			}
 		}
 	}
-	for (int i = 0; i < 245; i++) {
-		if (i < 245 * this->_win_rule.score / this->_win_rule.star_score[2]) {
-			this->_win_rule.score_image[i].SetTopLeft(20 + i, 100);
+	for (int i = 0; i < 255; i++) {
+		if (i < 255 * this->_win_rule.score / this->_win_rule.star_score[2]) {
+			this->_win_rule.score_image[i].SetTopLeft(272 + i, 25);
 		}
 	}
+
+	for (int i = 0; i < 3; i++) {
+		for (int j = 0; j < int(_win_rule.condition_number[i].size()); j++) {
+			TRACE("winrule: %d\n", _win_rule.condition_number[i][j].second);
+		}
+	}
+	
 }
+
