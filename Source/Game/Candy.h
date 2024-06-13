@@ -42,6 +42,7 @@ public:
 	bool can_dropped();
 	bool will_be_special_candy();
 	bool is_sameColor_candy(Candy c);
+	bool is_sameColor_candy_plus(Candy c);
 
 	void Init();
 	void updateCandy();

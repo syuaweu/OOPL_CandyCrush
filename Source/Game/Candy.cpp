@@ -188,6 +188,13 @@ bool Candy::is_sameColor_candy(Candy c) {
 	return false;
 }
 
+bool Candy::is_sameColor_candy_plus(Candy c) {
+	if (c.type() % 10 == type() % 10 && !c.will_be_special_candy()) {
+		return true;
+	}
+	return false;
+}
+
 void Candy::changeToBlank() {
 	_fall_status = 3;
 	_type = 99;
