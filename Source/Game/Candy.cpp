@@ -46,7 +46,8 @@ void Candy::Init() {
 		"Resources/texture_pack_original/candy/-11.bmp",
 		"Resources/texture_pack_original/candy/-12.bmp",
 		"Resources/texture_pack_original/candy/-13.bmp",
-		"Resources/texture_pack_original/candy/99.bmp", //30
+		"Resources/texture_pack_original/candy/-21.bmp",
+		"Resources/texture_pack_original/candy/99.bmp", //31
 		"Resources/texture_pack_original/candy/-99.bmp",
 		"Resources/texture_pack_original/candy/err.bmp" });
 	_candy.SetTopLeft(0, 0);
@@ -170,6 +171,9 @@ void Candy::updateCandy() {
 	else if (-13 <= type() && type() <= -11) {
 		_candy.SetFrameIndexOfBitmap(std::abs(type()) + 16);
 	}
+	else if (-21 == type()) {
+		_candy.SetFrameIndexOfBitmap(30);
+	}
 	else if (type() == 7) {
 		_candy.SetFrameIndexOfBitmap(24);
 	}
@@ -180,13 +184,13 @@ void Candy::updateCandy() {
 		_candy.SetFrameIndexOfBitmap(type() % 10 + type() / 6 / 10 * 6);
 	}
 	else if (type() == 99) {
-		_candy.SetFrameIndexOfBitmap(30);
-	}
-	else if (type() == -99) {
 		_candy.SetFrameIndexOfBitmap(31);
 	}
-	else {
+	else if (type() == -99) {
 		_candy.SetFrameIndexOfBitmap(32);
+	}
+	else {
+		_candy.SetFrameIndexOfBitmap(33);
 	}
 }
 
@@ -206,9 +210,19 @@ void Candy::changeToBlank() {
 }
 
 void Candy::removeObstacleLayer() {
+	if (!is_obstacle()) {
+		return;
+	}
 	if (type() == -1 || type() == -11) {
 		changeToBlank();
 		return;
 	}
 	_type += 1;
+}
+
+void Candy::removeDragon() {
+	if (type() == -21) {
+		changeToBlank();
+		return;
+	}
 }

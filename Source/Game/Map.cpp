@@ -9,7 +9,8 @@
 #include "../Library/gamecore.h"
 #include "Candy.h"
 #include "Map.h"
-#include"Ice.h"
+#include "Ice.h"
+#include "Surface.h"
 
 Map::Map() {
 	
@@ -19,18 +20,22 @@ void Map::Init() {
 	for (int i = 0; i < 9; i++) {
 		vector<Candy> temp_candy_row;
 		vector<Ice> temp_ice_row;
+		vector<Surface> temp_surface_row;
 		for (int j = 0; j < 9; j++) {
 			Candy candy;
 			Ice ice;
+			Surface surface;
 			candy.Init();
 			ice.Init();
+			surface.Init();
 			temp_candy_row.push_back(candy);
 			temp_ice_row.push_back(ice);
+			temp_surface_row.push_back(surface);
 		}
-		this->_candy_map.push_back(temp_candy_row);
-		this->_ice_map.push_back(temp_ice_row);
+		_candy_map.push_back(temp_candy_row);
+		_ice_map.push_back(temp_ice_row);
+		_surface_map.push_back(temp_surface_row);
 	}
-	_is_fall_candy = false;
 	idx0 = 0, idx1 = 0;
 	idy0 = 0, idy1 = 0;
 	_win_rule.Init();
@@ -46,6 +51,7 @@ void Map::BeginState(){
 	loadMapWidthAndHeight();
 	loadCandyMap();
 	loadIceMap();
+	loadSurfaceMap();
 	_win_rule.LoadWinCondition();
 }
 
@@ -58,6 +64,11 @@ void Map::Show() {
 	for (int i = 0; i < height(); i++) {
 		for (int j = 0; j < width(); j++) {
 			_candy_map[i][j].candy().ShowBitmap();
+		}
+	}
+	for (int i = 0; i < height(); i++) {
+		for (int j = 0; j < width(); j++) {
+			_surface_map[i][j].surface().ShowBitmap();
 		}
 	}
 	_win_rule.Show();
@@ -111,6 +122,9 @@ void Map::loadIceMap() {
 		for (int j = 0; j < width(); j++) {
 			int x = 0;
 			in >> x;
+			if (x == -999) {
+				break;
+			}
 			_ice_map[i][j]._layer = x;
 		}
 	}
@@ -118,10 +132,24 @@ void Map::loadIceMap() {
 	updateIceMap();
 }
 
+void Map::loadSurfaceMap() {
+	ifstream in;
+	in.open("Resources/surface_maps/" + to_string(level()) + ".txt");
+	for (int i = 0; i < height(); i++) {
+		for (int j = 0; j < width(); j++) {
+			int x = 0;
+			in >> x;
+			_surface_map[i][j]._type = x;
+		}
+	}
+	in.close();
+	updateSurfaceMap();
+}
+
 void Map::updateCandyMap() {
 	for (int i = 0; i < height(); i++) {
 		for (int j = 0; j < width(); j++) {
-			_candy_map[i][j]._position.first = (400 - 25 * width()) + j * 50;
+			_candy_map[i][j]._position.first = (400 - 25 * width()) + j * 50; // (top(),left())
 			_candy_map[i][j]._position.second = (400 - 25 * height()) + i * 50;
 			_candy_map[i][j].updateCandy();
 		}
@@ -138,24 +166,43 @@ void Map::updateIceMap() {
 	}
 }
 
+void Map::updateSurfaceMap() {
+	for (int i = 0; i < height(); i++) {
+		for (int j = 0; j < width(); j++) {
+			_surface_map[i][j]._position.first = (400 - 25 * width()) + j * 50;
+			_surface_map[i][j]._position.second = (400 - 25 * height()) + i * 50;
+			_surface_map[i][j].updateSurface();
+		}
+	}
+}
+
 void Map::updateMap() {
 	updateCandyMap();
 	updateIceMap();
+	updateSurfaceMap();
 }
 
 void Map::removeObstacleLayerAll() {
 	for (int i = 0; i < height(); i++) {
 		for (int j = 0; j < width(); j++) {
-			if (_candy_map[i][j].fall_status() == 4) {
-				removeAroundObstacle(i, j);
+			if (_candy_map[i][j].fall_status() == 4) { // :(
 				_candy_map[i][j]._fall_status = 0;
+				_surface_map[i][j].removeJelly();
+				removeAroundObstacle(i, j);
 			}
 			if (_candy_map[i][j].fall_status() == 2) {
 				_candy_map[i][j].removeObstacleLayer();
+				_surface_map[i][j].removeJelly();
+				_surface_map[i][j].removeLock();
 			}
 			if (_candy_map[i][j].fall_status() == 1) {
 				_candy_map[i][j].changeToBlank();
+				_surface_map[i][j].removeJelly();
+				_surface_map[i][j].removeLock();
 				removeAroundObstacle(i, j);
+			}
+			if (i == height() - 1) {
+				_candy_map[i][j].removeDragon();
 			}
 		}
 	}
@@ -172,14 +219,14 @@ void Map::startCandyAnimation(int i, int j, int direction) {
 		produceCandy(i, j);
 		return;
 	}
-	if (_candy_map[i - 1][j].can_dropped()) {
+	if (_candy_map[i - 1][j].can_dropped() && !_surface_map[i - 1][j].is_surface()) {
 		_candy_map[i][j]._type = _candy_map[i - 1][j].type();
 		_candy_map[i][j]._fall_status = _candy_map[i - 1][j].fall_status();
 		startCandyAnimation(i - 1, j, 0);
 		return;
 	}
 	if (j > 0) {
-		if (_candy_map[i - 1][j - 1].can_dropped()) {
+		if (_candy_map[i - 1][j - 1].can_dropped() && !_surface_map[i - 1][j - 1].is_surface()) {
 			_candy_map[i][j]._type = _candy_map[i - 1][j - 1].type();
 			_candy_map[i][j]._fall_status = _candy_map[i - 1][j - 1].fall_status();
 			startCandyAnimation(i - 1, j - 1, -1);
@@ -187,7 +234,7 @@ void Map::startCandyAnimation(int i, int j, int direction) {
 		}
 	}
 	if (j < width() - 1) {
-		if (_candy_map[i - 1][j + 1].can_dropped()) {
+		if (_candy_map[i - 1][j + 1].can_dropped() && !_surface_map[i - 1][j + 1].is_surface()) {
 			_candy_map[i][j]._type = _candy_map[i - 1][j + 1].type();
 			_candy_map[i][j]._fall_status = _candy_map[i - 1][j + 1].fall_status();
 			startCandyAnimation(i - 1, j + 1, 1);
@@ -225,24 +272,20 @@ void Map::produceCandy(int i, int j) {
 
 void Map::removeAroundObstacle(int i, int j) {
 	if (i > 0) {
-		if (_candy_map[i - 1][j].is_obstacle()) { //_candy_map[i - 1][j].type() != -10 && _candy_map[i - 1][j].type() != 99
-			_candy_map[i - 1][j].removeObstacleLayer();
-		}
+		_candy_map[i - 1][j].removeObstacleLayer();
+		_surface_map[i - 1][j].removeJelly();
 	}
 	if (j > 0) {
-		if (_candy_map[i][j - 1].is_obstacle()) {
-			_candy_map[i][j - 1].removeObstacleLayer();
-		}
+		_candy_map[i][j - 1].removeObstacleLayer();
+		_surface_map[i][j - 1].removeJelly();
 	}
 	if (i < height() - 1) {
-		if (_candy_map[i + 1][j].is_obstacle()) {
-			_candy_map[i + 1][j].removeObstacleLayer();
-		}
+		_candy_map[i + 1][j].removeObstacleLayer();
+		_surface_map[i + 1][j].removeJelly();
 	}
 	if (j < width() - 1) {
-		if (_candy_map[i][j + 1].is_obstacle()) {
-			_candy_map[i][j + 1].removeObstacleLayer();
-		}
+		_candy_map[i][j + 1].removeObstacleLayer();
+		_surface_map[i][j + 1].removeJelly();
 	}
 }
 
@@ -441,10 +484,13 @@ bool Map::can_switch_then_switch() {
 	int column0 = (idx0 - (400 - 25 * width())) / 50;
 	int row1 = (idy1 - (400 - 25 * height())) / 50;
 	int column1 = (idx1 - (400 - 25 * width())) / 50;
+	if (_surface_map[row0][column0].is_surface() || _surface_map[row1][column1].is_surface()) {
+		return false;
+	}
 	if (!(std::abs(row0 - row1) == 1 && std::abs(column0 - column1) == 0) && !(std::abs(row0 - row1) == 0 && std::abs(column0 - column1) == 1)) {
 		return false;
 	}
-	if (_candy_map[row0][column0].type() < -10 || _candy_map[row1][column1].type() < -10) {
+	if (_candy_map[row0][column0].is_frosting() || _candy_map[row1][column1].is_frosting()) {
 		return false;
 	}
 	Switch(row0, column0, row1, column1);

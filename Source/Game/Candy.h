@@ -48,5 +48,6 @@ public:
 	void updateCandy();
 	void changeToBlank();
 	void removeObstacleLayer();
+	void removeDragon();
 };
 
