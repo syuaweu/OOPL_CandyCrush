@@ -986,23 +986,23 @@ void Map::ScoreAndMovesCalculate() {
 	for (int i = 0; i < height(); i++) {
 		for (int j = 0; j < width(); j++) {
 			this->_win_rule.score += 40;
-			for (int k = 0; k < 3; k++) {
+			for (int k = 0; k < 4; k++) {
 				for (int l = 0; l<int(this->_win_rule.condition_number[k].size()); l++) {
 					if (k == 2) {
-						if (this->_candy_map[i][j].fall_status() != 0 && this->_candy_map[i][j].fall_status() != 4) {
-							if (this->_win_rule.condition_number[k][l].first >= 10 && this->_win_rule.condition_number[k][l].first <= 35) {
-								if (this->_candy_map[i][j].type() / 10 == this->_win_rule.condition_number[k][l].first / 10) {
-									this->_win_rule.condition_number[k][l].second -= 1;
-								}
-							}
-							else {
-								if (this->_candy_map[i][j].type() == this->_win_rule.condition_number[k][l].first) {
-									_win_rule.condition_number[k][l].second -= 1;
-								}
+						if (this->_win_rule.condition_number[k][l].first >= 10 && this->_win_rule.condition_number[k][l].first <= 35 
+							&& this->_candy_map[i][j].fall_status() != 0 && this->_candy_map[i][j].fall_status() != 4) {
+							if (this->_candy_map[i][j].type() / 10 == this->_win_rule.condition_number[k][l].first / 10) {
+								this->_win_rule.condition_number[k][l].second -= 1;
 							}
 						}
+						else if (this->_candy_map[i][j].fall_status() != 0){
+							if (this->_candy_map[i][j].type() == this->_win_rule.condition_number[k][l].first) {
+								_win_rule.condition_number[k][l].second -= 1;
+							}
+						}
+						
 					}
-					if (k == 0) {
+					if (k == 0||k==1) {
 						
 						if (_win_rule.condition_number[k][l].first == _candy_map[i][j].type()) {
 							TRACE("cnttttt\n");
@@ -1011,6 +1011,10 @@ void Map::ScoreAndMovesCalculate() {
 								
 						_win_rule.condition_number[k][l].second = cnt;
 						TRACE("con: %d\n", _win_rule.condition_number[k][l].second);
+					}
+					if (k == 4) {
+						cnt += _ice_map[i][j].layer();
+						_win_rule.condition_number[k][l].second = cnt;
 					}
 						
 				}
