@@ -17,7 +17,6 @@ public:
 	pair<int, int> _index;
 	pair<int, int> _position;
 	pair<int, int> _next_position;
-	bool _is_special_candy;
 	bool _will_be_special_candy;
 	bool _is_animating;
 
