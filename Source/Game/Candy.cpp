@@ -52,7 +52,6 @@ void Candy::Init() {
 		"Resources/texture_pack_original/candy/err.bmp" });
 	_candy.SetTopLeft(0, 0);
 	_candy.SetFrameIndexOfBitmap(0);
-	_is_special_candy = 0;
 	_index = {0, 0};
 	_position = {0, 0};
 	_next_position = {0, 0};
@@ -165,7 +164,10 @@ int Candy::next_y() {
 }
 
 bool Candy::is_special_candy() {
-	return _is_special_candy;
+	if (type() >= 10 && type() < 35) {
+		return true;
+	}
+	return false;
 }
 
 void Candy::updateCandy() {
@@ -202,6 +204,9 @@ void Candy::updateCandy() {
 }
 
 bool Candy::is_sameColor_candy(Candy c) {
+	if (is_obstacle() || !can_remove()) {
+		return false;
+	}
 	if (c.type() >= 0 && c.type() <= 35 && type() >= 0 && type() <= 35) {
 		if (c.type() % 10 == type() % 10) {
 			return true;
@@ -211,6 +216,9 @@ bool Candy::is_sameColor_candy(Candy c) {
 }
 
 bool Candy::is_sameColor_candy_plus(Candy c) {
+	if (is_obstacle() || !can_remove()) {
+		return false;
+	}
 	if (c.type() % 10 == type() % 10 && !c.will_be_special_candy()) {
 		return true;
 	}
