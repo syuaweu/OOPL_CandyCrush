@@ -40,6 +40,8 @@ void Map::Init() {
 	idx0 = 0, idx1 = 0;
 	idy0 = 0, idy1 = 0;
 	_animation_speed = 5;
+	_background.LoadBitmapByString({ "resources/texture_pack_original/bg_screens/map_background.bmp" });
+	_background.SetTopLeft(175, 175);
 	_win_rule.Init();
 }
 
@@ -59,6 +61,7 @@ void Map::BeginState(){
 }
 
 void Map::Show() {
+	_background.ShowBitmap();
 	for (int i = 0; i < height(); i++) {
 		for (int j = 0; j < width(); j++) {
 			_ice_map[i][j].ice().ShowBitmap();
@@ -266,7 +269,7 @@ void Map::animatedCandy() {
 		for (int j = 0; j < width(); j++) {
 			if (_candy_map[i][j].next_direction() != 0 || _candy_map[i][j].next_y() != 0) {
 				_candy_map[i][j]._candy.SetTopLeft(_candy_map[i][j].candy().GetLeft() - _candy_map[i][j].next_direction() * animation_speed(), _candy_map[i][j].candy().GetTop() + animation_speed());
-				if (_candy_map[i][j].candy().GetTop() >= _candy_map[i][j].next_y()) {
+				if (_candy_map[i][j].candy().GetTop() == _candy_map[i][j].next_y()) {
 					_candy_map[i][j]._next_position.first = 0;
 					_candy_map[i][j]._next_position.second = 0;
 					_candy_map[i][j]._is_animating = false;

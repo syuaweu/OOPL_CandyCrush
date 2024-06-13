@@ -28,6 +28,8 @@ public:
 	WinRule _win_rule;
 	bool _is_fall_candy;
 
+	CMovingBitmap _background;
+
 	Map();
 	int level();
 	int width();
