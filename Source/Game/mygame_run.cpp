@@ -1144,6 +1144,10 @@ void CGameStateRun::previous_map() {
 		ofstream ofs("Resources/init_map/choose_level.txt");
 		ofs << map_name - 1;
 		ofs.close();
+		ofstream ofs2("Resources/init_map/retry.txt");
+		ofs2 << 1;
+		ofs2.close();
+		GotoGameState(GAME_STATE_INIT);
 	}
 	GotoGameState(GAME_STATE_INIT);
 }
@@ -1153,12 +1157,16 @@ void CGameStateRun::next_map() {
 	in.open("Resources/init_map/choose_level.txt");
 	in >> map_name;
 	in.close();
-	if (map_name + 1 <= 30) {
+	if (map_name + 1 <= 40) {
 		ofstream ofs("Resources/init_map/choose_level.txt");
 		ofs << map_name + 1;
 		ofs.close();
+		ofstream ofs2("Resources/init_map/retry.txt");
+		ofs2 << 1;
+		ofs2.close();
+		GotoGameState(GAME_STATE_INIT);
 	}
-	GotoGameState(GAME_STATE_INIT);
+	
 }
 void CGameStateRun::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 {

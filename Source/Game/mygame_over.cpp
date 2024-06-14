@@ -72,7 +72,7 @@ void CGameStateOver::OnLButtonDown(UINT nFlags, CPoint point)
 	int x = point.x;
 	int y = point.y;
 	if (x >= 130 && x <= 370 && y >= 631 && y <= 714) {
-		ofstream ofs("Resources/retry.txt");
+		ofstream ofs("Resources/init_map/retry.txt");
 		ofs << 1;
 		ofs.close();
 		win.SetTopLeft(0, -800);
@@ -82,7 +82,7 @@ void CGameStateOver::OnLButtonDown(UINT nFlags, CPoint point)
 	if (x >= 420 && x <= 660 && y >= 631 && y <= 714) {
 		win.SetTopLeft(0, -800);
 		game_over.SetTopLeft(0, -800);
-		ofstream ofs("Resources/retry.txt");
+		ofstream ofs("Resources/init_map/retry.txt");
 		ofs << 0;
 		ofs.close();
 		GotoGameState(GAME_STATE_INIT);
