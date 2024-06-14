@@ -77,4 +77,5 @@ public:
 	void fallCandyAll();
 	void ScoreAndMovesCalculate();
 	void checkWinOrDead();
+	void Shuffle();
 };

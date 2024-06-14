@@ -615,8 +615,12 @@ bool Map::can_switch_then_switch() {
 	if (_candy_map[row0][column0].is_frosting() || _candy_map[row1][column1].is_frosting()) {
 		return false;
 	}
+	if (_candy_map[row0][column0].type() == 99 || _candy_map[row1][column1].type() == 99) {
+		return false;
+	}
 	Switch(row0, column0, row1, column1);
-	if (_candy_map[row0][column0].type() >= 10 && _candy_map[row1][column1].type() >= 10) {
+	if (_candy_map[row0][column0].type() >= 10 && _candy_map[row1][column1].type() >= 10
+		&& _candy_map[row0][column0].type() <= 35 && _candy_map[row1][column1].type() <= 35) {
 		return true;
 	}
 	if (_candy_map[row0][column0].type() == 7 || _candy_map[row1][column1].type() == 7) {
@@ -1049,7 +1053,8 @@ void Map::ScoreAndMovesCalculate() {
 						_win_rule.condition_number[k][l].second = cnt;
 						//TRACE("con: %d\n", _win_rule.condition_number[k][l].second);
 					}
-					if (k == 4) {
+					if (k == 3) {
+						//TRACE("ice: %d\n", _ice_map[i][j].layer());
 						cnt += _ice_map[i][j].layer();
 						_win_rule.condition_number[k][l].second = cnt;
 					}
@@ -1070,5 +1075,31 @@ void Map::ScoreAndMovesCalculate() {
 		}
 	}
 	
+}
+
+void Map::Shuffle() {
+	bool need_shuffle = 1;
+	for (int i = 0; i < height(); i++) {
+		for (int j = 0; j < width(); j++) {
+			int idx[4][2] = { {-1,0},{1,0},{0,-1},{0,1} };
+			for (int k = 0; k < 4; k++) {
+				if (_candy_map[i][j].type() >= 10 && _candy_map[i + idx[k][0]][j + idx[k][1]].type() >= 10
+					&& _candy_map[i][j].type() <= 35 && _candy_map[i + idx[k][0]][j + idx[k][1]].type() <= 35) {
+					return;
+				}
+				if (_candy_map[i][j].type() == 7 || _candy_map[i + idx[k][0]][j + idx[k][1]].type() == 7) {
+					return;
+				}
+				Switch(i, j, i + idx[k][0], j + idx[k][1]);
+				if (can_change_candy()) {
+					Switch(i, j, i + idx[k][0], j + idx[k][1]);
+					return;
+				}
+				Switch(i, j, i + idx[k][0], j + idx[k][1]);
+			}
+		}
+	}
+
+
 }
 
