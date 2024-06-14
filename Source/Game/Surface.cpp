@@ -19,7 +19,7 @@ void Surface::Init() {
 			"Resources/texture_pack_original/surface/blank.bmp",
 			"Resources/texture_pack_original/surface/jelly.bmp",
 			"Resources/texture_pack_original/surface/lock.bmp",
-		});
+		}, RGB(255, 255, 255));
 	_surface.SetTopLeft(0, 0);
 	_surface.SetFrameIndexOfBitmap(0);
 	_index = { 0, 0 };

@@ -175,7 +175,7 @@ void Map::updateIceMap() {
 void Map::updateSurfaceMap() {
 	for (int i = 0; i < height(); i++) {
 		for (int j = 0; j < width(); j++) {
-			_surface_map[i][j]._position.first = (400 - 25 * width()) + j * 50;
+			_surface_map[i][j]._position.first = (400 - 25 * width()) + j * 50 + 20;
 			_surface_map[i][j]._position.second = (400 - 25 * height()) + i * 50;
 			_surface_map[i][j].updateSurface();
 		}
@@ -225,6 +225,7 @@ void Map::removeObstacleLayerAll() {
 }
 
 void Map::startCandyAnimation(int i, int j, int direction) {
+	TRACE("startCandyAnimation %d %d\n",i,j);
 	if (_candy_map[i][j].next_direction() == 0 && _candy_map[i][j].next_y() == 0) {
 		_candy_map[i][j]._is_animating = true;
 		_candy_map[i][j]._next_position.first = direction; // x
@@ -956,17 +957,25 @@ void Map::fallCandyAll() {
 		TRACE("\n");
 	}
 	TRACE("\nfallCandyAll\n");
-	bool isFallCandy = false;
+	TRACE("\nfallCandytype\n");
 	for (int j = 0; j < width(); j++) {
 		for (int i = 0; i < height(); i++) {
+			TRACE("%d", _candy_map[i][j].type());
+		}
+		TRACE("\n");
+	}
+	TRACE("\nfallCandytype\n");
+	bool isFallCandy = false;
+	for (int i = 0; i < height(); i++) {
+		for (int j = 0; j < width(); j++) {
 			if (_candy_map[i][j].fall_status() == 3) {
 				_candy_map[i][j]._fall_status = 0;
 				isFallCandy = true;
 				startCandyAnimation(i, j, 0);
 			}
-			if (isFallCandy) {
-				return;
-			}
+		}
+		if (isFallCandy) {
+			return;
 		}
 	}
 	
@@ -1016,12 +1025,12 @@ void Map::ScoreAndMovesCalculate() {
 					if (k == 0) {
 						
 						if (_win_rule.condition_number[k][l].first == _candy_map[i][j].type()) {
-							TRACE("cnttttt\n");
+							//TRACE("cnttttt\n");
 							cnt++;
 						}
 								
 						_win_rule.condition_number[k][l].second = cnt;
-						TRACE("con: %d\n", _win_rule.condition_number[k][l].second);
+						//TRACE("con: %d\n", _win_rule.condition_number[k][l].second);
 					}
 						
 				}
@@ -1036,7 +1045,7 @@ void Map::ScoreAndMovesCalculate() {
 
 	for (int i = 0; i < 3; i++) {
 		for (int j = 0; j < int(_win_rule.condition_number[i].size()); j++) {
-			TRACE("winrule: %d\n", _win_rule.condition_number[i][j].second);
+			//TRACE("winrule: %d\n", _win_rule.condition_number[i][j].second);
 		}
 	}
 	

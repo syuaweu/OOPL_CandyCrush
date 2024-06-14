@@ -49,7 +49,7 @@ void Candy::Init() {
 		"Resources/texture_pack_original/candy/-21.bmp",
 		"Resources/texture_pack_original/candy/99.bmp", //31
 		"Resources/texture_pack_original/candy/-99.bmp",
-		"Resources/texture_pack_original/candy/err.bmp" });
+		"Resources/texture_pack_original/candy/err.bmp" } , RGB(255,255,255));
 	_candy.SetTopLeft(0, 0);
 	_candy.SetFrameIndexOfBitmap(0);
 	_index = {0, 0};
@@ -81,6 +81,9 @@ int Candy::fall_status() {
 
 bool Candy::can_remove() {
 	if (type() == -99) {
+		return false;
+	}
+	if (type() == -21) {
 		return false;
 	}
 	return true;
