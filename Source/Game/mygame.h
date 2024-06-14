@@ -97,54 +97,15 @@ namespace game_framework {
 		void OnMouseMove(UINT nFlags, CPoint point);	// ??????ï¿??ï¿????????ï¿?? 
 		void OnRButtonDown(UINT nFlags, CPoint point);  // ??????ï¿??ï¿????????ï¿??
 		void OnRButtonUp(UINT nFlags, CPoint point);	// ??????ï¿??ï¿????????ï¿??
-		void DropOneSquare();
-		vector<vector<int>> CheckMapStatus(int mp[9][9], int w, int h);
-		void vertical_fall_candy(int i, int j);
-		void update_candy();
-		void remove_obstacle_layer(int i, int j);
-		bool CanDelete();
-		void StartDropOneSquare(int i, int j,int direction);
 		void previous_map();
 		void next_map();
 	protected:
 		void OnMove();									// ç§»ï¿½???????ï¿½ï¿½??ï¿??
 		void OnShow();									// é¡¯ç¤º????????????????????ï¿½ï¿½?ï¿½ï¿½??
 	private:
-		int phase = 1;
-		int sub_phase = 1;
 		CMovingBitmap background;
 		CMovingBitmap cursor;
-		CMovingBitmap character;
-		CMovingBitmap chest_and_key;
-		CMovingBitmap bee;
-		CMovingBitmap ball;
-		CMovingBitmap door[3];
-		CMovingBitmap candy[9][9];
-		CMovingBitmap jelly[9][9];
-		CMovingBitmap condition_icon[10];
-		CMovingBitmap game_over;
-		CMovingBitmap win;
-		CMovingBitmap score_image[250];
-		CMovingBitmap score_edge;
-		int all_condition_number = 0;
-		int score = 0;
-		int moves;
-		bool has_conditon_type[3];
-		int star_score[3];
-		vector<pair<int, int>> condition_number[3];
-		void LoadWinCondition();
-		//void ScoreAndMovesCalculate(vector<vector<int>> s);
-		bool isGameOver();
-		bool isWin();
-
-		void show_image_by_phase();
-		void show_text_by_phase();
-		bool validate_phase_1();
-		bool validate_phase_2();
-		bool validate_phase_3();
-		bool validate_phase_4();
-		bool validate_phase_5();
-		bool validate_phase_6();
+		
 		//---reconstruct object
 		Map map;
 	};
