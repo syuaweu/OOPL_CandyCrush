@@ -19,6 +19,7 @@ public:
 	pair<int, int> _next_position;
 	bool _will_be_special_candy;
 	bool _is_animating;
+	bool _is_produce;
 
 	Candy();
 	CMovingBitmap candy();
@@ -38,6 +39,7 @@ public:
 	bool is_fall();
 	bool is_remove_obstacle();
 	bool can_remove();
+	bool is_produce();
 
 	bool can_dropped();
 	bool will_be_special_candy();

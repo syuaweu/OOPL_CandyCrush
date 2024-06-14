@@ -58,6 +58,7 @@ void Candy::Init() {
 	_fall_status = 0;
 	_will_be_special_candy = 0;
 	_is_animating = 0;
+	_is_produce = 0;
 }
 
 void Candy::BeginState() {
@@ -65,7 +66,9 @@ void Candy::BeginState() {
 	_next_position = {0, 0};
 	_fall_status = 0;
 	_is_animating = 0;
+	_is_produce = 0;
 }
+
 
 CMovingBitmap Candy::candy(){
 	return _candy;
@@ -77,6 +80,10 @@ int Candy::type(){
 
 int Candy::fall_status() {
 	return _fall_status;
+}
+
+bool Candy::is_produce() {
+	return _is_produce;
 }
 
 bool Candy::can_remove() {
@@ -138,6 +145,7 @@ bool Candy::is_remove_obstacle() {
 bool Candy::will_be_special_candy() {
 	return _will_be_special_candy;
 }
+
 
 bool Candy::is_animating() {
 	return _is_animating;

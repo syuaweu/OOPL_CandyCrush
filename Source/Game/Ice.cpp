@@ -78,6 +78,6 @@ void Ice::removeIce() {
 			changeToBlank();
 			return;
 		}
-		_layer += 1;
+		_layer -= 1;
 	}
 }

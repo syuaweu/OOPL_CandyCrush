@@ -491,34 +491,6 @@ void CGameStateRun::update_candy() { //v
 	}
 }
 
-//void CGameStateRun::ScoreAndMovesCalculate(vector<vector<int>> s) {
-//	for (int i = 0; i < h; i++) {
-//		for (int j = 0; j < w; j++) {
-//			if (s[i][j] == 0) {
-//				score += 40;
-//				for (int k = 0; k < 3; k++) {
-//					for (int l = 0; l<int(condition_number[k].size()); l++) {
-//						if (condition_number[k][l].first >= 10 && condition_number[k][l].first <= 35) {
-//							if (which_candy[i][j]/10 == condition_number[k][l].first/10) {
-//								condition_number[k][l].second -= 1;
-//							}
-//						}
-//						else {
-//							if (which_candy[i][j] == condition_number[k][l].first) {
-//								condition_number[k][l].second -= 1;
-//							}
-//						}
-//					}
-//				}
-//			}
-//		}
-//	}
-//	for (int i = 0; i < 250; i++) {
-//		if (i < 250 * score / star_score[2]) {
-//			score_image[i].SetTopLeft(20 + i, 100);
-//		}
-//	}
-//}
 bool CGameStateRun::isGameOver() {
 	if (moves > 0) {
 		return false;
@@ -729,33 +701,7 @@ vector<vector<int>> CGameStateRun::CheckMapStatus(int mp[9][9], int w, int h) { 
 	
 	
 	
-	/*
-	for (int i = 0; i < h; i++) {
-		for (int j = 0; j < w; j++) {
-			if (LTypeCandy(mp, i, j) || TTypeCandy(mp, i, j)) {
-				status[i][j] = 1;
-				which_candy[i][j] %= 10;
-				which_candy[i][j] += 10;
-				disapear = 1;
-				update_candy();
-			}
-			if (ITypeCandy(mp, i, j)) {
-				status[i][j] = 1;
-				which_candy[i][j] %= 10;
-				which_candy[i][j] += 20;
-				disapear = 1;
-				update_candy();
-			}
-			if (ETypeCandy(mp, i, j)) {
-				status[i][j] = 1;
-				which_candy[i][j] %= 10;
-				which_candy[i][j] += 30;
-				disapear = 1;
-				update_candy();
-			}
-		}
-	}
-	*/
+
 	return status;
 }
 
@@ -874,7 +820,6 @@ void CGameStateRun::remove_obstacle_layer(int i, int j) {//v
 
 void CGameStateRun::OnMove()
 {	
-	vector<vector<int>> status = CheckMapStatus(which_candy, w, h);
 
 	map.animatedCandy();
 
@@ -896,45 +841,8 @@ void CGameStateRun::OnMove()
 		}
 	}
 
-	if ((CheckInitCandy(which_candy, h, w) || disapear) && is_animation_finished) {
-		//ScoreAndMovesCalculate();
-		disapear = 0;
-		update_candy();
-		bool isFallCandy = false;
-		for (int j = 0; j < w; j++) { // status2: fall one layer
-			for (int i = 0; i < h; i++)
-			{
-				if (status[i][j] == 2) {
-					isFallCandy = true;
-					StartDropOneSquare(i, j, 0);
-					vertical_fall_candy(i, j);
-				}
-				if (isFallCandy == true) {
-					update_candy();
-					return;
-				}
-			}
-			if (isFallCandy == true) {
-				update_candy();
-				return;
-			}
-		}
+	
 
-		// status: 0 => 2
-		for (int i = 0; i < h; i++) {
-			for (int j = 0; j < w; j++) {
-				if (status[i][j] == 0) {
-					candy[i][j].SetFrameIndexOfBitmap(32);
-					which_candy[i][j] = 99;
-					remove_obstacle_layer(i, j);
-				}
-			}
-		}
-		map.idx0 = 0, map.idx1 = 0, map.idy0 = 0, map.idy1 = 0;
-	}
-	if (is_animation_finished) {
-		update_candy();
-	}
 	map.ScoreAndMovesCalculate();
 	if (map._win_rule.isWin()) {
 		/*if (map._win_rule.score >= map._win_rule.star_score[2]) {
@@ -968,20 +876,6 @@ void CGameStateRun::OnInit()
 	game_over.LoadBitmapByString({ "resources/texture_pack_original/bg_screens/gameover.bmp" });
 	game_over.SetTopLeft(0, -800);
 	game_over.SetFrameIndexOfBitmap(0);
-	/*win.LoadBitmapByString({ 
-		"resources/texture_pack_original/bg_screens/win1.bmp",
-		"resources/texture_pack_original/bg_screens/win2.bmp" ,
-		"resources/texture_pack_original/bg_screens/win3.bmp" });
-	win.SetTopLeft(0, -800);
-	win.SetFrameIndexOfBitmap(0);
-	for (int i = 0; i < 250; i++) {
-		score_image[i].LoadBitmapByString({ "resources/texture_pack_original/bg_screens/score.bmp" });
-		score_image[i].SetTopLeft(20, 100);
-		score_image[i].SetFrameIndexOfBitmap(0);
-	}
-	score_edge.LoadBitmapByString({ "resources/texture_pack_original/bg_screens/score_edge.bmp" });
-	score_edge.SetTopLeft(18, 98);
-	score_edge.SetFrameIndexOfBitmap(0);*/
 	background.LoadBitmapByString({
 		"resources/texture_pack_original/bg_screens/game.bmp",
 		"resources/texture_pack_original/bg_screens/3.bmp",
@@ -1070,57 +964,7 @@ void CGameStateRun::OnInit()
 		candy_xy_position[i] = inner_vector;
 	}
 	
-	/*character.LoadBitmapByString({ "resources/giraffe.bmp" });
-	character.SetTopLeft(0, 0);*/
-	/*int k = 0;
-	for (int i = 0; i < 3; i++) {
-		for (int j = 0; j < int(condition_number[i].size()); j++) {
-			condition_icon[k].LoadBitmapByString({
-				"Resources/texture_pack_original/candy/0.bmp",
-				"Resources/texture_pack_original/candy/1.bmp",
-				"Resources/texture_pack_original/candy/2.bmp",
-				"Resources/texture_pack_original/candy/3.bmp",
-				"Resources/texture_pack_original/candy/4.bmp",
-				"Resources/texture_pack_original/candy/5.bmp",
-				"Resources/texture_pack_original/candy/10.bmp",
-				"Resources/texture_pack_original/candy/11.bmp",
-				"Resources/texture_pack_original/candy/12.bmp",
-				"Resources/texture_pack_original/candy/13.bmp",
-				"Resources/texture_pack_original/candy/14.bmp",
-				"Resources/texture_pack_original/candy/15.bmp",
-				"Resources/texture_pack_original/candy/20.bmp",
-				"Resources/texture_pack_original/candy/21.bmp",
-				"Resources/texture_pack_original/candy/22.bmp",
-				"Resources/texture_pack_original/candy/23.bmp",
-				"Resources/texture_pack_original/candy/24.bmp",
-				"Resources/texture_pack_original/candy/25.bmp",
-				"Resources/texture_pack_original/candy/30.bmp",
-				"Resources/texture_pack_original/candy/31.bmp",
-				"Resources/texture_pack_original/candy/32.bmp",
-				"Resources/texture_pack_original/candy/33.bmp",
-				"Resources/texture_pack_original/candy/34.bmp",
-				"Resources/texture_pack_original/candy/35.bmp",
-				"Resources/texture_pack_original/candy/40.bmp",
-				"Resources/texture_pack_original/candy/50.bmp",
-				"Resources/texture_pack_original/candy/-1.bmp",
-				"Resources/texture_pack_original/candy/-10.bmp",
-				"Resources/texture_pack_original/candy/-11.bmp",
-				"Resources/texture_pack_original/candy/-12.bmp",
-				"Resources/texture_pack_original/candy/-13.bmp",
-				"Resources/texture_pack_original/candy/-99.bmp",
-				"Resources/texture_pack_original/candy/99.bmp",
-				"Resources/texture_pack_original/candy/999.bmp",
-				"Resources/texture_pack_original/candy/7.bmp",
-				"Resources/texture_pack_original/ice/ice1.bmp"});
-			condition_icon[k].SetFrameIndexOfBitmap(image_index(condition_number[i][j].first));
-			condition_icon[k].SetTopLeft(400 - (130 * all_condition_number) / 2 + k * 130, 50);
-			k++;
-		}
-	}
-	for (int i = 0; i < all_condition_number; i++) {
-		
-		
-	}*/
+
 	
 
 }
@@ -1263,7 +1107,7 @@ void CGameStateRun::OnLButtonDown(UINT nFlags, CPoint point)
 	idy1 = point.y;
 	map.idx1 = point.x;
 	map.idy1 = point.y;
-	if (!inSquare()||!CanDelete()) {
+	if (!inSquare() || !CanDelete()) {
 		idx0 = idx1;
 		idy0 = idy1;	
 	}
@@ -1279,11 +1123,7 @@ void CGameStateRun::OnLButtonDown(UINT nFlags, CPoint point)
 		map._win_rule.moves -= 1;
 	}
 
-	/*if (oneInSquare()) {
-		cursor.SetTopLeft((point.x - (400 - 25 * w)) / 50 * 50 + (400 - 25 * w),
-			(point.y - (400 - 25 * h)) / 50 * 50 + (400 - 25 * h));
-		cursor.ShowBitmap();
-	}*/
+	
 
 
 }
@@ -1314,57 +1154,19 @@ void CGameStateRun::OnShow()
 	//game_over.ShowBitmap();
 	//win.ShowBitmap();
 	map.Show();
-	/*score_edge.ShowBitmap();
-	for (int i = 0; i < 250; i++) {
-		score_image[i].ShowBitmap();
-	}
-	for (int i = 0; i < all_condition_number; i++) {
-		condition_icon[i].ShowBitmap();
-	}*/
+	
 }
 
 void CGameStateRun::show_image_by_phase() {
 	if (phase <= 6) {
-		background.SetFrameIndexOfBitmap((phase - 1) * 2 + (sub_phase - 1));
-		background.ShowBitmap();
-		/*character.ShowBitmap();*/
-
-		for (int i = 0; i < h; i++) {
-			for (int j = 0; j < w; j++) {
-				jelly[i][j].ShowBitmap();
-				candy[i][j].ShowBitmap();
-				
-			}
-		}
-
 		
-
-		
-		for (int i = 0; i < h; i++) {
-			for (int j = 0; j < w; j++) {
-				candy[i][j].ShowBitmap();
-			}
-		}
 		
 		
 		
 
 		/*cursor.ShowBitmap();*/
 
-		if (phase == 3 && sub_phase == 1) {
-			chest_and_key.ShowBitmap();
-		}
-		if (phase == 4 && sub_phase == 1) {
-			bee.ShowBitmap();
-		}
-		if (phase == 5 && sub_phase == 1) {
-			for (int i = 0; i < 3; i++) {
-				door[i].ShowBitmap();
-			}
-		}
-		if (phase == 6 && sub_phase == 1) {
-			ball.ShowBitmap();
-		}
+		
 	}
 }
 
@@ -1377,8 +1179,8 @@ void CGameStateRun::show_text_by_phase() {
 		//CTextDraw::Print(pDC, 20+250*map._win_rule.star_score[i]/map._win_rule.star_score[2], 60, "*");
 	}
 	//CTextDraw::Print(pDC, 50, 60, to_string(score));
-	CTextDraw::Print(pDC, 100, 60, to_string(map._win_rule.moves));
-	CTextDraw::Print(pDC, 100, 70, to_string(map.level()));
+	CTextDraw::Print(pDC, 100, 30, "level: " + to_string(map.level()));
+	CTextDraw::Print(pDC, 100, 60, "steps: " + to_string(map._win_rule.moves));
 	/*CTextDraw::Print(pDC, 50, 50, "timer:" + to_string(clock()));*/
 	int k = 0;
 	for (int i = 0; i < 4; i++) {
