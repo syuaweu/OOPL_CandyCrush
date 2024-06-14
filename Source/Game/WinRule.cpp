@@ -15,7 +15,7 @@ WinRule::WinRule() {
 
 }
 void WinRule::Init() {
-	for (int i = 0; i < 3; i++) {
+	for (int i = 0; i < 4; i++) {
 		condition_number[i].clear();
 	}
 	
@@ -69,7 +69,7 @@ void WinRule::Init() {
 }
 
 void WinRule::BeginState() {
-	for (int i = 0; i < 3; i++) {
+	for (int i = 0; i < 4; i++) {
 		condition_number[i].clear();
 	}
 	LoadWinCondition();
@@ -94,7 +94,7 @@ void WinRule::LoadWinCondition() {
 	for (int i = 0; i < 3; i++) {
 		in >> star_score[i];
 	}
-	for (int i = 0; i < 3; i++) {
+	for (int i = 0; i < 4; i++) {
 		in >> has_conditon_type[i];
 		if (has_conditon_type[i]) {
 			int t, n;
@@ -108,7 +108,7 @@ void WinRule::LoadWinCondition() {
 		}
 	}
 	in.close();
-	for (int i = 0; i < 3; i++) {
+	for (int i = 0; i < 4; i++) {
 		for (int j = 0; j < int(condition_number[i].size()); j++) {
 			TRACE("number:%d\n", condition_number[i][j].first);
 			condition_icon.SetFrameIndexOfBitmap(image_index(condition_number[i][j].first));
@@ -128,6 +128,13 @@ void WinRule::Show() {
 int WinRule::image_index(int x) {
 	if (x == -1) {
 		return 26;
+	}
+	else if (x == -21)
+	{
+		return 25;
+	}
+	else if (x == -999) {
+		return 35;
 	}
 	else if (x >= 60 && x <= 65) {
 		return x % 10 + x / 6 / 10 * 6;
@@ -150,7 +157,7 @@ int WinRule::image_index(int x) {
 }
 
 bool WinRule::isWin() {
-	for (int i = 0; i < 3; i++) {
+	for (int i = 0; i < 4; i++) {
 		for (int j = 0; j<int(condition_number[i].size()); j++) {
 			TRACE("con: %d\n", condition_number[i][j].second);
 			if (condition_number[i][j].second > 0) {

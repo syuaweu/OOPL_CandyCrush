@@ -207,7 +207,7 @@ void Candy::updateCandy() {
 }
 
 bool Candy::is_sameColor_candy(Candy c) {
-	if (is_obstacle() || !can_remove()) {
+	if (is_obstacle() || !can_remove() || type() == 99) {
 		return false;
 	}
 	if (c.type() >= 0 && c.type() <= 35 && type() >= 0 && type() <= 35) {
@@ -219,12 +219,15 @@ bool Candy::is_sameColor_candy(Candy c) {
 }
 
 bool Candy::is_sameColor_candy_plus(Candy c) {
-	if (is_obstacle() || !can_remove()) {
+	if (is_obstacle() || !can_remove() || type() == 99) {
 		return false;
 	}
-	if (c.type() % 10 == type() % 10 && !c.will_be_special_candy()) {
-		return true;
+	if (c.type() >= 0 && c.type() <= 35 && type() >= 0 && type() <= 35) {
+		if (c.type() % 10 == type() % 10 && !c.will_be_special_candy()) {
+			return true;
+		}
 	}
+	
 	return false;
 }
 

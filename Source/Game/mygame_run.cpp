@@ -1157,6 +1157,10 @@ void CGameStateRun::previous_map() {
 		ofstream ofs("Resources/init_map/choose_level.txt");
 		ofs << map_name - 1;
 		ofs.close();
+		ofstream ofs2("Resources/init_map/retry.txt");
+		ofs2 << 1;
+		ofs2.close();
+		GotoGameState(GAME_STATE_INIT);
 	}
 	GotoGameState(GAME_STATE_INIT);
 }
@@ -1166,12 +1170,16 @@ void CGameStateRun::next_map() {
 	in.open("Resources/init_map/choose_level.txt");
 	in >> map_name;
 	in.close();
-	if (map_name + 1 <= 30) {
+	if (map_name + 1 <= 40) {
 		ofstream ofs("Resources/init_map/choose_level.txt");
 		ofs << map_name + 1;
 		ofs.close();
+		ofstream ofs2("Resources/init_map/retry.txt");
+		ofs2 << 1;
+		ofs2.close();
+		GotoGameState(GAME_STATE_INIT);
 	}
-	GotoGameState(GAME_STATE_INIT);
+	
 }
 void CGameStateRun::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
@@ -1372,7 +1380,7 @@ void CGameStateRun::show_text_by_phase() {
 	CTextDraw::Print(pDC, 100, 60, to_string(map._win_rule.moves));
 	/*CTextDraw::Print(pDC, 50, 50, "timer:" + to_string(clock()));*/
 	int k = 0;
-	for (int i = 0; i < 3; i++) {
+	for (int i = 0; i < 4; i++) {
 		for (int j = 0; j < int(map._win_rule.condition_number[i].size()); j++) {
 			CTextDraw::Print(pDC, 400, 80, to_string(map._win_rule.condition_number[i][j].second>0? map._win_rule.condition_number[i][j].second:0));
 		}

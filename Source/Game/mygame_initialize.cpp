@@ -110,7 +110,7 @@ void CGameStateInit::OnBeginState()
 {
 	bool retry;
 	ifstream in;
-	in.open("Resources/retry.txt");
+	in.open("Resources/init_map/retry.txt");
 	in >> retry;
 	in.close();
 	if (!retry) {

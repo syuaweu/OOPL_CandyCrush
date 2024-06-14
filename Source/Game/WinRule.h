@@ -23,7 +23,7 @@ public:
 	int moves;
 	bool has_conditon_type[3];
 	int star_score[3];
-	vector<pair<int, int>> condition_number[3];
+	vector<pair<int, int>> condition_number[4];
 
 	void LoadWinCondition();
 	void Show();

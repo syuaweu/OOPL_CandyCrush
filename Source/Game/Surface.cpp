@@ -80,7 +80,7 @@ void Surface::removeJelly() {
 }
 
 void Surface::removeLock() {
-	if (type() == 1) {
+	if (type() == 2) {
 		changeToBlank();
 		return;
 	}
