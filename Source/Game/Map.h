@@ -51,6 +51,7 @@ public:
 	void updateIceMap();
 	void updateSurfaceMap();
 	void updateMap();
+	void removeObstacle(int i, int j);
 	void removeObstacleLayerAll();
 	void startCandyAnimation(int i, int j, int direction);
 	void animatedCandy();

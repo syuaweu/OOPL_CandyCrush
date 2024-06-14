@@ -1378,6 +1378,7 @@ void CGameStateRun::show_text_by_phase() {
 	}
 	//CTextDraw::Print(pDC, 50, 60, to_string(score));
 	CTextDraw::Print(pDC, 100, 60, to_string(map._win_rule.moves));
+	CTextDraw::Print(pDC, 100, 70, to_string(map.level()));
 	/*CTextDraw::Print(pDC, 50, 50, "timer:" + to_string(clock()));*/
 	int k = 0;
 	for (int i = 0; i < 4; i++) {
