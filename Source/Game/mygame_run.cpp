@@ -876,13 +876,7 @@ void CGameStateRun::OnInit()
 	game_over.LoadBitmapByString({ "resources/texture_pack_original/bg_screens/gameover.bmp" });
 	game_over.SetTopLeft(0, -800);
 	game_over.SetFrameIndexOfBitmap(0);
-	background.LoadBitmapByString({
-		"resources/texture_pack_original/bg_screens/game.bmp",
-		"resources/texture_pack_original/bg_screens/3.bmp",
-		"resources/texture_pack_original/bg_screens/2.bmp",
-		"resources/texture_pack_original/bg_screens/1.bmp",
-		"resources/texture_pack_original/bg_screens/0.bmp",
-		});
+	background.LoadBitmapByString({ "resources/texture_pack_original/bg_screens/game.bmp" });
 	background.SetTopLeft(0, 0);
 	vector<vector<int>> mp = LoadMap(&h, &w);
 	vector<vector<int>> jellymp = LoadStatus(&h, &w);
@@ -1083,37 +1077,14 @@ bool inSquare() {
 	return 1;
 }
 
-bool oneInSquare() {
-	int potx = (400 - 25 * w);
-	int poty = (400 - 25 * h);
 
-	if (which_mou) {
-		if (idx0 < potx || idx0 > potx + 50 * w || idy0 < poty || idy0 > poty + 50 * h) {
-			return 0;
-		}
-		return 1;
-	}
-	else {
-		if (idx1 < potx || idx1 > potx + 50 * w || idy1 < poty || idy1 > poty + 50 * h) {
-			return 0;
-		}
-		return 1;
-	}
-}
 
 void CGameStateRun::OnLButtonDown(UINT nFlags, CPoint point)
 {
-	idx1 = point.x;
-	idy1 = point.y;
+	
 	map.idx1 = point.x;
 	map.idy1 = point.y;
-	if (!inSquare() || !CanDelete()) {
-		idx0 = idx1;
-		idy0 = idy1;	
-	}
-	else {
-		moves -= 1;
-	}
+	
 
 	if (!map.is_inSquare() || !map.can_switch_then_switch()) {
 		map.idx0 = map.idx1;
@@ -1122,9 +1093,6 @@ void CGameStateRun::OnLButtonDown(UINT nFlags, CPoint point)
 	else {
 		map._win_rule.moves -= 1;
 	}
-
-	
-
 
 }
 
@@ -1149,6 +1117,8 @@ void CGameStateRun::OnRButtonUp(UINT nFlags, CPoint point)
 
 void CGameStateRun::OnShow()
 {
+	background.SetFrameIndexOfBitmap(0);
+	background.ShowBitmap();
 	show_image_by_phase();
 	show_text_by_phase();
 	//game_over.ShowBitmap();

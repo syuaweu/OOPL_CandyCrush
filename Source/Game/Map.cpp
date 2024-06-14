@@ -947,6 +947,17 @@ void Map::checkMapStatus() { // 1:normal, 0.2:special
 				if (_candy_map[i][j].type() / 10 == 1) {
 					boom_que.push_back({ 2, {i,j} });
 				}
+				if (_candy_map[i][j].type() == 7) {
+					_candy_map[i0][j0]._fall_status = 1;
+					int x = 0;
+					for (int ii = 0; ii < height(); ii++) {
+						for (int jj = 0; jj < width(); jj++) {
+							if (_candy_map[i][j].type() % 10 == x) {
+								_candy_map[i][j]._fall_status = 1;
+							}
+						}
+					}
+				}
 			}
 		}
 	}
