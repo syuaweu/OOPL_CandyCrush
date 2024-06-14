@@ -820,7 +820,7 @@ void CGameStateRun::remove_obstacle_layer(int i, int j) {//v
 
 void CGameStateRun::OnMove()
 {	
-
+	map.Shuffle();
 	map.animatedCandy();
 
 	if (!map.still_fall() && !map.is_animating()) {
@@ -1092,6 +1092,7 @@ void CGameStateRun::OnLButtonDown(UINT nFlags, CPoint point)
 	}
 	else {
 		map._win_rule.moves -= 1;
+		map._win_rule.score += 40;
 	}
 
 }
