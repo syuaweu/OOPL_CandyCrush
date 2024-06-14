@@ -340,6 +340,12 @@ void Map::animatedCandy() {
 void Map::produceCandy(int i, int j) {
 	int min = 0;
 	int max = 3;
+	if (level() == 36) {
+		max = 4;
+	}
+	if (level() == 37) {
+		max = 5;
+	}
 	int x = rand() % (max - min + 1) + min;
 	_candy_map[i][j]._type = x;
 }
