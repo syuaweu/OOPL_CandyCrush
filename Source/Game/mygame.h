@@ -37,7 +37,8 @@
  *      2. Replace the demonstration of animation as a new bouncing ball.
  *      3. Use ShowInitProgress(percent) to display loading progress.
 */
-
+#include"Map.h"
+#include "WinRule.h"
 
 namespace game_framework {
 	/////////////////////////////////////////////////////////////////////////////
@@ -70,11 +71,12 @@ namespace game_framework {
 		void draw_text();
 		void next_level();
 		void previous_level();
-		void level_1to4(int x,int y);
-		void choose_map(int level);
+		void pressLevel(int stage, int x, int y);
+		void chooseLevel(int level);
 		CMovingBitmap background;
 		CMovingBitmap property_status;
 		CMovingBitmap show_account;
+
 	};
 
 	/////////////////////////////////////////////////////////////////////////////
@@ -131,7 +133,7 @@ namespace game_framework {
 		int star_score[3];
 		vector<pair<int, int>> condition_number[3];
 		void LoadWinCondition();
-		void ScoreAndMovesCalculate(vector<vector<int>> s);
+		//void ScoreAndMovesCalculate(vector<vector<int>> s);
 		bool isGameOver();
 		bool isWin();
 
@@ -143,6 +145,8 @@ namespace game_framework {
 		bool validate_phase_4();
 		bool validate_phase_5();
 		bool validate_phase_6();
+		//---reconstruct object
+		Map map;
 	};
 
 	/////////////////////////////////////////////////////////////////////////////
@@ -156,12 +160,14 @@ namespace game_framework {
 		void OnBeginState();							// è¨­ï¿½??ï¿??æ¬¡ï¿½????ï¿½ï¿½????????ï¿?????
 		void OnInit();
 		void OnKeyDown(UINT, UINT, UINT);
+		void OnLButtonDown(UINT nFlags, CPoint point);
 	protected:
 		void OnMove();									// ç§»ï¿½???????ï¿½ï¿½??ï¿??
 		void OnShow();									// é¡¯ç¤º????????????????????ï¿½ï¿½?ï¿½ï¿½??
 	private:
 		CMovingBitmap background;
-		void load_background();
+		CMovingBitmap game_over;
+		CMovingBitmap win;
 	};
 
 }
