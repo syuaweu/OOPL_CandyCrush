@@ -21,7 +21,7 @@ void WinRule::Init() {
 	
 	for (int i = 0; i < 255; i++) {
 		score_image[i].LoadBitmapByString({ "resources/texture_pack_original/bg_screens/score.bmp" });
-		score_image[i].SetTopLeft(272, 25);
+		score_image[i].SetTopLeft(270, 25);
 		score_image[i].SetFrameIndexOfBitmap(0);
 	}
 	score_edge.LoadBitmapByString({ "resources/texture_pack_original/bg_screens/score_edge.bmp" });
@@ -73,7 +73,7 @@ void WinRule::BeginState() {
 		condition_number[i].clear();
 	}
 	LoadWinCondition();
-	score_edge.SetTopLeft(270, 25);
+	score_edge.SetTopLeft(268, 23);
 	score = 0;
 	all_condition_number = 0;
 	score_edge.SetFrameIndexOfBitmap(0);

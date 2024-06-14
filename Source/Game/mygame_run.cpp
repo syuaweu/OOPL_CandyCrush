@@ -1000,7 +1000,6 @@ void CGameStateRun::previous_map() {
 		ofs2.close();
 		GotoGameState(GAME_STATE_INIT);
 	}
-	GotoGameState(GAME_STATE_INIT);
 }
 void CGameStateRun::next_map() {
 	ifstream in;
@@ -1150,8 +1149,8 @@ void CGameStateRun::show_text_by_phase() {
 		//CTextDraw::Print(pDC, 20+250*map._win_rule.star_score[i]/map._win_rule.star_score[2], 60, "*");
 	}
 	//CTextDraw::Print(pDC, 50, 60, to_string(score));
-	CTextDraw::Print(pDC, 100, 30, "level: " + to_string(map.level()));
-	CTextDraw::Print(pDC, 100, 60, "steps: " + to_string(map._win_rule.moves));
+	CTextDraw::Print(pDC, 80, 30, "level: " + to_string(map.level()));
+	CTextDraw::Print(pDC, 80, 60, "steps: " + to_string(map._win_rule.moves));
 	/*CTextDraw::Print(pDC, 50, 50, "timer:" + to_string(clock()));*/
 	int k = 0;
 	for (int i = 0; i < 4; i++) {
