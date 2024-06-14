@@ -62,11 +62,7 @@ void Map::BeginState(){
 
 void Map::Show() {
 	_background.ShowBitmap();
-	for (int i = 0; i < height(); i++) {
-		for (int j = 0; j < width(); j++) {
-			_ice_map[i][j].ice().ShowBitmap();
-		}
-	}
+	
 	for (int i = 0; i < height(); i++) {
 		for (int j = 0; j < width(); j++) {
 			_candy_map[i][j].candy().ShowBitmap();
@@ -75,6 +71,11 @@ void Map::Show() {
 	for (int i = 0; i < height(); i++) {
 		for (int j = 0; j < width(); j++) {
 			_surface_map[i][j].surface().ShowBitmap();
+		}
+	}
+	for (int i = 0; i < height(); i++) { ////////// not remove object
+		for (int j = 0; j < width(); j++) {
+			_ice_map[i][j].ice().ShowBitmap();
 		}
 	}
 	_win_rule.Show();
@@ -165,7 +166,7 @@ void Map::updateCandyMap() {
 void Map::updateIceMap() {
 	for (int i = 0; i < height(); i++) {
 		for (int j = 0; j < width(); j++) {
-			_ice_map[i][j]._position.first = (400 - 25 * width()) + j * 50;
+			_ice_map[i][j]._position.first = (400 - 25 * width()) + j * 50 + 10;
 			_ice_map[i][j]._position.second = (400 - 25 * height()) + i * 50;
 			_ice_map[i][j].updateIce();
 		}
@@ -175,7 +176,7 @@ void Map::updateIceMap() {
 void Map::updateSurfaceMap() {
 	for (int i = 0; i < height(); i++) {
 		for (int j = 0; j < width(); j++) {
-			_surface_map[i][j]._position.first = (400 - 25 * width()) + j * 50 + 20;
+			_surface_map[i][j]._position.first = (400 - 25 * width()) + j * 50;
 			_surface_map[i][j]._position.second = (400 - 25 * height()) + i * 50;
 			_surface_map[i][j].updateSurface();
 		}
@@ -193,8 +194,12 @@ void Map::removeObstacleLayerAll() {
 		for (int j = 0; j < width(); j++) {
 			if (_candy_map[i][j].fall_status() == 4) { // :(
 				_candy_map[i][j]._fall_status = 0;
-				_surface_map[i][j].removeJelly();
-				_ice_map[i][j].removeIce();
+				if (_surface_map[i][j].type() == 1) {
+					_surface_map[i][j].removeJelly();
+				}
+				else {
+					_ice_map[i][j].removeIce();
+				}
 				removeAroundObstacle(i, j);
 			}
 			if (_candy_map[i][j].fall_status() == 2) {
@@ -206,19 +211,32 @@ void Map::removeObstacleLayerAll() {
 				else{
 					_candy_map[i][j]._fall_status = 0;
 				}
-				_surface_map[i][j].removeJelly();
-				_surface_map[i][j].removeLock();
-				_ice_map[i][j].removeIce();
+				if (_surface_map[i][j].is_surface()) {
+					_surface_map[i][j].removeJelly();
+					_surface_map[i][j].removeLock();
+				}
+				else {
+					_ice_map[i][j].removeIce();
+				}
 			}
 			if (_candy_map[i][j].fall_status() == 1) {
-				_candy_map[i][j].changeToBlank();
-				_surface_map[i][j].removeJelly();
-				_surface_map[i][j].removeLock();
-				_ice_map[i][j].removeIce();
+				if (_surface_map[i][j].is_surface()) {
+					_surface_map[i][j].removeJelly();
+					_surface_map[i][j].removeLock();
+				}
+				else {
+					_candy_map[i][j].changeToBlank();
+					_ice_map[i][j].removeIce();
+				}
 				removeAroundObstacle(i, j);
 			}
 			if (i == height() - 1) {
-				_candy_map[i][j].removeDragon();
+				if (_candy_map[i][j].type() == -99) {
+					_candy_map[i - 1][j].removeDragon();
+				}
+				else {
+					_candy_map[i][j].removeDragon();
+				}
 			}
 		}
 	}
@@ -288,23 +306,22 @@ void Map::produceCandy(int i, int j) {
 	_candy_map[i][j]._type = x;
 }
 
+void Map::removeObstacle(int i, int j) {
+	if (i >= 0 && i < height()&& j >= 0 && j < width()) {
+		if (_surface_map[i][j].type() == 1) {
+			_surface_map[i][j].removeJelly();
+		}
+		else {
+			_candy_map[i][j].removeObstacleLayer();
+		}
+	}
+}
+
 void Map::removeAroundObstacle(int i, int j) {
-	if (i > 0) {
-		_candy_map[i - 1][j].removeObstacleLayer();
-		_surface_map[i - 1][j].removeJelly();
-	}
-	if (j > 0) {
-		_candy_map[i][j - 1].removeObstacleLayer();
-		_surface_map[i][j - 1].removeJelly();
-	}
-	if (i < height() - 1) {
-		_candy_map[i + 1][j].removeObstacleLayer();
-		_surface_map[i + 1][j].removeJelly();
-	}
-	if (j < width() - 1) {
-		_candy_map[i][j + 1].removeObstacleLayer();
-		_surface_map[i][j + 1].removeJelly();
-	}
+	removeObstacle(i - 1, j);
+	removeObstacle(i, j - 1);
+	removeObstacle(i + 1, j);
+	removeObstacle(i, j + 1);
 }
 
 bool Map::is_LTypeCandy(int i, int j) {
