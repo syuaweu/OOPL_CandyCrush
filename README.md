@@ -1,3 +1,6 @@
+### Warning
+- **如要使用有去背的遊戲，請參考 main_remove_background Branch**
+
 # Candy Crush with Grass
 
 《糖果傳奇與草》是由 syuaweu & itaouo 模仿英國網路遊戲公司 King Digital 開發的寶石方塊遊戲。糖果傳奇是以糖果爲主題；糖果傳奇與草是以草爲主題。基本規則是將三至五個一樣的草排成一線消除糖果得到分數。遊戲需要把不同的草組在一起並引爆，會產生不同效果威力。當串消草產生連擊的期間，玩家無法移動其他的草。
