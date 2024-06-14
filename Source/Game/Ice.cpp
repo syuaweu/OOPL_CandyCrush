@@ -66,3 +66,18 @@ void Ice::updateIce() {
 		_ice.SetFrameIndexOfBitmap(0);
 	}
 }
+
+void Ice::changeToBlank() {
+	_layer = 0;
+	updateIce();
+}
+
+void Ice::removeIce() {
+	if (is_ice()){
+		if (layer() == 1) {
+			changeToBlank();
+			return;
+		}
+		_layer += 1;
+	}
+}

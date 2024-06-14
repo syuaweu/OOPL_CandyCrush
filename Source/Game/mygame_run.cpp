@@ -1133,7 +1133,20 @@ void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 	if (nChar == VK_RIGHT) {
 		next_map();
 	}
+	if (nChar == 0x51) { // Q
+		map._animation_speed = 0;
+	}
+	if (nChar == 0x57) { // W
+		map._animation_speed = 2;
+	}
+	if (nChar == 0x45) { // E
+		map._animation_speed = 5;
+	}
+	if (nChar == 0x52) { // R
+		map._animation_speed = 10;
+	}
 }
+
 void CGameStateRun::previous_map() {
 	ifstream in;
 	int map_name;

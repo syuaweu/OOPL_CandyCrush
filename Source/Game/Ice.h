@@ -28,5 +28,7 @@ public:
 
 	void Init();
 	void updateIce();
+	void changeToBlank();
+	void removeIce();
 };
 

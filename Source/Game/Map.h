@@ -19,6 +19,7 @@ public:
 	int _level;
 	int _width;
 	int _height;
+	int _animation_speed;
 	
 	vector<vector<Candy>> _candy_map;
 	vector<vector<Ice>> _ice_map;
@@ -27,12 +28,16 @@ public:
 	WinRule _win_rule;
 	bool _is_fall_candy;
 
+	CMovingBitmap _background;
+
 	Map();
 	int level();
 	int width();
 	int height();
+	int animation_speed();
 	int idx0 = 0, idx1 = 0;
 	int idy0 = 0, idy1 = 0;
+	
 
 	void Init();
 	void BeginState();
