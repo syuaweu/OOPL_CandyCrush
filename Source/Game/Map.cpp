@@ -1060,7 +1060,7 @@ void Map::ScoreAndMovesCalculate() {
 	int cnt = 0;
 	for (int i = 0; i < height(); i++) {
 		for (int j = 0; j < width(); j++) {
-			this->_win_rule.score += 40;
+			//this->_win_rule.score += 40;
 			for (int k = 0; k < 4; k++) {
 				for (int l = 0; l<int(this->_win_rule.condition_number[k].size()); l++) {
 					if (k == 2) {
@@ -1100,6 +1100,7 @@ void Map::ScoreAndMovesCalculate() {
 	for (int i = 0; i < 255; i++) {
 		if (i < 255 * this->_win_rule.score / this->_win_rule.star_score[2]) {
 			this->_win_rule.score_image[i].SetTopLeft(272 + i, 25);
+			TRACE("score: %d", _win_rule.score);
 		}
 	}
 
@@ -1112,11 +1113,25 @@ void Map::ScoreAndMovesCalculate() {
 }
 
 void Map::Shuffle() {
-	bool need_shuffle = 1;
 	for (int i = 0; i < height(); i++) {
 		for (int j = 0; j < width(); j++) {
 			int idx[4][2] = { {-1,0},{1,0},{0,-1},{0,1} };
 			for (int k = 0; k < 4; k++) {
+				if (i + idx[k][0] < 0 || i + idx[k][0] >= height() || j + idx[k][1] < 0 || j + idx[k][1] >= width()) {
+					continue;
+				}
+				if (_surface_map[i][j].is_surface() || _surface_map[i + idx[k][0]][j + idx[k][1]].is_surface()) {
+					continue;
+				}
+				if (!(std::abs(i - i + idx[k][0]) == 1 && std::abs(j - j + idx[k][1]) == 0) && !(std::abs(i - i + idx[k][0]) == 0 && std::abs(j - j + idx[k][1]) == 1)) {
+					continue;
+				}
+				if (_candy_map[i][j].is_frosting() || _candy_map[i + idx[k][0]][j + idx[k][1]].is_frosting()) {
+					continue;
+				}
+				if (_candy_map[i][j].type() == 99 || _candy_map[i + idx[k][0]][j + idx[k][1]].type() == 99) {
+					continue;
+				}
 				if (_candy_map[i][j].type() >= 10 && _candy_map[i + idx[k][0]][j + idx[k][1]].type() >= 10
 					&& _candy_map[i][j].type() <= 35 && _candy_map[i + idx[k][0]][j + idx[k][1]].type() <= 35) {
 					return;
@@ -1133,7 +1148,13 @@ void Map::Shuffle() {
 			}
 		}
 	}
-
-
+	for (int i = 0; i < width(); i++) {
+		for (int j = 0; j < height(); j++) {
+			if (_candy_map[i][j].type() >= 0 && _candy_map[i][j].type() <= 7) {
+				produceCandy(i, j);
+			}
+		}
+	}
+	updateCandyMap();
 }
 
