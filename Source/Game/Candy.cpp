@@ -214,7 +214,7 @@ void Candy::updateCandy() {
 		_candy.SetFrameIndexOfBitmap(32);
 	}
 	else {
-		_candy.SetFrameIndexOfBitmap(33);
+		_candy.SetFrameIndexOfBitmap(31);
 	}
 }
 
