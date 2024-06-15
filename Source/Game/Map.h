@@ -53,7 +53,6 @@ public:
 	void updateMap();
 	void removeObstacle(int i, int j);
 	void removeObstacleLayerAll();
-	void checkAnimationConflict();
 	void startCandyAnimation(int i, int j, int direction);
 	void animatedCandy();
 	void removeAroundObstacle(int i, int j);

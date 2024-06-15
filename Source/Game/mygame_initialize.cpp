@@ -124,7 +124,6 @@ void CGameStateInit::OnBeginState()
 
 void CGameStateInit::OnMove()
 {	
-	TRACE("Stage: %d\n", stage);
 	if (stage == 0) {
 		if (isAccountSettingOpen == 1 && show_account.GetTop() < 0) {
 			show_account.SetTopLeft(0, show_account.GetTop() + 40);

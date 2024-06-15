@@ -610,6 +610,10 @@ void Map::Switch(int i1, int j1, int i2, int j2) {
 	Candy xx = _candy_map[i1][j1];
 	_candy_map[i1][j1] = _candy_map[i2][j2];
 	_candy_map[i2][j2] = xx;
+	bool is_produce_candy = _candy_map[i1][j1].is_produce();
+	_candy_map[i1][j1]._is_produce = _candy_map[i2][j2].is_produce();
+	_candy_map[i2][j2]._is_produce = is_produce_candy;
+
 }
 
 bool Map::can_switch_then_switch() {
@@ -965,13 +969,6 @@ void Map::checkMapStatus() { // 1:normal, 0.2:special
 			}
 		}
 	}
-	/*TRACE("\nmapstatus\n");
-	for (int i = 0; i < height(); i++) {
-		for (int j = 0; j < width(); j++) {
-			TRACE("%d", _candy_map[i][j].fall_status());
-		}
-		TRACE("\n");
-	}*/
 	ScoreAndMovesCalculate();
 }
 
@@ -988,41 +985,15 @@ bool Map::is_animating() {
 
 void Map::fallCandyAll() {
 	bool isFallCandy = false;
-	checkAnimationConflict();
-	for (int i = 0; i < height(); i++) {
-		for (int j = 0; j < width(); j++) {
-			if (_candy_map[i][j].fall_status() == 3 && !_candy_map[i][j].is_animation_conflict()) {
+	for (int j = 0; j < width(); j++) {
+		for (int i = 0; i < height(); i++) {
+			if (_candy_map[i][j].fall_status() == 3) {
 				_candy_map[i][j]._fall_status = 0;
 				isFallCandy = true;
 				startCandyAnimation(i, j, 0);
 			}
-		}
-		if (isFallCandy) {
-			return;
-		}
-	}
-}
-
-void Map::checkAnimationConflict() {
-	int line[9] = {0,0,0,0,0,0,0,0,0};
-	for (int j = 0; j < width(); j++) {
-		for (int i = 0; i < height() - 1; i++) {
-			if (_candy_map[i][j].fall_status() == 3) {
-				line[j] += 1;
-				line[j+1] += 1;
-				break;
-			}
-		}
-	}
-	TRACE("\nlines:\n");
-	for (int i = 0; i < width() - 1; i++) {
-		TRACE("%d ", line[i]);
-	}
-	for (int i = 0; i < height(); i++) {
-		for (int j = 0; j < width(); j++) {
-			_candy_map[i][j]._is_animation_conflict = 0;
-			if (line[j] > 1) {
-				_candy_map[i][j]._is_animation_conflict = 1;
+			if (isFallCandy) {
+				return;
 			}
 		}
 	}
