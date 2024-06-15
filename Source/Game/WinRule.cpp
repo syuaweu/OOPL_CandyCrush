@@ -110,7 +110,6 @@ void WinRule::LoadWinCondition() {
 	in.close();
 	for (int i = 0; i < 4; i++) {
 		for (int j = 0; j < int(condition_number[i].size()); j++) {
-			TRACE("number:%d\n", condition_number[i][j].first);
 			condition_icon.SetFrameIndexOfBitmap(image_index(condition_number[i][j].first));
 			condition_icon.SetTopLeft(300, 70);
 		}
@@ -159,7 +158,6 @@ int WinRule::image_index(int x) {
 bool WinRule::isWin() {
 	for (int i = 0; i < 4; i++) {
 		for (int j = 0; j<int(condition_number[i].size()); j++) {
-			TRACE("con: %d\n", condition_number[i][j].second);
 			if (condition_number[i][j].second > 0) {
 				return false;
 			}

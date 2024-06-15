@@ -59,6 +59,7 @@ void Candy::Init() {
 	_will_be_special_candy = 0;
 	_is_animating = 0;
 	_is_produce = 0;
+	_is_animation_conflict = 0;
 }
 
 void Candy::BeginState() {
@@ -86,6 +87,9 @@ bool Candy::is_produce() {
 	return _is_produce;
 }
 
+bool Candy::is_animation_conflict() {
+	return _is_animation_conflict;
+}
 bool Candy::can_remove() {
 	if (type() == -99) {
 		return false;

@@ -6,18 +6,18 @@
 #include "../Library/gameutil.h"
 #include "../Library/gamecore.h"
 #include "mygame.h"
-#include<iostream>
+#include <iostream>
 #include <cstdlib>
 #include <ctime>
-#include<sstream>
+#include <sstream>
 #include <vector>
-#include<math.h>
-#include<utility>
+#include <math.h>
+#include <utility>
 #include <fstream>
-#include<queue>
-#include<algorithm>
-#include"Map.h"
-#include"Candy.h"
+#include <queue>
+#include <algorithm>
+#include "Map.h"
+#include "Candy.h"
 using namespace std;
 using namespace game_framework;
 
@@ -64,30 +64,34 @@ void delay(int ms) {
 
 void CGameStateRun::OnMove()
 {	
-	map.Shuffle();
 	map.animatedCandy();
 
-	if (!map.still_fall() && !map.is_animating()) {
-		map.checkMapStatus();
-		map.removeObstacleLayerAll();
-	}
-
 	if (!map.is_animating()) {
+
+		if (!map.still_fall()) {
+			map.checkMapStatus();
+			map.removeObstacleLayerAll();
+		}
+		if (!map.still_fall()) {
+			map.Shuffle();
+		}
+
 		map.updateMap();
-	}
-	if (map.still_fall() && !map.is_animating()) {
-		map.fallCandyAll();
-		map.idx0 = 0, map.idx1 = 0, map.idy0 = 0, map.idy1 = 0;
-		for (int i = 0; i < map.height(); i++) {
-			for (int j = 0; j < map.width(); j++) {
-				map._candy_map[i][j]._will_be_special_candy = 0;
+
+		if (map.still_fall()) {
+
+			map.fallCandyAll();
+			map.idx0 = 0, map.idx1 = 0, map.idy0 = 0, map.idy1 = 0;
+			for (int i = 0; i < map.height(); i++) {
+				for (int j = 0; j < map.width(); j++) {
+					map._candy_map[i][j]._will_be_special_candy = 0;
+				}
 			}
 		}
 	}
 
-	
-
 	map.ScoreAndMovesCalculate();
+
 	if (map._win_rule.isWin()) {
 		ofstream ofs("Resources/win_or_loose.txt");
 		ofs << 'W';
@@ -128,13 +132,13 @@ void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 		map._animation_speed = 0;
 	}
 	if (nChar == 0x57) { // W
-		map._animation_speed = 2;
-	}
-	if (nChar == 0x45) { // E
 		map._animation_speed = 5;
 	}
-	if (nChar == 0x52) { // R
+	if (nChar == 0x45) { // E
 		map._animation_speed = 10;
+	}
+	if (nChar == 0x52) { // R
+		map._animation_speed = 25;
 	}
 }
 
@@ -154,6 +158,7 @@ void CGameStateRun::previous_map() {
 		GotoGameState(GAME_STATE_INIT);
 	}
 }
+
 void CGameStateRun::next_map() {
 	ifstream in;
 	int map_name;
@@ -171,6 +176,7 @@ void CGameStateRun::next_map() {
 	}
 	
 }
+
 void CGameStateRun::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
 
@@ -220,28 +226,19 @@ void CGameStateRun::OnShow()
 	background.SetFrameIndexOfBitmap(0);
 	background.ShowBitmap();
 	map.Show();
-	CDC *pDC = CDDraw::GetBackCDC();
-	CTextDraw::ChangeFontLog(pDC, 21, "", RGB(0, 0, 0), 800);
-	CTextDraw::Print(pDC, 237, 128, "");
-	CTextDraw::Print(pDC, 55, 163, "");
 
+	CDC *pDC = CDDraw::GetBackCDC();
+
+	CTextDraw::ChangeFontLog(pDC, 21, "", RGB(0, 0, 0), 800);
 	CTextDraw::Print(pDC, 80, 30, "level: " + to_string(map.level()));
 	CTextDraw::Print(pDC, 80, 60, "steps: " + to_string(map._win_rule.moves));
+
 	int k = 0;
 	for (int i = 0; i < 4; i++) {
 		for (int j = 0; j < int(map._win_rule.condition_number[i].size()); j++) {
 			CTextDraw::Print(pDC, 400, 80, to_string(map._win_rule.condition_number[i][j].second > 0 ? map._win_rule.condition_number[i][j].second : 0));
 		}
 	}
+
 	CDDraw::ReleaseBackCDC();
-	
 }
-
-
-
-
-
-
-
-
-

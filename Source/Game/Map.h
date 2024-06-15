@@ -53,6 +53,7 @@ public:
 	void updateMap();
 	void removeObstacle(int i, int j);
 	void removeObstacleLayerAll();
+	void checkAnimationConflict();
 	void startCandyAnimation(int i, int j, int direction);
 	void animatedCandy();
 	void removeAroundObstacle(int i, int j);
@@ -69,6 +70,7 @@ public:
 	bool is_animating();
 	bool still_fall();
 	bool can_change_candy();
+	bool can_candy_drop_then_drop(int i, int j, int direction);
 	void deleteRow(int i, int j);
 	void deleteColumn(int i, int j);
 	void boom(int ii, int jj, int x);
